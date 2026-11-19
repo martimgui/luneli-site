@@ -1,0 +1,43 @@
+---
+import CartaoDaConta from '../componentes/CartaoDaConta.astro'
+import Campo from '../componentes/Campo.astro'
+---
+<CartaoDaConta titulo="Testar grátis">
+  <div id="etapa-formulario">
+    <p class="fraco">O primeiro mês da conta nova não é cobrado e não pede cartão; nesse mês você escolhe o plano sem pagar nada. Nesta versão nada é cobrado: o pagamento ainda não está ligado.</p>
+    <p class="aviso aviso-info" id="aviso-config" hidden></p>
+    <form id="form-criar" class="form" method="post" novalidate>
+      <Campo nome="nomeDoRestaurante" rotulo="Nome do restaurante" autocomplete="organization" obrigatorio maximo={80} />
+      <Campo nome="nomeDoDono" rotulo="Seu nome" autocomplete="name" obrigatorio maximo={80} />
+      <Campo nome="email" rotulo="E-mail" tipo="email" autocomplete="email" inputmode="email" obrigatorio nota="É com ele que você entra e recebe o link de confirmação." />
+      <Campo nome="telefone" rotulo="Telefone com DDD" tipo="tel" autocomplete="tel" inputmode="tel" obrigatorio maximo={40} nota="Ex.: (11) 98765-4321. O DDD vira o padrão do restaurante." />
+      <Campo nome="senha" rotulo="Senha" tipo="password" autocomplete="new-password" obrigatorio nota="Pelo menos 8 caracteres." />
+      <Campo nome="endereco" rotulo="Endereço do restaurante" autocomplete="off" nota="Dá para pôr depois, em Dados do restaurante." />
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes">
+        <button class="btn um" type="submit" disabled>Criar minha conta</button>
+        <a class="ligacao" href="/entrar">Já tenho conta</a>
+      </div>
+    </form>
+  </div>
+  <div id="etapa-confira" hidden>
+    <p class="aviso aviso-ok" role="status" id="aviso-criada">Conta criada.</p>
+    <h2>Confira o seu e-mail</h2>
+    <p id="texto-enviado" style="margin-top:8px">Mandamos um link de confirmação para <b id="email-enviado"></b>. Abra o link para confirmar o e-mail e escolher o seu plano.</p>
+    <p class="aviso aviso-erro" id="texto-nao-enviado" style="margin-top:8px" hidden>Não conseguimos mandar o e-mail de confirmação agora. Clique em "Reenviar e-mail" daqui a pouco.</p>
+    <p class="aviso aviso-info" id="aviso-telefone" style="margin-top:12px" hidden></p>
+    <div class="bloco-codigo">
+      <p class="fraco">Código do restaurante</p>
+      <p class="codigo-grande" id="codigo-criado"></p>
+      <p class="fraco">Guarde este código: é com ele que os funcionários entram no sistema.</p>
+    </div>
+    <p class="aviso" id="aviso-reenvio" role="status" style="margin-top:16px" hidden></p>
+    <div class="acoes" style="margin-top:20px">
+      <button class="btn dois" type="button" id="reenviar">Reenviar e-mail</button>
+      <a class="ligacao" href="/minha-conta">Ir para minha conta</a>
+    </div>
+  </div>
+  <script>
+    import '../scripts/conta/testar-gratis'
+  </script>
+</CartaoDaConta>

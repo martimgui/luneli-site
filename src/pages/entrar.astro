@@ -1,0 +1,26 @@
+---
+import CartaoDaConta from '../componentes/CartaoDaConta.astro'
+import Campo from '../componentes/Campo.astro'
+---
+<CartaoDaConta titulo="Entrar">
+  <p class="fraco">O mesmo login do sistema. O dono entra só com o e-mail.</p>
+  <p class="aviso aviso-info" id="aviso-ja-entrou" hidden></p>
+  <form id="form-entrar" class="form" method="post" novalidate>
+    <Campo nome="identificacao" rotulo="E-mail" tipo="email" autocomplete="username" inputmode="email" obrigatorio />
+    <Campo nome="senha" rotulo="Senha" tipo="password" autocomplete="current-password" obrigatorio />
+    <p class="aviso" role="alert" hidden></p>
+    <div class="acoes">
+      <button class="btn um" type="submit" disabled>Entrar</button>
+      <a class="ligacao" href="/esqueci-a-senha">Esqueci a senha</a>
+    </div>
+    <p class="fraco">Ainda não tem conta? <a class="ligacao" href="/testar-gratis">Testar grátis</a></p>
+  </form>
+  <div id="escolher" hidden>
+    <h2>Em qual restaurante?</h2>
+    <ul id="lista-restaurantes" class="lista-planos"></ul>
+    <p class="aviso" id="aviso-escolher" role="alert" hidden></p>
+  </div>
+  <script>
+    import '../scripts/conta/entrar'
+  </script>
+</CartaoDaConta>

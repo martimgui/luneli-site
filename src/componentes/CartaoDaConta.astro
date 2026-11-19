@@ -1,0 +1,20 @@
+---
+/** A moldura das páginas da conta: um cartão estreito no meio da página. */
+import Base from '../layouts/Base.astro'
+
+interface Props {
+  titulo: string
+}
+const { titulo } = Astro.props
+---
+<Base titulo={`${titulo} | Luneli`}>
+  <section class="pagina estreita" aria-labelledby="h-pagina">
+    <div class="in">
+      <div class="cartao">
+        <h1 id="h-pagina">{titulo}</h1>
+        <noscript><p class="aviso aviso-info">A conta precisa de JavaScript ligado no navegador.</p></noscript>
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>

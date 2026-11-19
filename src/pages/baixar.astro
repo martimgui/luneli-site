@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro'
+import { ENDERECO_DO_SISTEMA } from '../lib/conta'
+import { funcaoDoSite } from '@pdv/core'
+import Marca from '../componentes/Marca.astro'
+const caixa = funcaoDoSite('caixa_para_windows')
+const lojas = funcaoDoSite('apps_nas_lojas')
+---
+<Base titulo="Baixar | Luneli">
+  <section class="pagina" aria-labelledby="h-pagina">
+    <div class="in">
+      <h1 id="h-pagina">Baixar</h1>
+      <p class="lead">Ainda não há programa para baixar: o caixa para Windows está sendo feito. Por enquanto, o Luneli abre no navegador do computador, e o entregador usa uma página no celular.</p>
+      <div class="blocos">
+        <article class="bloco">
+          <h2>Caixa para Windows</h2>
+          <p>O programa do caixa instalado no computador do restaurante. O instalador ainda está sendo feito.</p>
+          <Marca funcao={caixa} />
+        </article>
+        <article class="bloco">
+          <h2>Por enquanto, no navegador</h2>
+          <p>Enquanto o instalador não chega, o caixa abre no navegador do computador. Entre com o e-mail e a senha da sua conta.</p>
+          <a class="btn um" href={ENDERECO_DO_SISTEMA}>Abrir o sistema</a>
+        </article>
+        <article class="bloco">
+          <h2>Apps nas lojas</h2>
+          <p>O app do entregador e o do garçom na Google Play e na App Store. Hoje o entregador usa a página Luneli Entregador no navegador do celular, ligada à loja com um código.</p>
+          <Marca funcao={lojas} />
+        </article>
+      </div>
+    </div>
+  </section>
+</Base>

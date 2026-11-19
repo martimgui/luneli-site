@@ -1,0 +1,22 @@
+---
+/** 5. O PDV de dia: a tela de pedido no tema claro (porcelana), com o seletor Escuro/Claro que troca a tela na hora. */
+import Moldura from '../telas/Moldura.astro'
+import Pedido from '../telas/Pedido.astro'
+---
+<section class="secao dia" id="dia" aria-labelledby="dTit">
+  <div class="sec-cab">
+    <div>
+      <h2 class="serifa" id="dTit">O PDV de dia.</h2>
+      <div class="troca-tema" role="group" aria-label="Tema da tela">
+        <span>Tema</span>
+        <div class="seg-site"><button type="button" id="tEsc" aria-pressed="false">Escuro</button><button type="button" id="tCla" aria-pressed="true">Claro</button></div>
+      </div>
+    </div>
+    <p>O escuro vem de fábrica. Para o caixa perto da janela ou o balcão do almoço, cada pessoa troca para o claro em Minha conta, e escolhe uma de 8 cores e o tamanho da letra, com o mesmo desenho e os mesmos atalhos.</p>
+  </div>
+  <div class="sec-tela">
+    <Moldura classe="m-dia" rotulo="A tela de pedido do Luneli no tema claro.">
+      <Pedido instante={0.9} claro />
+    </Moldura>
+  </div>
+</section>

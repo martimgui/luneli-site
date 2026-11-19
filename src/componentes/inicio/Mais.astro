@@ -1,0 +1,38 @@
+---
+/**
+ * 6. O que mais existe. "A internet caiu. O caixa continua." ainda não chegou a nenhum cliente: fica como em breve,
+ * com a marca lida da lista única e um quadro marcado como exemplo ilustrativo só do que a primeira versão faz
+ * (um caixa, no computador onde o Luneli está instalado, e a nuvem sem internet). Abaixo, quatro funções que existem.
+ */
+import { funcaoDoSite } from '@pdv/core'
+import Marca from '../Marca.astro'
+
+const semInternet = funcaoDoSite('vender_sem_internet')
+---
+<section class="secao mais" id="mais" aria-labelledby="xTit">
+  <div class="mais-in">
+    <div class="m-grande">
+      <div>
+        <h2 class="serifa" id="xTit">A internet caiu. O caixa continua.</h2>
+        <div class="marca-funcao"><Marca funcao={semInternet} /></div>
+        <p class="lead">Em breve: sem internet, os pedidos ficam guardados no computador do balcão, onde o Luneli Caixa está instalado, e sobem sozinhos para a nuvem quando a conexão volta.</p>
+      </div>
+      <div class="rede" role="img" aria-label="Exemplo ilustrativo do que está sendo feito: um caixa no computador do balcão continua vendendo sem internet, e a nuvem recebe tudo quando a conexão volta.">
+       <div aria-hidden="true">
+        <div class="t">Luneli Caixa <span>em breve · exemplo ilustrativo</span></div>
+        <div class="l"><span>Caixa 1 · computador do balcão</span><em><i class="ponto"></i>Vendendo</em></div>
+        <div class="l"><span>Internet</span><em><i class="ponto esp"></i>Caiu</em></div>
+        <div class="l"><span>Pedidos e caixa</span><em>Guardados neste computador</em></div>
+        <div class="l"><span>Nuvem</span><em>Recebe tudo quando a conexão volta</em></div>
+        <div class="nota">É o que a primeira versão vai fazer: um caixa, no computador onde o Luneli está instalado.</div>
+       </div>
+      </div>
+    </div>
+    <dl class="lista-mais">
+      <div><dt>Pagamento dividido</dt><dd>Parte no Pix, parte no cartão, ou a conta em partes iguais entre as pessoas.</dd></div>
+      <div><dt>Caixinha do motoboy</dt><dd>No pedido de entrega, lance o valor e quem ficou com ela. A que fica no caixa entra no esperado do turno e é paga no acerto do dia.</dd></div>
+      <div><dt>Vários caixas</dt><dd>Caixa 1, caixa 2: cada um com o seu turno, o seu troco e o seu fechamento.</dd></div>
+      <div><dt>Uma comanda por cozinha</dt><dd>Você escolhe a impressora de cada cozinha e a ordem dos blocos e dos campos no papel.</dd></div>
+    </dl>
+  </div>
+</section>

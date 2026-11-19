@@ -1,0 +1,91 @@
+---
+/**
+ * 3. A história fixa: a tela do Luneli fica parada enquanto o texto avança em quatro passos, e a tela muda junto,
+ * uma coisa de cada vez, ligada à rolagem (scripts/vitrine/historia.ts). No celular, cada passo traz a sua tela,
+ * já no estado que explica o passo. Cada tela segue a tela real do Luneli (conferida em 03/11/2026).
+ */
+import Cozinha from '../telas/Cozinha.astro'
+import Expedicao from '../telas/Expedicao.astro'
+import FaseDaLua from '../telas/FaseDaLua.astro'
+import Fechamento from '../telas/Fechamento.astro'
+import Moldura from '../telas/Moldura.astro'
+import Pedido from '../telas/Pedido.astro'
+import { FASE_DO_PASSO } from '../telas/estado'
+
+const PASSOS = [
+  {
+    nome: 'Pedido',
+    titulo: 'Pelo teclado, do telefone ao F8.',
+    texto: 'Digitou o telefone e apertou Enter: o cliente aparece com o endereço salvo e a taxa do endereço. Os itens entram pelo código ou pelo nome, e a tecla / monta o meio a meio. F8 finaliza.',
+    rotulo: 'A tela de pedido do Luneli, com o pedido 248 registrado: cliente, meio a meio, Pix e o aviso de registro.',
+    estatico: 0.9,
+    Tela: Pedido,
+  },
+  {
+    nome: 'Cozinha',
+    titulo: 'Cada cozinha recebe só o que é dela.',
+    texto: 'A pizza sai na comanda da pizzaria; a bebida, na do bar. Na tela da cozinha, um Enter marca a parte daquela cozinha, e, quando todas marcam, o pedido vai sozinho para Pronto.',
+    rotulo: 'A tela da cozinha do Luneli, com a fila da pizzaria e o pedido 248 esperando o Enter.',
+    estatico: 0.5,
+    Tela: Cozinha,
+  },
+  {
+    nome: 'Entrega',
+    titulo: 'Da expedição até a porta.',
+    texto: 'A expedição vê cada pedido pela etapa: em preparo, pronto, saiu para entrega, entregue. Na saída, você escolhe quem leva, e o pedido aparece no celular do entregador, na página Luneli Entregador.',
+    rotulo: 'A expedição do Luneli: o pedido 248 saiu para entrega com o Diego e aparece no celular dele.',
+    estatico: 1,
+    Tela: Expedicao,
+  },
+  {
+    nome: 'Fechamento',
+    titulo: 'No fim do turno, o caixa bate.',
+    texto: 'O fechamento mostra o esperado em dinheiro, Pix e cartão. Você digita o que contou e a diferença aparece na hora. O acerto de cada entregador tem a sua própria tela.',
+    rotulo: 'O fechamento do caixa do Luneli: dinheiro, Pix e cartão conferidos, total Confere.',
+    estatico: 1,
+    Tela: Fechamento,
+  },
+]
+---
+<section class="historia" id="historia" aria-label="O caminho de um pedido">
+  <div class="h-in">
+    <div class="caps" id="caps">
+      {PASSOS.map((passo, i) => {
+        const Tela = passo.Tela
+        return (
+          <article class="cap">
+            <div class="txt">
+              <div class="onde"><FaseDaLua d={FASE_DO_PASSO[i]!} tam={15} />Passo {i + 1} de 4 · {passo.nome}</div>
+              <h3>{passo.titulo}</h3>
+              <p>{passo.texto}</p>
+            </div>
+            <div class="cap-tela">
+              <Moldura aceso rotulo={passo.rotulo}><Tela instante={passo.estatico} /></Moldura>
+            </div>
+          </article>
+        )
+      })}
+    </div>
+    <div class="palco-col">
+      <div class="fixo" id="fixo">
+        <div class="etapas" id="etapas" role="group" aria-label="Etapas do pedido">
+          {PASSOS.map((passo, i) => (
+            <button type="button" class="etapa">
+              <span class="fzw"><FaseDaLua d={FASE_DO_PASSO[i]!} tam={16} /></span>
+              {passo.nome}
+              <span class="tr"><i></i></span>
+            </button>
+          ))}
+        </div>
+        <Moldura id="mHist" classe="m-hist" rotulo="A tela do Luneli muda junto com o texto: pedido, cozinha, expedição e fechamento do caixa.">
+          <template id="tplPalco">
+            <Pedido />
+            <Cozinha />
+            <Expedicao />
+            <Fechamento />
+          </template>
+        </Moldura>
+      </div>
+    </div>
+  </div>
+</section>

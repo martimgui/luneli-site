@@ -1,0 +1,149 @@
+/*
+  As páginas internas na identidade D6: planos, perguntas, o que vem por aí, situação, baixar,
+  as páginas da conta (formulários, avisos, cartão, minha conta) e as páginas "em preparação".
+  Superfícies quietas com linhas finas; âmbar só na ação principal; verde só no concluído; vermelho só no erro.
+*/
+.pagina{position:relative;padding:clamp(32px,6vh,64px) var(--m) clamp(72px,12vh,128px)}
+.pagina>.in{max-width:1180px;margin:0 auto}
+.pagina.estreita>.in{max-width:560px}
+.pagina.media>.in{max-width:760px}
+.pagina h1{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(40px,5vw,64px);line-height:1.02;letter-spacing:-.022em;text-wrap:balance;margin-bottom:18px}
+.pagina .lead{font-size:18px;line-height:1.55;color:var(--t2);max-width:36em;text-wrap:pretty}
+.pagina h2{font-size:22px;font-weight:650;letter-spacing:-.015em;line-height:1.2}
+.pagina h3{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.pagina p{max-width:42em}
+.pagina p+p{margin-top:12px}
+.fraco{color:var(--t3)}
+.nota-texto{font-size:14px;color:var(--t3)}
+.preparo{margin-top:28px;padding:18px 20px;border-radius:12px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--linha);color:var(--t2);max-width:42em;line-height:1.5}
+.acoes{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:8px}
+
+/* marcas pronta / em breve, lidas da lista única */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:6px;font-size:12.5px;font-weight:500;white-space:nowrap;line-height:1.3}
+.pill.pronta{color:var(--verde);background:rgba(156,207,174,.1)}
+.pill.pronta::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--verde)}
+.pill.breve{color:var(--t2);background:rgba(226,232,240,.07)}
+
+/* aviso de exemplo: uma linha discreta, nunca uma caixa colorida */
+.exemplo{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 10px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--linha-2);font-size:13.5px;color:var(--t2)}
+
+/* ===== planos ===== */
+.degraus{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px;align-items:start}
+.degrau{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px 22px 20px;display:flex;flex-direction:column;gap:10px}
+.degrau .situ{font-size:13px;color:var(--t3)}
+.degrau h2{font-size:21px;font-weight:650;letter-spacing:-.015em;line-height:1.15}
+.degrau .provisorio{font-size:13px;color:var(--t3);margin-top:-6px}
+.degrau>p{font-size:15px;line-height:1.5;color:var(--t2)}
+.degrau .inclui{font-size:13.5px;color:var(--t3);margin-top:4px}
+.degrau ul{list-style:none;display:grid;gap:0;margin-top:2px}
+.degrau li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px;line-height:1.35;min-height:38px;padding:6px 0;border-top:1px solid var(--linha)}
+.degrau .preco{margin-top:auto;padding-top:16px;font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.1;display:flex;flex-direction:column;gap:4px}
+.degrau .preco small{font-size:13px;font-weight:450;color:var(--t3);letter-spacing:0}
+.extras{margin-top:40px}
+.extras h2{font-size:19px;font-weight:650;letter-spacing:-.012em;margin-bottom:6px}
+.soon{list-style:none;border-top:1px solid var(--linha);margin-top:12px}
+.soon li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 24px;align-items:center;padding:14px 0;border-bottom:1px solid var(--linha)}
+.soon li b{font-weight:600}
+.soon li p{grid-column:1;font-size:14.5px;color:var(--t2);line-height:1.45}
+.soon li .act{grid-row:1/3;grid-column:2}
+.selos{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:15px;color:var(--t2);list-style:none}
+.selos span{display:inline-flex;align-items:center;gap:8px}
+.selos svg{color:var(--luar)}
+@media (max-width:1000px){.degraus{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.degraus{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== o que vem por aí ===== */
+.colunas-futuro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:32px;align-items:start}
+.coluna-futuro{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:20px 22px}
+.coluna-futuro h2{font-size:20px;margin:0}
+.coluna-futuro>p{margin:4px 0 10px;font-size:14px}
+.coluna-futuro ul{list-style:none}
+.coluna-futuro li{padding:12px 0;border-top:1px solid var(--linha)}
+.coluna-futuro li b{display:block;font-weight:600}
+.coluna-futuro li p{font-size:14px;color:var(--t2);margin-top:3px;line-height:1.45}
+.coluna-futuro .btn{margin-top:6px;margin-left:-4px}
+.coluna-futuro .btn.tres[disabled]{background:none;box-shadow:none;color:var(--t3)}
+@media (max-width:900px){.colunas-futuro{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== perguntas ===== */
+.perguntas{margin-top:24px;max-width:46em;border-top:1px solid var(--linha)}
+.perguntas details{border-bottom:1px solid var(--linha)}
+.perguntas summary{list-style:none;cursor:pointer;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;font-weight:600;font-size:17px;letter-spacing:-.005em}
+.perguntas summary::-webkit-details-marker{display:none}
+.perguntas summary::after{content:"";flex:none;width:9px;height:9px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s var(--sai);margin-right:4px}
+.perguntas details[open] summary::after{transform:rotate(225deg) translate(-2px,-2px)}
+.perguntas details p{padding:0 0 18px;color:var(--t2);line-height:1.55;max-width:40em}
+@media (hover:hover) and (pointer:fine){ .perguntas summary:hover::after{border-color:var(--t1)} }
+
+/* ===== baixar ===== */
+.blocos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+.bloco{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px;display:grid;gap:10px;align-content:start}
+.bloco h2{font-size:19px}
+.bloco p{font-size:15px;color:var(--t2);line-height:1.5}
+.bloco .pill,.bloco .btn{justify-self:start;margin-top:4px}
+@media (max-width:900px){.blocos{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== a conta: cartão, formulários e avisos ===== */
+.cartao{background:var(--s1);border-radius:16px;box-shadow:inset 0 0 0 1px var(--linha),0 30px 60px -30px rgba(0,0,0,.8);padding:clamp(22px,3.4vw,36px)}
+.cartao h1{font-size:clamp(34px,4.6vw,44px);margin-bottom:12px}
+.cartao>p.fraco{color:var(--t2);line-height:1.5}
+.cartao h2{margin-top:22px}
+.form{display:grid;gap:16px;margin-top:20px}
+.campo{display:grid;gap:6px}
+.campo label{font-size:14px;font-weight:500;color:var(--t2)}
+.campo label .fraco{font-weight:450}
+.campo .nota{font-size:13px;color:var(--t3);line-height:1.45}
+.campo input{width:100%;height:44px;padding:0 12px;border-radius:8px;border:1px solid rgba(226,232,240,.4);background:#111318;color:var(--t1);transition:border-color .2s ease}
+.campo input::placeholder{color:var(--t3)}
+.campo input:focus{outline:2px solid var(--luar);outline-offset:2px}
+.campo input[aria-invalid=true]{border-color:rgba(242,160,142,.75)}
+.campo input[aria-invalid=true]:focus{outline-color:var(--erro)}
+.contagem{font-size:13.5px;color:var(--t3);margin-top:-8px}
+.erro-campo{color:var(--erro);font-size:13.5px;line-height:1.4}
+.erro-campo:empty{display:none}
+.aviso{width:fit-content;max-width:100%;padding:11px 14px;border-radius:8px;font-size:14.5px;line-height:1.45;color:var(--t1);background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha-2)}
+.aviso:empty{display:none}
+.aviso-erro{color:#F6CFC5;background:rgba(242,160,142,.09);box-shadow:inset 0 0 0 1px rgba(242,160,142,.35)}
+.aviso-info{color:var(--t1);background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha-2)}
+.aviso-ok{color:#CFEBD9;background:rgba(156,207,174,.09);box-shadow:inset 0 0 0 1px rgba(156,207,174,.3)}
+.aviso .ligacao{min-height:0;color:inherit}
+.codigo-grande{font-size:32px;font-weight:600;letter-spacing:.08em;line-height:1.1;margin:8px 0 10px;font-variant-numeric:tabular-nums}
+.bloco-codigo{margin-top:20px;padding:16px 18px;border-radius:12px;background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha)}
+.bloco-codigo p.fraco{font-size:14px}
+
+/* ===== minha conta ===== */
+.area-conta{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.area-conta .form{max-width:560px}
+.conta-menu{list-style:none;display:grid;gap:2px}
+.conta-menu a,.conta-menu span{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:8px;font-weight:500;color:var(--t2);transition:background-color .2s ease,color .2s ease}
+.conta-menu a[aria-current=page]{background:var(--s2);color:var(--t1);font-weight:600}
+.conta-menu span{color:var(--t3)}
+.conta-menu small{font-size:12px;font-weight:500;padding:2px 7px;border-radius:5px;background:rgba(226,232,240,.07);color:var(--t3);white-space:nowrap}
+.conta-menu .sair{margin-top:12px;justify-self:start;height:40px;padding:0 12px}
+@media (hover:hover) and (pointer:fine){ .conta-menu a:not([aria-current]):hover{background:var(--s1);color:var(--t1)} }
+.quem{font-size:14px;color:var(--t3);padding:0 12px;margin-bottom:10px;min-height:1.5em;line-height:1.45}
+.area-conta h1{font-size:clamp(34px,4vw,44px)}
+.area-conta .cartao{margin-top:18px;box-shadow:inset 0 0 0 1px var(--linha)}
+.area-conta .cartao h2{margin-top:0}
+.ficha{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 24px;margin-top:14px}
+.ficha dt{color:var(--t3);padding:9px 0;border-top:1px solid var(--linha)}
+.ficha dd{padding:9px 0;border-top:1px solid var(--linha);font-weight:500}
+.ficha dt:first-of-type,.ficha dd:first-of-type{border-top:0}
+.lista-planos{list-style:none;margin-top:16px;display:grid;gap:12px}
+.lista-planos li{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:18px 20px;display:grid;gap:8px}
+.lista-planos li.atual{box-shadow:inset 0 0 0 1px rgba(242,182,107,.5)}
+.lista-planos h2{font-size:19px;font-weight:650;letter-spacing:-.012em;margin-top:0}
+.lista-planos li>p{font-size:15px;line-height:1.45}
+.lista-planos ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.lista-planos ul li{display:inline-block;padding:3px 9px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--linha-2);background:none;font-size:13px;color:var(--t2)}
+.lista-planos .btn{justify-self:start;margin-top:6px}
+#lista-restaurantes li{padding:0;background:none;box-shadow:none}
+#lista-restaurantes .btn{white-space:normal;height:auto;min-height:48px;padding:12px 22px;line-height:1.3;text-align:left;justify-self:stretch;overflow-wrap:anywhere}
+@media (max-width:800px){
+  .area-conta{grid-template-columns:minmax(0,1fr)}
+  .conta-menu{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+  .conta-menu .sair{margin-top:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .perguntas summary::after{transition:none}
+}

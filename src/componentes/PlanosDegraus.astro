@@ -1,0 +1,61 @@
+---
+/**
+ * Os 4 degraus (cada um inclui o de baixo) e os extras, com a marca de cada função lida da lista única.
+ * Nenhum preço é inventado: o preço ainda não foi definido.
+ */
+import { DEGRAUS_DO_SITE, funcoesDoLugar, situacaoDoDegrau } from '@pdv/core'
+import Marca from './Marca.astro'
+import { AVISO_DE_EXEMPLO, SITUACAO_DO_DEGRAU, TEXTO_DOS_DEGRAUS } from '../lib/planos'
+
+interface Props {
+  /** Na página inicial, sem a lista das funções de todos os planos. */
+  completo?: boolean
+}
+const { completo = false } = Astro.props
+const extras = funcoesDoLugar('extra')
+const todos = funcoesDoLugar('todos')
+const CHECK =
+  '<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.2 4.7-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+// Texto provisório até o Gui decidir (03/11): "Plano mensal" e "Implantação guiada" são o que o cofre confirma.
+const SELOS = ['Plano mensal', 'Cancela pela tela', 'Implantação guiada']
+---
+<p class="exemplo" role="note">{AVISO_DE_EXEMPLO}</p>
+<div class="degraus">
+  {DEGRAUS_DO_SITE.map((degrau) => {
+    const texto = TEXTO_DOS_DEGRAUS[degrau]
+    return (
+      <article class="degrau" aria-labelledby={`degrau-${degrau}`}>
+        <span class="situ">{SITUACAO_DO_DEGRAU[situacaoDoDegrau(degrau)]}</span>
+        <h2 id={`degrau-${degrau}`}>{texto.nome}</h2>
+        {texto.provisorio && <span class="provisorio">Nome provisório</span>}
+        <p>{texto.resumo}</p>
+        {texto.inclui && <p class="inclui">{texto.inclui}</p>}
+        <ul>
+          {funcoesDoLugar(degrau).map((funcao) => (
+            <li><span>{funcao.nome}</span><Marca funcao={funcao} /></li>
+          ))}
+        </ul>
+        <p class="preco">R$ —/mês<small>Preço ainda não definido.</small></p>
+      </article>
+    )
+  })}
+</div>
+<div class="extras">
+  <h2>Extras, para qualquer plano</h2>
+  <ul class="soon">
+    {extras.map((funcao) => (
+      <li><b>{funcao.nome}</b><p>{funcao.frase}</p><div class="act"><Marca funcao={funcao} /></div></li>
+    ))}
+  </ul>
+</div>
+{completo && (
+  <div class="extras">
+    <h2>Para todos os planos</h2>
+    <ul class="soon">
+      {todos.map((funcao) => (
+        <li><b>{funcao.nome}</b><p>{funcao.frase}</p><div class="act"><Marca funcao={funcao} /></div></li>
+      ))}
+    </ul>
+  </div>
+)}
+<p class="selos">{SELOS.map((selo) => <span><Fragment set:html={CHECK} />{selo}</span>)}</p>

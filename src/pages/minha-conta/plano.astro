@@ -1,0 +1,12 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+---
+<AreaDaConta titulo="Plano">
+  <p class="exemplo" role="note" style="margin-top:0">Planos e preços de exemplo, ainda em definição. Nada é cobrado nesta versão.</p>
+  <p class="fraco" id="p-regra" style="margin-top:14px"></p>
+  <p class="aviso" id="p-aviso" role="status" style="margin-top:14px" hidden></p>
+  <ul class="lista-planos" id="p-lista"></ul>
+  <script>
+    import '../../scripts/conta/plano'
+  </script>
+</AreaDaConta>

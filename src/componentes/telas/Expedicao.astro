@@ -1,0 +1,84 @@
+---
+/**
+ * A expedição, como no Luneli: cada pedido na coluna da etapa real (Em preparo, Pronto, Saiu para entrega,
+ * Entregue ou retirado hoje), sem valores. O Enter no 248 abre "Quem leva o pedido 248?"; com o Diego escolhido,
+ * o pedido vai para Saiu para entrega e aparece no celular dele, na página Luneli Entregador.
+ */
+import FaseDaLua from './FaseDaLua.astro'
+import Pdv from './Pdv.astro'
+import { cls, de } from './estado'
+
+interface Props {
+  instante?: number
+}
+const { instante: p } = Astro.props
+---
+<Pdv aba="expedicao" estatico={1}>
+  <div class="cab-tela">
+    <h4>Expedição</h4>
+    <span class="r dica-k"><span class="k">←</span><span class="k">→</span> escolher · <span class="k">Enter</span> etapa seguinte</span>
+    <span class="esp"></span>
+    <span class="bt b3">Entregadores</span>
+  </div>
+  <div class="ex">
+    <div class="painel col c-prep">
+      <div class="col-c"><FaseDaLua etapa="em_preparo" /><span class="nome">Em preparo</span><span class="n">2</span></div>
+      <div class="ped"><div class="a"><b>#247 Rafael<span class="sob"> A.</span></b><span class="t3">Delivery</span></div><div class="b"><span>Pinheiros</span><span>20:52 · 6 min</span></div></div>
+      <div class="ped"><div class="a"><b>#249 Júlia</b><span class="t3">Balcão</span></div><div class="b"><span></span><span>20:58 · 1 min</span></div></div>
+    </div>
+    <div class="painel col">
+      <div class="col-c"><FaseDaLua etapa="pronto" /><span class="nome">Pronto</span><span class="n tr"><span {...de(p, 0, 0.4)}>1</span><span {...de(p, 0.4)}>0</span></span></div>
+      <div class="slot">
+        <div {...cls(p, { foi: 0.4 }, 'ped sel sai-daqui')}>
+          <div class="a"><b>#248 Marina<span class="sob"> O.</span></b><span class="t3">Delivery</span></div>
+          <div class="b"><span>Vila Madalena</span><span>20:58 · 3 min</span></div>
+          <div class="ac"><span class="bt b1">Saiu para entrega <span class="k">Enter</span></span></div>
+        </div>
+        <div {...de(p, 0.46, Infinity, 'vazio')}>Nenhum pedido pronto esperando.</div>
+      </div>
+    </div>
+    <div class="painel col">
+      <div class="col-c"><FaseDaLua etapa="saiu" /><span class="nome">Saiu para entrega</span><span class="n tr"><span {...de(p, 0, 0.4)}>1</span><span {...de(p, 0.4)}>2</span></span></div>
+      <div {...de(p, 0.42, Infinity, 'ped sel')}>
+        <div class="a"><b>#248 Marina<span class="sob"> O.</span></b><span class="t3">Delivery</span></div>
+        <div class="b"><span>Vila Madalena</span><span>20:58 · 4 min</span></div>
+        <div class="e"><span class="pb-av">D</span>Com Diego</div>
+      </div>
+      <div class="ped">
+        <div class="a"><b>#245 Paulo<span class="sob"> R.</span></b><span class="t3">Delivery</span></div>
+        <div class="b"><span>Sumarezinho</span><span>20:44 · 18 min</span></div>
+        <div class="e"><span class="pb-av">C</span>Com Caio</div>
+      </div>
+    </div>
+    <div class="painel col c-ent">
+      <div class="col-c"><FaseDaLua etapa="entregue" /><span class="nome">Entregue ou retirado hoje</span><span class="n">31</span></div>
+      <div class="ped min"><div class="a"><b>#244 Lia<span class="sob"> M.</span></b><span class="t3">Delivery</span></div><div class="b"><span>Pinheiros</span><span>20:36 · 23 min</span></div><div class="e"><span class="pb-av">D</span>Com Diego</div></div>
+      <div class="ped min"><div class="a"><b>#243 Otávio</b><span class="t3">Balcão</span></div><div class="b"><span></span><span>20:41 · 18 min</span></div></div>
+    </div>
+  </div>
+  <div {...cls(p, { on: 0.3, fecha: 0.4 }, 'janela-fundo')}>
+    <div class="janela">
+      <h5>Quem leva o pedido 248?</h5>
+      <div class="opcoes">
+        <div class="at"><span class="t3">1</span>Diego</div>
+        <div><span class="t3">2</span>Caio</div>
+      </div>
+      <div class="dica">Setas ou o número escolhem; Enter confirma a saída.</div>
+    </div>
+  </div>
+  <div {...cls(p, { on: 0.6 }, 'fone')}>
+    <div class="tl">
+      <div class="bar"><span>20:59</span><span>Diego</span></div>
+      <h5>Luneli Entregador</h5>
+      <div class="abas"><span>Para sair</span><span class="at">Na rua · 1</span><span>Ganhos</span></div>
+      <div class="card">
+        <div class="s"><b><FaseDaLua etapa="saiu" />#248</b><span>20:59</span></div>
+        <div class="nm">Marina Okada</div>
+        <div class="en">R. Harmonia, 412<br />ap. 31 · Vila Madalena</div>
+        <div class="vl"><span>Cobrar</span><b>R$ 80,00 · Pix</b></div>
+        <div class="ln2"><span>Ligar</span><span>Abrir no mapa</span></div>
+        <div class="bt">Entregue</div>
+      </div>
+    </div>
+  </div>
+</Pdv>

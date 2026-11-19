@@ -1,0 +1,37 @@
+---
+/**
+ * A casca de uma tela do Luneli: a barra do topo e o conteúdo. A barra segue a real (apps/web, Moldura):
+ * a marca, as telas na ordem verdadeira (um subconjunto, com "Mais" para o que não cabe), e à direita quem entrou,
+ * Ajuda e Sair. Nada de estado do caixa aqui: isso fica na tela Caixa.
+ */
+interface Props {
+  aba: 'pedido' | 'mesas' | 'cozinha' | 'expedicao' | 'caixa'
+  /** O instante em que a tela fica parada fora do palco (as cópias estáticas). */
+  estatico: number
+  claro?: boolean
+}
+const { aba, estatico, claro = false } = Astro.props
+const TELAS: [Props['aba'] | null, string][] = [
+  ['pedido', 'Pedido'],
+  [null, 'Clientes'],
+  [null, 'Pedidos do dia'],
+  ['mesas', 'Mesas'],
+  ['expedicao', 'Expedição'],
+  ['cozinha', 'Cozinha'],
+  ['caixa', 'Caixa'],
+]
+---
+<div class:list={['pdv', { claro }]} data-estatico={estatico} aria-hidden="true">
+  <div class="pb">
+    <span class="pb-marca">Luneli</span>
+    <div class="pb-abas">
+      {TELAS.map(([id, nome]) => <span class:list={{ at: id === aba }}>{nome}</span>)}
+      <span>Mais</span>
+    </div>
+    <span class="pb-esp"></span>
+    <span class="pb-pessoa"><span class="pb-av">A</span><span class="pb-nome">Ana Lima</span></span>
+    <span class="pb-acao">Ajuda</span>
+    <span class="pb-acao">Sair</span>
+  </div>
+  <div class="pc"><slot /></div>
+</div>

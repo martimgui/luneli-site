@@ -1,0 +1,44 @@
+---
+/**
+ * Pronto / Fazendo / Planejado, sem datas. Tudo sai da lista única (@pdv/core): a coluna de cada função
+ * segue o que o sistema tem de verdade.
+ */
+import { FUNCOES_DO_SITE, colunaDaFuncao } from '@pdv/core'
+import type { ColunaDoFuturo, FuncaoDoSite } from '@pdv/core'
+import Base from '../layouts/Base.astro'
+
+const TODAS = FUNCOES_DO_SITE as readonly FuncaoDoSite[]
+const COLUNAS: { coluna: ColunaDoFuturo; titulo: string; texto: string }[] = [
+  { coluna: 'pronto', titulo: 'Pronto', texto: 'Já está no sistema.' },
+  { coluna: 'fazendo', titulo: 'Fazendo', texto: 'Em construção agora.' },
+  { coluna: 'planejado', titulo: 'Planejado', texto: 'Vai entrar, sem data marcada.' },
+]
+---
+<Base titulo="O que vem por aí | Luneli">
+  <section class="pagina" aria-labelledby="h-pagina">
+    <div class="in">
+      <h1 id="h-pagina">O que vem por aí</h1>
+      <p class="lead">O que o sistema já faz, o que está sendo feito e o que vem depois. Sem datas: só entra como pronto o que já está no sistema.</p>
+      <div class="colunas-futuro">
+        {COLUNAS.map(({ coluna, titulo, texto }) => (
+          <section class="coluna-futuro" aria-labelledby={`col-${coluna}`}>
+            <h2 id={`col-${coluna}`}>{titulo}</h2>
+            <p class="fraco">{texto}</p>
+            <ul>
+              {TODAS.filter((funcao) => colunaDaFuncao(funcao) === coluna).map((funcao) => (
+                <li>
+                  <b>{funcao.nome}</b>
+                  <p>{funcao.frase}</p>
+                  {coluna !== 'pronto' && (
+                    <button class="btn tres pequeno" type="button" disabled aria-describedby="me-avise-nota">Me avise (em breve)</button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+      <p id="me-avise-nota" class="nota-texto" style="margin-top:20px">O "Me avise" ainda não funciona: ele entra em breve.</p>
+    </div>
+  </section>
+</Base>

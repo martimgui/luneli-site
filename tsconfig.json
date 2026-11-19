@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@pdv/core": ["src/lib/core-compat.ts"],
+      "@pdv/server/api": ["src/lib/server-types.ts"]
+    }
+  },
+  "include": [".astro/types.d.ts", "src", "astro.config.mjs"],
+  "exclude": ["dist"]
+}

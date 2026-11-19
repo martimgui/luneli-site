@@ -1,0 +1,11 @@
+---
+/** A marca "Pronta" ou "Em breve" de uma função, lida da lista única (@pdv/core). */
+import { marcaDaFuncao } from '@pdv/core'
+import type { FuncaoDoSite } from '@pdv/core'
+
+interface Props {
+  funcao: FuncaoDoSite
+}
+const marca = marcaDaFuncao(Astro.props.funcao)
+---
+{marca === 'pronta' ? <span class="pill pronta">Pronta</span> : <span class="pill breve">Em breve</span>}

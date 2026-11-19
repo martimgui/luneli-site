@@ -1,0 +1,18 @@
+---
+import CartaoDaConta from '../componentes/CartaoDaConta.astro'
+import Campo from '../componentes/Campo.astro'
+---
+<CartaoDaConta titulo="Esqueci a senha">
+  <p class="fraco">Digite o e-mail da conta. Se ele tiver conta, chega um link para criar uma senha nova.</p>
+  <form id="form-esqueci" class="form" method="post" novalidate>
+    <Campo nome="email" rotulo="E-mail" tipo="email" autocomplete="email" inputmode="email" obrigatorio />
+    <p class="aviso" role="alert" hidden></p>
+    <div class="acoes">
+      <button class="btn um" type="submit" disabled>Mandar o link</button>
+      <a class="ligacao" href="/entrar">Voltar para entrar</a>
+    </div>
+  </form>
+  <script>
+    import '../scripts/conta/esqueci'
+  </script>
+</CartaoDaConta>

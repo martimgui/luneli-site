@@ -1,0 +1,70 @@
+---
+/**
+ * O mapa de mesas e a conta da mesa 4 (duas telas do Luneli, lado a lado no site): cada rodada traz a hora e
+ * quem lançou, só com os itens novos; os totais trazem a taxa de serviço, o valor por pessoa e o que já foi pago.
+ */
+import Pdv from './Pdv.astro'
+
+const MESAS: { nome: string; tempo?: string; quem: string; valor?: string; nota?: string; sel?: boolean; x?: boolean; x2?: boolean }[] = [
+  { nome: 'Mesa 1', quem: 'Livre' },
+  { nome: 'Mesa 2', tempo: 'há 1h12', quem: 'Família Souza · Ana', valor: 'R$ 186,40' },
+  { nome: 'Mesa 3', quem: 'Livre' },
+  { nome: 'Mesa 4', tempo: 'há 38 min', quem: '4 pessoas · Ana', valor: 'R$ 149,38', sel: true },
+  { nome: 'Mesa 5', quem: 'Livre', x2: true },
+  { nome: 'Mesa 6', tempo: 'há 12 min', quem: '2 pessoas · Beto', valor: 'R$ 48,00' },
+  { nome: 'Mesa 7', quem: 'Livre', x: true },
+  { nome: 'Mesa 8', tempo: 'há 2h05', quem: 'Aniversário · Beto', valor: 'R$ 412,30', x: true },
+  { nome: 'Mesa 12', tempo: 'há 51 min', quem: '8 pessoas · Ana', valor: 'R$ 297,60' },
+  { nome: 'Mesa 13', tempo: 'há 51 min', quem: 'junto com 12', nota: 'na conta da 12', x: true },
+  { nome: 'Varanda 1', quem: 'Livre', x: true },
+  { nome: 'Varanda 2', tempo: 'há 22 min', quem: '3 pessoas · Beto', valor: 'R$ 64,50', x: true },
+]
+---
+<Pdv aba="mesas" estatico={1}>
+  <div class="ms">
+    <section class="painel mapa">
+      <div class="topo">
+        <div class="campo-pdv"><span class="ph">Número da mesa e Enter para abrir</span></div>
+        <span class="bt b2">Mesa temporária <span class="k">Alt+N</span></span>
+      </div>
+      <div class="grade-m">
+        {MESAS.map((mesa) => (
+          <div class:list={['mesa', mesa.valor || mesa.tempo ? 'oc' : 'livre', { sel: mesa.sel, x: mesa.x, x2: mesa.x2 }]}>
+            <div class="a">{mesa.nome}{mesa.tempo && <span class="t3">{mesa.tempo}</span>}</div>
+            <div class="s">{mesa.quem}</div>
+            {mesa.valor ? <div class="v num">{mesa.valor}</div> : mesa.nota && <div class="v t3">{mesa.nota}</div>}
+          </div>
+        ))}
+      </div>
+      <div class="legenda"><span><i></i>Conta aberta</span><span><i class="l"></i>Livre</span><span class="contagem">7 mesas abertas · 5 livres</span></div>
+    </section>
+    <section class="painel conta-mesa">
+      <div class="c1"><h5>Mesa 4</h5><span class="t3">aberta há 38 min · Ana</span></div>
+      <div class="c2">4 pessoas</div>
+      <div class="rod nova">
+        <div class="rh"><span>Rodada 3</span><span class="t3">21:40 · Ana</span></div>
+        <div class="ri"><span>2</span><span>Chope 300 ml</span><span class="num">25,80</span></div>
+      </div>
+      <div class="rod">
+        <div class="rh"><span>Rodada 2</span><span class="t3">21:12 · Ana</span></div>
+        <div class="ri"><span>1</span><span>Pizza grande <span class="t3">½ Portuguesa · ½ Frango com catupiry</span></span><span class="num">82,00</span></div>
+      </div>
+      <div class="rod">
+        <div class="rh"><span>Rodada 1</span><span class="t3">21:05 · Ana</span></div>
+        <div class="ri"><span>1</span><span>Porção de batata</span><span class="num">28,00</span></div>
+      </div>
+      <div class="tots">
+        <div class="ln"><span>Itens</span><span class="num">135,80</span></div>
+        <div class="ln"><span>Taxa de serviço (10%)</span><span class="num">13,58</span></div>
+        <div class="ln g"><span>Total</span><span class="num">R$ 149,38</span></div>
+        <div class="ln"><span>Por pessoa</span><span class="num">R$ 37,35</span></div>
+        <div class="ln pf"><span>Pago <b>R$ 50,00</b> · Falta <b>R$ 99,38</b></span></div>
+      </div>
+      <div class="acs">
+        <span class="bt b1">Lançar itens</span>
+        <span class="bt b2">Receber parte <span class="k">R</span></span>
+        <span class="bt b2">Fechar <span class="k">F</span></span>
+      </div>
+    </section>
+  </div>
+</Pdv>

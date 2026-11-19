@@ -1,0 +1,76 @@
+---
+/**
+ * O fechamento do caixa, como no Luneli: o esperado em dinheiro, Pix e cartão; o contado entra, e a diferença
+ * aparece ao lado (Confere, Sobra ou Falta). Ao lado, o quadro "Esperado no caixa" e os lançamentos do turno.
+ * O acerto de cada entregador tem a sua própria tela; aqui aparece só a soma.
+ */
+import Pdv from './Pdv.astro'
+import { cls, de } from './estado'
+
+interface Props {
+  instante?: number
+}
+const { instante: p } = Astro.props
+const CONFERE =
+  '<svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.2 4.7-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+const FORMAS = [
+  { nome: 'Dinheiro', valor: '1.236,50', contado: 0.18, confere: 0.24 },
+  { nome: 'Pix', valor: '2.418,00', contado: 0.36, confere: 0.42 },
+  { nome: 'Cartão', valor: '2.249,60', contado: 0.54, confere: 0.6 },
+]
+---
+<Pdv aba="caixa" estatico={1}>
+  <div class="cab-tela">
+    <h4>Caixa 1</h4>
+    <span class="t3">Aberto por Ana Lima às 18:00 · dia de trabalho 03/11</span>
+    <span class="esp"></span>
+    <span class="bt b2">Sangria</span>
+    <span class="bt b2">Suprimento</span>
+  </div>
+  <div class="fc">
+    <section class="painel">
+      <span class="r">Conferência do fechamento</span>
+      <div class="intro">Digite o que contou em cada forma; a diferença aparece ao lado.</div>
+      <table class="tb">
+        <thead><tr><th>Forma</th><th>Esperado</th><th>Contado</th><th>Diferença</th></tr></thead>
+        <tbody>
+          {FORMAS.map((forma) => (
+            <tr>
+              <td>{forma.nome}</td>
+              <td>{forma.valor}</td>
+              <td><span class="tr"><span {...de(p, 0, forma.contado, 'falta')}>a contar</span><span {...de(p, forma.contado)}>{forma.valor}</span></span></td>
+              <td><span class="tr"><span {...de(p, 0, forma.confere, 'falta')}>–</span><span {...de(p, forma.confere, Infinity, 'conf')}><Fragment set:html={CONFERE} />Confere</span></span></td>
+            </tr>
+          ))}
+          <tr class="soma">
+            <td>Total</td>
+            <td>5.904,10</td>
+            <td><span class="tr"><span {...de(p, 0, 0.6, 'falta')}>–</span><span {...de(p, 0.6)}>5.904,10</span></span></td>
+            <td><span class="tr"><span {...de(p, 0, 0.66, 'falta')}>–</span><span {...de(p, 0.66, Infinity, 'conf')}><Fragment set:html={CONFERE} />Confere</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="lanc">
+        <h5>Lançamentos</h5>
+        <div class="ln"><span class="t3">19:35</span><span>Sangria · levada ao cofre · Ana</span><span class="num">−150,00</span></div>
+        <div class="ln"><span class="t3">20:10</span><span>Sangria · levada ao cofre · Ana</span><span class="num">−150,00</span></div>
+        <div class="ln"><span class="t3">20:30</span><span>Acerto do entregador · Diego, dia 03/11 · Ana</span><span class="num">−254,00</span></div>
+      </div>
+      <div class="fim">
+        <span class="t3">Diferença? A tela pede uma nota curta.</span>
+        <div {...cls(p, { pronto: 0.7 }, 'bt b2')}>Fechar caixa <span class="k">F8</span></div>
+      </div>
+    </section>
+    <section class="painel res">
+      <div class="gr">
+        <h5>Esperado no caixa</h5>
+        <div class="ln"><span>Troco inicial</span><span class="num">150,00</span></div>
+        <div class="ln"><span>Sangrias</span><span class="num">−300,00</span></div>
+        <div class="ln"><span>Suprimentos</span><span class="num">0,00</span></div>
+        <div class="ln"><span>Caixinhas recebidas</span><span class="num">38,00</span></div>
+        <div class="ln"><span>Acertos de entregador</span><span class="num">−254,00</span></div>
+      </div>
+      <div class="nota">Caixinha não é venda: a que ficou no caixa é paga ao motoboy no acerto do dia, que tem a sua própria tela. O acerto pago pela gaveta sai do esperado.</div>
+    </section>
+  </div>
+</Pdv>

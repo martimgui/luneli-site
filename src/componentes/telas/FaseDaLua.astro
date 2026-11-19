@@ -1,0 +1,15 @@
+---
+/** O ícone de fase: uma etapa real do pedido (em preparo … entregue) ou um valor de 0 (nova) a 2 (cheia). */
+import { FASE_DA_ETAPA, lunar } from './estado'
+import type { Etapa } from './estado'
+
+interface Props {
+  etapa?: Etapa
+  d?: number
+  tam?: number
+  aro?: boolean
+}
+const { etapa, d, tam = 14, aro = true } = Astro.props
+const valor = etapa !== undefined ? FASE_DA_ETAPA[etapa] : (d ?? 0)
+---
+<Fragment set:html={lunar(valor, tam, aro)} />

@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro'
+import PlanosDegraus from '../componentes/PlanosDegraus.astro'
+---
+<Base titulo="Planos e preços | Luneli">
+  <section class="pagina" aria-labelledby="h-pagina">
+    <div class="in">
+      <h1 id="h-pagina">Planos e preços</h1>
+      <p class="lead">Quatro degraus: cada um inclui tudo o do degrau de baixo. Os extras se somam a qualquer degrau. Por enquanto, só o plano mensal.</p>
+      <PlanosDegraus completo />
+      <div class="acoes" style="margin-top:36px">
+        <a class="btn um" href="/testar-gratis">Testar grátis</a>
+        <a class="ligacao" href="/o-que-vem-por-ai">Veja o que vem por aí</a>
+      </div>
+    </div>
+  </section>
+</Base>

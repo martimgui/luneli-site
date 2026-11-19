@@ -1,0 +1,17 @@
+---
+/** Páginas cujo texto passa por um jurídico antes do lançamento (decisão do dono): nada de texto jurídico aqui. */
+import Base from '../layouts/Base.astro'
+
+interface Props {
+  titulo: string
+}
+const { titulo } = Astro.props
+---
+<Base titulo={`${titulo} | Luneli`}>
+  <section class="pagina estreita" aria-labelledby="h-pagina">
+    <div class="in">
+      <h1 id="h-pagina">{titulo}</h1>
+      <p class="preparo">Em preparação: o texto passa por um jurídico antes do lançamento.</p>
+    </div>
+  </section>
+</Base>

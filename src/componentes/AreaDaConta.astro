@@ -1,0 +1,52 @@
+---
+/**
+ * A moldura de "Minha conta": o menu à esquerda e o conteúdo, que o script da página mostra
+ * depois de conferir a sessão (sem sessão, vai para /entrar; funcionário que não é dono vê o aviso).
+ */
+import Base from '../layouts/Base.astro'
+
+interface Props {
+  titulo: string
+}
+const { titulo } = Astro.props
+const caminho = Astro.url.pathname.replace(/\/$/, '')
+const MENU: { href?: string; texto: string }[] = [
+  { href: '/minha-conta', texto: 'Resumo' },
+  { href: '/minha-conta/plano', texto: 'Plano' },
+  { texto: 'Pagamento' },
+  { texto: 'Faturas' },
+  { texto: 'Dados da empresa' },
+  { texto: 'Meus dados' },
+  { href: '/minha-conta/cancelar', texto: 'Cancelar' },
+]
+---
+<Base titulo={`${titulo} | Minha conta | Luneli`}>
+  <section class="pagina" aria-labelledby="h-pagina">
+    <div class="in area-conta">
+      <nav aria-label="Minha conta">
+        <p class="quem" id="quem"></p>
+        <ul class="conta-menu">
+          {MENU.map((item) => (
+            <li>
+              {item.href ? (
+                <a href={item.href} aria-current={caminho === item.href ? 'page' : undefined}>{item.texto}</a>
+              ) : (
+                <span aria-disabled="true">{item.texto}<small>em breve</small></span>
+              )}
+            </li>
+          ))}
+          <li><button class="btn tres sair" type="button" id="sair">Sair</button></li>
+        </ul>
+      </nav>
+      <div>
+        <h1 id="h-pagina">{titulo}</h1>
+        <noscript><p class="aviso aviso-info">A conta precisa de JavaScript ligado no navegador.</p></noscript>
+        <p class="aviso aviso-info" id="conta-carregando" role="status">Carregando…</p>
+        <p class="aviso aviso-erro" id="conta-erro" role="alert" hidden></p>
+        <div id="conta-conteudo" hidden>
+          <slot />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

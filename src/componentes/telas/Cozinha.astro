@@ -1,0 +1,57 @@
+---
+/**
+ * A tela da cozinha, como no Luneli: uma cozinha por vez (escolhida numa lista), a fila em ordem de chegada,
+ * só com os itens dela. Um Enter marca a parte desta cozinha: o tíquete sai da fila e a faixa "Pedido 248 pronto."
+ * aparece com o "Desfazer (30 s)". Um pedido dividido avisa "Falta também: Bar".
+ * Só delivery e balcão: a rodada da mesa sai no papel. Os tíquetes "antigo" somem no celular; os "fila2", no palco baixo.
+ */
+import Pdv from './Pdv.astro'
+import { cls, de } from './estado'
+
+interface Props {
+  instante?: number
+}
+const { instante: p } = Astro.props
+---
+<Pdv aba="cozinha" estatico={0.5}>
+  <div class="cab-tela cz-cab">
+    <h4>Cozinha: Pizzaria</h4>
+    <span class="sel-coz"><span class="r">Comanda de produção</span>Pizzaria<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="esp"></span>
+    <span class="r dica-k"><span class="k">←</span><span class="k">→</span><span class="k">↑</span><span class="k">↓</span> escolher · <span class="k">Enter</span> pronto · <span class="k">Backspace</span> desfazer</span>
+  </div>
+  <div {...de(p, 0.7, Infinity, 'faixa')}>
+    <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.2 4.7-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Pedido 248 pronto. Todas as cozinhas prontas: o pedido foi para Pronto.</span>
+    <span class="bt b2">Desfazer o pedido 248 (30 s)</span>
+  </div>
+  <div class="cz">
+    <div class="painel tq antigo fila2">
+      <div class="c1"><b>#245</b><span class="t3">Delivery</span></div>
+      <div class="c2">20:44 · 14 min · Paulo R.</div>
+      <div class="it">1 Pizza média</div>
+      <div class="sb"><i>½</i>Quatro queijos<br /><i>½</i>Margherita</div>
+    </div>
+    <div class="painel tq antigo">
+      <div class="c1"><b>#246</b><span class="t3">Balcão</span></div>
+      <div class="c2">20:49 · 9 min · Sônia K.</div>
+      <div class="it">1 Pizza grande</div>
+      <div class="sb"><i>½</i>Portuguesa<br /><i>½</i>Atum</div>
+    </div>
+    <div class="painel tq antigo">
+      <div class="c1"><b>#247</b><span class="t3">Delivery</span></div>
+      <div class="c2">20:52 · 6 min · Rafael A.</div>
+      <div class="it">2 Pizza grande</div>
+      <div class="sb"><i>1</i>Calabresa<br /><i>1</i>Margherita</div>
+      <div class="falta">Falta também: Bar</div>
+    </div>
+    <div {...cls(p, { foi: 0.7 }, 'painel tq sel')}>
+      <div class="c1"><b>#248</b><span class="t3">Delivery</span></div>
+      <div class="c2">20:58 · 1 min · Marina O.</div>
+      <div class="it">1 Meio a meio Grande</div>
+      <div class="sb"><i>½</i>Margherita<br /><i>½</i>Calabresa</div>
+      <div class="ob"><span class="k">OBS</span> Sem cebola</div>
+      <div class="ac"><div class="bt b2 pr">Pronto <span class="k">Enter</span></div></div>
+    </div>
+  </div>
+</Pdv>

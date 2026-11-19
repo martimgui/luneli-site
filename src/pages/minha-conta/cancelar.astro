@@ -1,0 +1,23 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+import Campo from '../../componentes/Campo.astro'
+---
+<AreaDaConta titulo="Cancelar">
+  <div id="c-ativo" hidden>
+    <p>Cancelar vale no fim do período: você usa até <b id="c-ate"></b>, e nada mais é cobrado. Dá para desfazer até lá.</p>
+    <form id="form-cancelar" class="form" method="post" novalidate>
+      <Campo nome="confirmacao" rotulo='Digite "cancelar" para confirmar' obrigatorio maximo={20} />
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes"><button class="btn dois" type="submit" disabled>Cancelar a assinatura</button></div>
+    </form>
+  </div>
+  <div id="c-cancelado" hidden>
+    <p class="aviso aviso-info" id="c-aviso-cancelado" role="status"></p>
+    <p class="aviso" id="c-aviso-desfazer" role="alert" style="margin-top:12px" hidden></p>
+    <div class="acoes" style="margin-top:16px"><button class="btn um" type="button" id="desfazer">Desfazer o cancelamento</button></div>
+  </div>
+  <p class="aviso aviso-info" id="c-encerrada" hidden>A assinatura está encerrada.</p>
+  <script>
+    import '../../scripts/conta/cancelar'
+  </script>
+</AreaDaConta>

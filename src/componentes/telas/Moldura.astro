@@ -1,0 +1,14 @@
+---
+/** A moldura em que uma tela do produto aparece: objeto bem construído, com profundidade ao entrar (uma vez). */
+interface Props {
+  rotulo: string
+  classe?: string
+  id?: string
+  /** Já acesa desde o começo (as cópias do celular). */
+  aceso?: boolean
+}
+const { rotulo, classe, id, aceso = false } = Astro.props
+---
+<div class:list={['moldura', classe, { aceso }]} role="img" aria-label={rotulo} id={id}>
+  <div class="vidro"><slot /></div>
+</div>

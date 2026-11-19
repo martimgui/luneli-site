@@ -1,0 +1,73 @@
+---
+/**
+ * A moldura de toda página: o cabeçalho comum (marca, Produto, Preços, Entrar, Testar grátis), o conteúdo
+ * e o rodapé. Na página de início o cabeçalho fica sobre a abertura e o rodapé é o do eclipse;
+ * nas outras, o rodapé compacto.
+ *
+ * As fontes vêm instaladas com o site (pacotes fontsource), sem chamar serviço de fora: só as faces latinas,
+ * com preload, e uma face de reserva (Arial, Times New Roman) com as métricas ajustadas pelo capsize, para o
+ * texto não pular quando a fonte chega.
+ * TROCA DA SEM SERIFA (Hanken → Manrope): rode `pnpm --filter @pdv/site add @fontsource-variable/manrope`,
+ * troque o import do arquivo .woff2 e as métricas abaixo (`@capsizecss/metrics/manrope`) e, em
+ * estilos/base.css, --sans:'Manrope Variable'.
+ */
+import hankenUrl from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url'
+import bodoniUrl from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url'
+import { createFontStack } from '@capsizecss/core'
+import hankenMetricas from '@capsizecss/metrics/hankenGrotesk'
+import bodoniMetricas from '@capsizecss/metrics/bodoniModa'
+import arial from '@capsizecss/metrics/arial'
+import timesNewRoman from '@capsizecss/metrics/timesNewRoman'
+import '../estilos/base.css'
+import '../estilos/paginas.css'
+import Cabecalho from '../componentes/Cabecalho.astro'
+import Rodape from '../componentes/Rodape.astro'
+import RodapeEclipse from '../componentes/RodapeEclipse.astro'
+
+interface Props {
+  titulo: string
+  descricao?: string
+  /** A página de início: cabeçalho sobre a abertura e o rodapé com o eclipse. */
+  inicio?: boolean
+}
+
+const {
+  titulo,
+  descricao = 'Luneli é o sistema de caixa e gestão para restaurantes, pizzarias e delivery: pedido pelo teclado, cozinha, expedição, entregador, mesas e fechamento do caixa.',
+  inicio = false,
+} = Astro.props
+
+// Só os caracteres latinos (o site é em português): o mesmo recorte do pacote fontsource.
+const LATIM = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'
+const reservaSans = createFontStack([{ ...hankenMetricas, familyName: 'Hanken Grotesk Variable' }, arial], { fontFaceFormat: 'styleString' })
+const reservaSerifa = createFontStack([{ ...bodoniMetricas, familyName: 'Bodoni Moda Variable' }, timesNewRoman], { fontFaceFormat: 'styleString' })
+const fontes = [
+  `@font-face{font-family:'Hanken Grotesk Variable';font-style:normal;font-weight:100 900;font-display:swap;src:url(${hankenUrl}) format('woff2-variations');unicode-range:${LATIM}}`,
+  `@font-face{font-family:'Bodoni Moda Variable';font-style:normal;font-weight:400 900;font-display:swap;src:url(${bodoniUrl}) format('woff2-variations');unicode-range:${LATIM}}`,
+  reservaSans.fontFaces,
+  reservaSerifa.fontFaces,
+].join('\n')
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <meta name="theme-color" content="#0D0E12" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={hankenUrl} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={bodoniUrl} />
+    <Fragment set:html={`<style>${fontes}</style>`} />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Cabecalho sobre={inicio} />
+    <main id="conteudo" class:list={{ folha: inicio }} tabindex="-1">
+      <slot />
+    </main>
+    {inicio ? <RodapeEclipse /> : <Rodape />}
+  </body>
+</html>

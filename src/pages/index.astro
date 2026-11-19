@@ -1,0 +1,34 @@
+---
+import '../estilos/inicio.css'
+import '../estilos/telas.css'
+import Base from '../layouts/Base.astro'
+import Abertura from '../componentes/inicio/Abertura.astro'
+import Passagem from '../componentes/inicio/Passagem.astro'
+import Historia from '../componentes/inicio/Historia.astro'
+import SecaoMesas from '../componentes/inicio/SecaoMesas.astro'
+import Dia from '../componentes/inicio/Dia.astro'
+import Mais from '../componentes/inicio/Mais.astro'
+import Precos from '../componentes/inicio/Precos.astro'
+---
+<Base titulo="Luneli: sistema de caixa e gestão para restaurantes, pizzarias e delivery" inicio>
+  {/* A noite: a abertura e a passagem dividem a lua de verdade (um canvas fixo, recortado por este invólucro; scripts/vitrine/abertura.ts). */}
+  <div class="noite" id="noite">
+    <canvas class="lua-gl" id="luaGl" aria-hidden="true"></canvas>
+    <Abertura />
+    <Passagem />
+  </div>
+  <Historia />
+  <SecaoMesas />
+  <Dia />
+  <Mais />
+  <Precos />
+  <script>
+    import '../scripts/vitrine/abertura'
+  </script>
+  <script>
+    import '../scripts/vitrine/historia'
+  </script>
+  <script>
+    import '../scripts/vitrine/dia'
+  </script>
+</Base>

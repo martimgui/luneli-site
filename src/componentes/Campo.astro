@@ -1,0 +1,36 @@
+---
+/**
+ * Um campo de formulário acessível: rótulo ligado ao campo, nota e erro ligados por aria-describedby.
+ * O erro (`erro-<nome>`) é preenchido pelo script da página.
+ */
+interface Props {
+  nome: string
+  rotulo: string
+  tipo?: 'text' | 'email' | 'tel' | 'password'
+  autocomplete?: string
+  nota?: string
+  obrigatorio?: boolean
+  maximo?: number
+  inputmode?: 'text' | 'numeric' | 'tel' | 'email'
+}
+const { nome, rotulo, tipo = 'text', autocomplete = 'off', nota, obrigatorio = false, maximo = 200, inputmode } = Astro.props
+const descrito = [nota ? `nota-${nome}` : null, `erro-${nome}`].filter(Boolean).join(' ')
+const ehEmail = tipo === 'email'
+---
+<div class="campo">
+  <label for={nome}>{rotulo}{!obrigatorio && <span class="fraco"> (opcional)</span>}</label>
+  <input
+    id={nome}
+    name={nome}
+    type={tipo}
+    autocomplete={autocomplete}
+    maxlength={maximo}
+    required={obrigatorio}
+    inputmode={inputmode}
+    autocapitalize={ehEmail || tipo === 'password' ? 'none' : undefined}
+    spellcheck={ehEmail || tipo === 'password' ? 'false' : undefined}
+    aria-describedby={descrito}
+  />
+  {nota && <p class="nota" id={`nota-${nome}`}>{nota}</p>}
+  <p class="erro-campo" id={`erro-${nome}`}></p>
+</div>

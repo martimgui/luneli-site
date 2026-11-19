@@ -1,0 +1,19 @@
+---
+import CartaoDaConta from '../componentes/CartaoDaConta.astro'
+---
+<CartaoDaConta titulo="Confirmar e-mail">
+  <p class="aviso aviso-info" id="aviso-confirmacao" role="status">Confirmando…</p>
+  <div class="acoes" id="acoes-confirmado" style="margin-top:20px" hidden>
+    <button class="btn um" type="button" id="escolher-plano">Escolher meu plano</button>
+  </div>
+  <div class="acoes" id="acoes-tentar" style="margin-top:20px" hidden>
+    <button class="btn dois" type="button" id="tentar-de-novo">Tentar de novo</button>
+  </div>
+  <div class="acoes" id="acoes-outros" style="margin-top:20px" hidden>
+    <a class="ligacao" href="/minha-conta">Ir para minha conta</a>
+    <a class="ligacao" href="/entrar">Entrar</a>
+  </div>
+  <script>
+    import '../scripts/conta/confirmar-email'
+  </script>
+</CartaoDaConta>

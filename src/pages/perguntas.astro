@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro'
+
+const PERGUNTAS: { p: string; r: string }[] = [
+  { p: 'Preciso de cartão para testar?', r: 'Não. O primeiro mês da conta nova não é cobrado e não pede cartão; nesse mês você escolhe o plano sem pagar nada. Nesta versão nada é cobrado: o pagamento ainda não está ligado.' },
+  { p: 'Quanto custa?', r: 'Os preços ainda estão em definição. A página de planos mostra os degraus e o que entra em cada um, com o preço marcado como "ainda não definido".' },
+  { p: 'Tem fidelidade?', r: 'Plano mensal: você cancela pela própria tela quando quiser, e o acesso segue até o fim do período.' },
+  { p: 'Funciona sem internet?', r: 'Ainda não. Vender sem internet está sendo feito agora, e aparece em "O que vem por aí".' },
+  { p: 'Emite nota fiscal?', r: 'Ainda não. A nota fiscal do consumidor (NFC-e) está planejada, como extra para qualquer plano.' },
+  { p: 'Preciso comprar algum aparelho para testar?', r: 'Não. Por enquanto o caixa abre no navegador do computador. O programa do caixa para Windows vem em breve.' },
+  { p: 'Os dados são meus?', r: 'Sim. Você exporta tudo quando quiser, e apaga os dados de um cliente a pedido dele, como a LGPD manda.' },
+  { p: 'Como os funcionários entram?', r: 'Com o código do restaurante, que aparece quando você cria a conta, e com o login que você cria para cada um dentro do sistema. Cada um mexe só no que você liberar.' },
+  { p: 'O entregador tem aplicativo?', r: 'Tem a página Luneli Entregador, que abre no navegador do celular e pode ficar na tela inicial; o celular se liga à loja com um código. Nela ele vê a fila, sai com o pedido, marca a entrega e vê os ganhos do dia. Os aplicativos nas lojas (Google Play e App Store) vêm em breve.' },
+  { p: 'Atende mesas?', r: 'Sim. Mesas e contas fazem parte do plano Profissional (e do Empresarial); no teste grátis, escolha o Profissional para usá-las. O app do garçom vem em breve.' },
+  { p: 'Integra com o iFood?', r: 'Ainda não. Está planejado.' },
+]
+---
+<Base titulo="Perguntas frequentes | Luneli">
+  <section class="pagina media" aria-labelledby="h-pagina">
+    <div class="in">
+      <h1 id="h-pagina">Perguntas frequentes</h1>
+      <p class="lead">O que costumam perguntar antes de testar. Se faltar alguma, a página de contato chega no lançamento.</p>
+      <div class="perguntas">
+        {PERGUNTAS.map(({ p, r }) => (
+          <details>
+            <summary>{p}</summary>
+            <p>{r}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

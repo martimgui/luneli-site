@@ -1,0 +1,100 @@
+---
+/**
+ * A tela de pedido, como no Luneli: o telefone se digita e o Enter traz o cliente com o endereço e a taxa;
+ * com o campo de item vazio, a tecla / abre a janela do meio a meio e a linha "Meio a meio Grande" entra;
+ * o Pix é escolhido; o F8 registra e o aviso "Pedido 248 registrado" aparece acima do botão.
+ */
+import Pdv from './Pdv.astro'
+import { cls, de } from './estado'
+
+interface Props {
+  instante?: number
+  claro?: boolean
+}
+const { instante: p, claro = false } = Astro.props
+---
+<Pdv aba="pedido" estatico={0.9} claro={claro}>
+  <div class="pd">
+    <section class="painel pd-cli">
+      <span class="r r-tipo">Tipo do pedido</span>
+      <div class="seg"><span class="at">Delivery</span><span>Balcão</span></div>
+      <span class="r">Telefone ou nome</span>
+      <div class="campo-pdv foco">
+        <span class="tr">
+          <span {...de(p, 0, 0.04, 'ph')}>Telefone ou nome</span>
+          <span {...de(p, 0.04, 0.08)}>119</span>
+          <span {...de(p, 0.08, 0.12)}>11987</span>
+          <span {...de(p, 0.12, 0.16)}>1198734</span>
+          <span {...de(p, 0.16, 0.22)}>11987342210</span>
+          <span {...de(p, 0.22)}>(11) 98734-2210</span>
+        </span>
+        <span {...cls(p, { esconde: 0.22 }, 'caret')}></span>
+      </div>
+      <span class="tr dica-campo"><span {...de(p, 0.04, 0.22, 'dica')}>Enter para buscar.</span></span>
+      <div {...de(p, 0.22, Infinity, 'cli')}>
+        <div class="nm">Marina Okada</div>
+        <div class="en">R. Harmonia, 412, ap. 31<br />Vila Madalena <em>· R$ 6,00</em></div>
+        <div class="tx"><span class="r">Taxa de entrega</span><span class="num">R$ 6,00</span></div>
+        <div class="dica">Taxa padrão do lugar. Dá para mudar aqui no pedido.</div>
+      </div>
+    </section>
+    <section class="painel pd-itens">
+      <span class="r">Item</span>
+      <div class="campo-pdv"><span class="ph">Código ou nome</span></div>
+      <div class="lista">
+        <div class="lh r"><span>Qtd</span><span>Item</span><span class="num">Valor</span></div>
+        <div {...de(p, 0.36, Infinity, 'li')}>
+          <span class="q">1</span>
+          <span>Meio a meio Grande<span class="d">½ Margherita · ½ Calabresa</span><span class="d obs"><span class="k">OBS</span> Sem cebola</span></span>
+          <span class="num">74,00</span>
+        </div>
+      </div>
+      <div class="atalhos">
+        <span><span class="k">/</span>meio a meio</span>
+        <span><span class="k">+</span>opções</span>
+        <span><span class="k">↑↓</span>item</span>
+        <span><span class="k">←→</span>quantidade</span>
+        <span><span class="k">*</span>observação</span>
+        <span><span class="k">Del</span>remover</span>
+      </div>
+    </section>
+    <section class="painel pd-fech">
+      <span class="r">Fechamento</span>
+      <div class="fe" style="margin-top:6px">
+        <span>Itens</span>
+        <span class="num tr dir"><span {...de(p, 0, 0.36)}>0,00</span><span {...de(p, 0.36)}>74,00</span></span>
+      </div>
+      <div class="fe">
+        <span>Entrega</span>
+        <span class="num tr dir"><span {...de(p, 0, 0.22)}>0,00</span><span {...de(p, 0.22)}>6,00</span></span>
+      </div>
+      <div class="tot">
+        <span>Total</span>
+        <span class="num tr dir"><span {...de(p, 0, 0.22)}>R$ 0,00</span><span {...de(p, 0.22, 0.36)}>R$ 6,00</span><span {...de(p, 0.36)}>R$ 80,00</span></span>
+      </div>
+      <div class="pag"><span class="r">Forma de pagamento</span></div>
+      <div class="seg cheio"><span>Dinheiro</span><span {...cls(p, { at: 0.6 })}>Pix</span><span>Cartão</span></div>
+      <span class="bt b3 div">Dividir pagamento <span class="k">Alt+P</span></span>
+      <div class="fim">
+        <span class="tr registro"><span {...de(p, 0.86, Infinity, 'registrado')}>
+          <svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.2 4.7-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span><b>Pedido 248 registrado</b><br />Total R$ 80,00</span>
+        </span></span>
+        <div {...cls(p, { pronto: 0.6 }, 'bt grande fin b2')}>Finalizar <span class="k">F8</span></div>
+      </div>
+    </section>
+  </div>
+  <div {...cls(p, { on: 0.28, fecha: 0.36 }, 'janela-fundo')}>
+    <div class="janela">
+      <h5>Meio a meio</h5>
+      <span class="r">Tamanho</span>
+      <div class="seg"><span>Média</span><span class="at">Grande</span></div>
+      <span class="r" style="margin-top:10px">Sabores, até 4</span>
+      <div class="opcoes">
+        <div><span class="t3">½</span>Margherita</div>
+        <div><span class="t3">½</span>Calabresa</div>
+      </div>
+      <div class="dica">Digite o código ou o nome de cada sabor. Enter com o campo vazio fecha o item.</div>
+    </div>
+  </div>
+</Pdv>

@@ -1,0 +1,31 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+---
+<AreaDaConta titulo="Resumo">
+  <p class="aviso aviso-info" role="note">Nada é cobrado nesta versão: o pagamento ainda não está ligado.</p>
+  <div class="cartao">
+    <h2>Plano</h2>
+    <dl class="ficha">
+      <dt>Plano</dt><dd id="r-plano"></dd>
+      <dt>Situação</dt><dd id="r-estado"></dd>
+      <dt id="r-periodo-rotulo">Período atual até</dt><dd id="r-periodo"></dd>
+      <dt>Próxima cobrança</dt><dd id="r-cobranca"></dd>
+    </dl>
+    <p class="aviso aviso-info" id="r-aviso-plano" style="margin-top:14px" hidden></p>
+    <div class="acoes" style="margin-top:16px"><a class="btn um" href="/minha-conta/plano" id="r-ir-plano">Ver os planos</a></div>
+  </div>
+  <div class="cartao">
+    <h2>E-mail</h2>
+    <dl class="ficha">
+      <dt>E-mail</dt><dd id="r-email"></dd>
+      <dt>Confirmação</dt><dd id="r-confirmado"></dd>
+    </dl>
+    <p class="aviso" id="aviso-reenvio" role="status" style="margin-top:14px" hidden></p>
+    <div class="acoes" id="r-acoes-email" style="margin-top:16px" hidden>
+      <button class="btn dois" type="button" id="reenviar">Reenviar e-mail</button>
+    </div>
+  </div>
+  <script>
+    import '../../scripts/conta/resumo'
+  </script>
+</AreaDaConta>
