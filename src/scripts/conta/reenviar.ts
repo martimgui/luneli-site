@@ -16,7 +16,8 @@ export async function reenviarConfirmacao(botao: HTMLButtonElement, aviso: HTMLE
   botao.textContent = 'Enviando…'
   try {
     const { estado } = await api().auth.pedirConfirmacao.mutate()
-    avisar(aviso, RESPOSTAS[estado], estado === 'enviado' || estado === 'ja_confirmado' ? 'ok' : 'info')
+    const textoResposta = RESPOSTAS[estado as keyof typeof RESPOSTAS] ?? 'Resposta recebida.'
+    avisar(aviso, textoResposta, estado === 'enviado' || estado === 'ja_confirmado' ? 'ok' : 'info')
   } catch (erro) {
     avisar(aviso, mensagemDoErro(erro))
     const espera = esperaDoErro(erro)

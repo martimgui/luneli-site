@@ -12,7 +12,7 @@ const form = new Formulario<Campo>('form-criar', CAMPOS)
 // A chave da criação de conta no servidor: desligada, a rota nem existe.
 void api()
   .sistema.configuracao.query()
-  .then((config) => {
+  .then((config: any) => {
     if (!config.criacaoDeConta) {
       avisar(elemento('aviso-config'), 'A criação de conta não está ligada neste servidor.', 'erro')
       form.botao.disabled = true

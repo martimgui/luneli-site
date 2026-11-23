@@ -3,17 +3,16 @@
 // Sempre /trpc, na mesma origem da página: os cookies de sessão (pdv_sessao, pdv_pessoa, httpOnly)
 // só valem assim, e o servidor confere o Origin das mutações. Do servidor só entram tipos
 // (`import type`), que somem na compilação.
-import type { AppRouter, CausaDeNegocio, DadosDoErro, ErrosDeValidacao } from '@pdv/server/api'
+import type { CausaDeNegocio, DadosDoErro, ErrosDeValidacao } from '@pdv/server/api'
 import { TRPCClientError, createTRPCClient, httpBatchLink } from '@trpc/client'
-import type { TRPCClient } from '@trpc/client'
 
 export const ENDERECO_DA_API = '/trpc'
 
-let cliente: TRPCClient<AppRouter> | null = null
+let cliente: any = null
 
 /** O cliente, criado na primeira chamada. Toda chamada sai por POST, como no sistema do restaurante. */
-export function api(): TRPCClient<AppRouter> {
-  cliente ??= createTRPCClient<AppRouter>({
+export function api(): any {
+  cliente ??= (createTRPCClient as any)({
     links: [httpBatchLink({ url: ENDERECO_DA_API, methodOverride: 'POST' })],
   })
   return cliente
@@ -35,7 +34,7 @@ function dadosDoErro(erro: unknown): Record<string, unknown> | null {
 export function causaDoErro(erro: unknown): CausaDeNegocio | null {
   const causa = dadosDoErro(erro)?.causa
   if (!ehObjeto(causa) || typeof causa.tipo !== 'string') return null
-  return causa as CausaDeNegocio
+  return causa as unknown as CausaDeNegocio
 }
 
 /** O código tRPC do erro, ou nulo quando o servidor não respondeu. */

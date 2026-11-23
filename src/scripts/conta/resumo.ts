@@ -12,8 +12,9 @@ async function abrir(): Promise<void> {
   try {
     const [minha, email] = await Promise.all([api().assinatura.minha.query(), api().auth.meuEmail.query()])
     elemento('r-plano').textContent = minha.plano.nome + (minha.plano.ehExemplo ? ' (plano de exemplo)' : '')
+    const estadoTexto = ESTADOS[minha.estado as keyof typeof ESTADOS] ?? minha.estado
     elemento('r-estado').textContent =
-      ESTADOS[minha.estado] + (minha.estado === 'em_atraso' && minha.atrasoLimiteEm ? `, bloqueia em ${formatarData(minha.atrasoLimiteEm)}` : '')
+      estadoTexto + (minha.estado === 'em_atraso' && minha.atrasoLimiteEm ? `, bloqueia em ${formatarData(minha.atrasoLimiteEm)}` : '')
     elemento('r-periodo-rotulo').textContent = minha.pagoPorFatura ? 'Pago até' : 'Período atual até'
     elemento('r-periodo').textContent = formatarData(minha.acessoAte)
     elemento('r-cobranca').textContent = minha.proximaCobranca
