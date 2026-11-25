@@ -127,12 +127,14 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
   ultimoQuadro = chave
   if (renderizador !== null) {
     if (op <= 0.001 || cyJanela + r * 1.7 < 0) {
+      canvas.style.opacity = '0'
       renderizador.desenhar([])
       return
     }
-    const theta = Math.max(0, 180 - 18 * f - 162 * kk)
-    const phi = 62 * kk
-    const intensidade = 1 - 0.32 * kk
+    canvas.style.opacity = op.toFixed(3)
+    const theta = Math.max(92, 180 - 18 * f - 70 * kk)
+    const phi = 54 * kk
+    const intensidade = 1 - 0.35 * kk
     renderizador.desenhar([
       {
         cx: G.cx,
@@ -140,9 +142,9 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
         r,
         theta,
         phi,
-        halo: f * op * (1 - 0.2 * kk),
-        anel: an * op,
-        aro: (0.35 + 0.65 * Math.max(f, an)) * op,
+        halo: f * (1 - 0.25 * kk),
+        anel: an,
+        aro: 0.35 + 0.65 * Math.max(f, an),
         tom: [1.03 * intensidade, 0.99 * intensidade, 0.92 * intensidade],
       },
     ])
