@@ -1,20 +1,32 @@
 ---
-/** A moldura das páginas da conta: um cartão estreito no meio da página. */
+/**
+ * A moldura das páginas da conta: um cartão estreito no meio da página, com o título da página (h1#h-pagina) dentro.
+ * Com conteúdo no slot `lado`, a página fica em duas colunas (o lado à esquerda, o cartão à direita), como em
+ * "Testar grátis": aí o título da página vem no lado (a página põe o h1#h-pagina lá) e o cartão fica sem h1.
+ * O slot `depois` (v3) fica abaixo do lado no computador e abaixo do cartão no celular.
+ */
 import Base from '../layouts/Base.astro'
 
 interface Props {
   titulo: string
+  descricao?: string
+  /** Página que não deve aparecer na busca (confirmar e-mail, esqueci a senha, senha nova). */
+  semIndice?: boolean
 }
-const { titulo } = Astro.props
+const { titulo, descricao, semIndice = false } = Astro.props
+const comLado = Astro.slots.has('lado')
+const comDepois = Astro.slots.has('depois')
 ---
-<Base titulo={`${titulo} | Luneli`}>
-  <section class="pagina estreita" aria-labelledby="h-pagina">
-    <div class="in">
+<Base titulo={`${titulo} | Luneli`} descricao={descricao} semIndice={semIndice}>
+  <section class:list={['pagina', { estreita: !comLado }]} aria-labelledby="h-pagina">
+    <div class:list={['in', { 'conta-dupla': comLado }]}>
+      {comLado && <div class="lado"><slot name="lado" /></div>}
       <div class="cartao">
-        <h1 id="h-pagina">{titulo}</h1>
+        {!comLado && <h1 id="h-pagina">{titulo}</h1>}
         <noscript><p class="aviso aviso-info">A conta precisa de JavaScript ligado no navegador.</p></noscript>
         <slot />
       </div>
+      {comDepois && <div class="depois-da-conta"><slot name="depois" /></div>}
     </div>
   </section>
 </Base>

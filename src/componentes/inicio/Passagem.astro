@@ -1,23 +1,10 @@
 ---
 /**
- * 2. A passagem para o produto: uma lua pequena vai de nova a crescente conforme a seção chega.
- * Com WebGL, a lua de verdade da abertura pousa aqui (este SVG fica só como marcador de lugar, invisível);
- * sem WebGL, o SVG mostra a imagem da lua cheia com o disco escuro fazendo a fase (scripts/vitrine/historia.ts).
+ * 2. A passagem para o produto: o título que apresenta a história do pedido 248. A lua da abertura se apaga
+ * antes de chegar aqui (scripts/vitrine/abertura.ts); a próxima lua é a do arco da noite, depois da história.
  */
 ---
 <section class="passagem" id="produto" aria-labelledby="pTit" tabindex="-1">
-  <svg class="p-lua" id="pLua" viewBox="0 0 100 100" aria-hidden="true">
-    <defs>
-      <radialGradient id="plHalo"><stop offset="0" stop-color="#D6DEEC" stop-opacity=".16"/><stop offset=".6" stop-color="#D6DEEC" stop-opacity=".03"/><stop offset="1" stop-color="#D6DEEC" stop-opacity="0"/></radialGradient>
-      <clipPath id="plClip"><circle cx="50" cy="50" r="30"/></clipPath>
-    </defs>
-    <circle id="plHaloC" cx="50" cy="50" r="50" fill="url(#plHalo)"/>
-    <g clip-path="url(#plClip)">
-      <image href="/lua/cheia.webp" x="20" y="20" width="60" height="60"/>
-      <circle id="plDisco" cx="50" cy="50" r="31" fill="#121419" transform="translate(-22 0)"/>
-    </g>
-    <circle cx="50" cy="50" r="29.6" fill="none" stroke="rgba(220,227,238,.16)" stroke-width=".8"/>
-  </svg>
-  <h2 class="serifa" id="pTit">Um pedido, do teclado à entrega.</h2>
-  <p>Role a página e acompanhe o pedido 248 pela casa: o caixa lança, a cozinha marca, o entregador leva e, no fim do turno, o caixa bate.</p>
+  <h2 class="serifa revela" id="pTit">Um pedido, do teclado à entrega.</h2>
+  <p class="revela" style="--i:1">Role a página e acompanhe o pedido 248 pela casa: o caixa lança, a cozinha marca, o entregador leva e, no fim do turno, você confere o caixa. As telas abaixo são o Luneli, desenhadas a partir do sistema.</p>
 </section>

@@ -1,51 +1,89 @@
 ---
 /**
  * 3. A história fixa: a tela do Luneli fica parada enquanto o texto avança em quatro passos, e a tela muda junto,
- * uma coisa de cada vez, ligada à rolagem (scripts/vitrine/historia.ts). No celular, cada passo traz a sua tela,
- * já no estado que explica o passo. Cada tela segue a tela real do Luneli (conferida em 03/11/2026).
+ * uma coisa de cada vez, ligada à rolagem (scripts/vitrine/historia.ts). Um trilho liga os passos na coluna do
+ * texto e acende conforme a rolagem; sob o palco, o rastro diz onde o pedido 248 está. No passo 3 a expedição
+ * recua e o celular do entregador entra sozinho, centralizado: o segundo tempo do passo.
+ * No celular e no tablet cada passo traz a sua tela, já no estado que explica o passo: no tablet no desenho do
+ * computador, encolhido (--escala); no celular recortada no trecho que o passo explica (--recorte, 75 svh, borda
+ * de baixo esmaecida); o passo 3 traz o celular do entregador direto sobre o preto (v3: sem a moldura de fora).
+ * Cada tela segue a tela real do Luneli (conferida em 03/11/2026). A tela da cozinha e o celular do entregador
+ * são do plano Delivery completo, e o texto dos passos 2 e 3 diz isso.
  */
 import Cozinha from '../telas/Cozinha.astro'
 import Expedicao from '../telas/Expedicao.astro'
 import FaseDaLua from '../telas/FaseDaLua.astro'
 import Fechamento from '../telas/Fechamento.astro'
+import Fone from '../telas/Fone.astro'
 import Moldura from '../telas/Moldura.astro'
 import Pedido from '../telas/Pedido.astro'
 import { FASE_DO_PASSO } from '../telas/estado'
 
+// Os títulos levam espaço que não quebra depois das palavras curtas (C7 da v3); os textos têm no máximo quatro
+// linhas ao lado do palco. A nota do plano (`plano`) vai para a linha de estado sob a tela (no computador) ou
+// logo abaixo do texto (celular e tablet), nunca some.
+const NB = '\u00a0'
 const PASSOS = [
   {
     nome: 'Pedido',
-    titulo: 'Pelo teclado, do telefone ao F8.',
-    texto: 'Digitou o telefone e apertou Enter: o cliente aparece com o endereço salvo e a taxa do endereço. Os itens entram pelo código ou pelo nome, e a tecla / monta o meio a meio. F8 finaliza.',
+    titulo: `Pelo teclado, do${NB}telefone ao${NB}F8.`,
+    texto: 'Digitou o telefone e apertou Enter: o cliente aparece com o endereço salvo e a taxa do lugar. A tecla / monta o meio a meio, e o F8 registra. Sem mouse e sem redigitar endereço.',
+    plano: 'Em todos os planos.',
     rotulo: 'A tela de pedido do Luneli, com o pedido 248 registrado: cliente, meio a meio, Pix e o aviso de registro.',
     estatico: 0.9,
+    // no celular: o trecho que o passo explica, medido pelo elemento (historia.ts; sem script vale o recorte em px)
+    recorte: 150,
+    recorteDe: '.cli',
+    recorteAte: '.pd-fech .fim',
+    recorta: true,
+    rastro: { em: 0.86, antes: 'sendo lançado no caixa por Ana', depois: 'registrado às 20:58: Marina, meio a meio grande, Pix' },
     Tela: Pedido,
   },
   {
     nome: 'Cozinha',
-    titulo: 'Cada cozinha recebe só o que é dela.',
-    texto: 'A pizza sai na comanda da pizzaria; a bebida, na do bar. Na tela da cozinha, um Enter marca a parte daquela cozinha, e, quando todas marcam, o pedido vai sozinho para Pronto.',
+    titulo: `Cada cozinha recebe só o${NB}que é${NB}dela.`,
+    texto: 'A pizza vai para a pizzaria; a bebida, para o bar. Na tela da cozinha, um Enter marca a parte daquela cozinha e, quando todas marcam, o pedido vai sozinho para Pronto na expedição.',
+    plano: 'A tela da cozinha é do plano Delivery completo. No Essencial, a comanda vai sair no papel, na impressora de cada cozinha, quando o programa da impressora puder ser baixado (em breve).',
     rotulo: 'A tela da cozinha do Luneli, com a fila da pizzaria e o pedido 248 esperando o Enter.',
     estatico: 0.5,
+    recorte: 0,
+    recorteDe: '',
+    recorteAte: '',
+    recorta: false,
+    rastro: { em: 0.7, antes: 'na fila da pizzaria, há 1 minuto', depois: 'pronto na pizzaria às 21:04' },
     Tela: Cozinha,
   },
   {
     nome: 'Entrega',
-    titulo: 'Da expedição até a porta.',
-    texto: 'A expedição vê cada pedido pela etapa: em preparo, pronto, saiu para entrega, entregue. Na saída, você escolhe quem leva, e o pedido aparece no celular do entregador, na página Luneli Entregador.',
-    rotulo: 'A expedição do Luneli: o pedido 248 saiu para entrega com o Diego e aparece no celular dele.',
-    estatico: 1,
+    titulo: `Da expedição até a${NB}porta.`,
+    texto: 'A expedição mostra cada pedido na sua etapa: em preparo, pronto, saiu para entrega, entregue. Na saída, você escolhe quem leva, e o pedido aparece no celular do entregador, com o endereço e quanto cobrar.',
+    plano: 'O celular do entregador é do plano Delivery completo.',
+    rotulo: 'A expedição do Luneli: o pedido 248 saiu para entrega com o Diego.',
+    // a cópia estática para antes do segundo tempo (o celular entra a 0,6 e tem a sua própria moldura)
+    estatico: 0.5,
+    recorte: 318,
+    recorteDe: '.ex > .col:nth-child(3)',
+    recorteAte: '.ex > .col:nth-child(n+3)',
+    recorta: true,
+    rastro: { em: 0.42, antes: 'pronto, esperando a saída', depois: 'na rua com o Diego: cobrar R$ 80,00 no Pix' },
     Tela: Expedicao,
   },
   {
     nome: 'Fechamento',
-    titulo: 'No fim do turno, o caixa bate.',
+    titulo: `No fim do turno, você sabe se o${NB}caixa${NB}bateu.`,
     texto: 'O fechamento mostra o esperado em dinheiro, Pix e cartão. Você digita o que contou e a diferença aparece na hora. O acerto de cada entregador tem a sua própria tela.',
+    plano: 'Em todos os planos.',
     rotulo: 'O fechamento do caixa do Luneli: dinheiro, Pix e cartão conferidos, total Confere.',
     estatico: 1,
+    recorte: 0,
+    recorteDe: '',
+    recorteAte: '',
+    recorta: true,
+    rastro: { em: 0.66, antes: 'entregue; o turno está em conferência', depois: 'entregue; caixa fechado, tudo confere' },
     Tela: Fechamento,
   },
 ]
+const ROTULO_DO_FONE = 'O celular do entregador, na página Luneli Entregador: o pedido 248 com o endereço, o telefone e R$ 80,00 a cobrar no Pix, e o botão Entregue.'
 ---
 <section class="historia" id="historia" aria-label="O caminho de um pedido">
   <div class="h-in">
@@ -53,14 +91,18 @@ const PASSOS = [
       {PASSOS.map((passo, i) => {
         const Tela = passo.Tela
         return (
-          <article class="cap">
+          <article class="cap" data-rastro-em={passo.rastro.em} data-rastro-antes={passo.rastro.antes} data-rastro-depois={passo.rastro.depois} data-plano={passo.plano}>
             <div class="txt">
-              <div class="onde"><FaseDaLua d={FASE_DO_PASSO[i]!} tam={15} />Passo {i + 1} de 4 · {passo.nome}</div>
+              <p class="onde"><span class="no"><FaseDaLua d={FASE_DO_PASSO[i]!} tam={16} /></span>Passo {i + 1} de 4 · {passo.nome}</p>
               <h3>{passo.titulo}</h3>
               <p>{passo.texto}</p>
+              <p class="cap-plano">{passo.plano}</p>
             </div>
-            <div class="cap-tela">
-              <Moldura aceso rotulo={passo.rotulo}><Tela instante={passo.estatico} /></Moldura>
+            <div class="cap-tela" style={`--recorte:${passo.recorte}px`} data-recorte-de={passo.recorteDe || undefined} data-recorte-ate={passo.recorteAte || undefined}>
+              <Moldura aceso classe={passo.recorta ? 'recorta' : ''} rotulo={passo.rotulo}><div class="tela-escala"><Tela instante={passo.estatico} /></div></Moldura>
+              {i === 2 && (
+                <div class="m-fone" role="img" aria-label={ROTULO_DO_FONE}><Fone fixo /></div>
+              )}
             </div>
           </article>
         )
@@ -68,16 +110,7 @@ const PASSOS = [
     </div>
     <div class="palco-col">
       <div class="fixo" id="fixo">
-        <div class="etapas" id="etapas" role="group" aria-label="Etapas do pedido">
-          {PASSOS.map((passo, i) => (
-            <button type="button" class="etapa">
-              <span class="fzw"><FaseDaLua d={FASE_DO_PASSO[i]!} tam={16} /></span>
-              {passo.nome}
-              <span class="tr"><i></i></span>
-            </button>
-          ))}
-        </div>
-        <Moldura id="mHist" classe="m-hist" rotulo="A tela do Luneli muda junto com o texto: pedido, cozinha, expedição e fechamento do caixa.">
+        <Moldura id="mHist" classe="m-hist" rotulo="A tela do Luneli muda junto com o texto: pedido, cozinha, expedição com o celular do entregador e fechamento do caixa.">
           <template id="tplPalco">
             <Pedido />
             <Cozinha />
@@ -85,6 +118,11 @@ const PASSOS = [
             <Fechamento />
           </template>
         </Moldura>
+        <p class="rastro" id="rastro" aria-live="off">
+          {PASSOS.map((_, i) => <span class:list={['rastro-fz', { on: i === 0 }]}><FaseDaLua d={FASE_DO_PASSO[i]!} tam={14} /></span>)}
+          <b>Pedido 248</b> <span id="rastroTexto">{PASSOS[0]!.rastro.antes}</span>
+        </p>
+        <p class="rastro-plano" id="rastroPlano">{PASSOS[0]!.plano}</p>
       </div>
     </div>
   </div>

@@ -1,34 +1,21 @@
 ---
 /**
- * 1. A abertura: a lua crescente nasce atrás do título em eclipse (anel finíssimo → a luz nasce → a mensagem entra),
- * a frase diz o que o Luneli é e os dois botões levam ao teste e ao produto. Tudo posicionado por scripts/vitrine/abertura.ts.
- * Com WebGL a lua é a de verdade, desenhada no canvas do invólucro .noite (index.astro); os elementos de .ceu
- * ficam como reserva sem WebGL (só o ponto âmbar, .fio, é usado nos dois casos). O céu e o grão são do invólucro.
+ * 1. A abertura: a lua minimalista nasce atrás do título em eclipse (anel finíssimo → a luz nasce num fio por
+ * baixo), a frase diz o que o Luneli é e os dois botões levam ao teste e ao produto. A mensagem é posicionada
+ * pelo CSS e fica visível desde a primeira pintura (só um deslize curto a partir de 60 % de opacidade); a lua
+ * mora no quadro preso à janela do invólucro .noite (index.astro) e é desenhada por scripts/vitrine/abertura.ts,
+ * que lê a posição da mensagem para pôr a lua atrás dela (computador) ou acima dela (celular).
  */
 ---
 <section class="hero" id="hero" aria-label="Luneli">
-  <div class="ceu" id="ceu" aria-hidden="true">
-    <div class="brilho" id="hBrilho"></div>
-    <div class="halo" id="hHalo"></div>
-    <div class="coroa" id="hCoroa"></div>
-    <div class="lua" id="hLua"><div class="luz" id="hLuz"></div><div class="disco" id="hDisco"></div></div>
-    <div class="aro" id="hAro"></div>
-    <div class="anel" id="hAnel"></div>
-    <svg class="fio" id="hFio">
-      <g id="hDica"></g>
-      <defs>
-        <radialGradient id="hpt"><stop offset="0" stop-color="#FFF1DA"/><stop offset=".3" stop-color="#F2B66B" stop-opacity=".8"/><stop offset="1" stop-color="#F2B66B" stop-opacity="0"/></radialGradient>
-      </defs>
-      <circle id="hDicaPonta" r="10" fill="url(#hpt)" opacity="0"/>
-    </svg>
-  </div>
-
   <div class="msg" id="msg">
-    <h1 id="h1"><span class="ln">O restaurante<br class="m" /> inteiro,</span> <span class="ln">do caixa<br class="m" /> à porta.</span></h1>
-    <p class="sub" id="sub">Sistema de caixa e gestão para restaurantes, pizzarias e delivery.</p>
+    <p class="kicker" id="kicker">Sistema de caixa e gestão para restaurantes, pizzarias e delivery</p>
+    <h1 id="h1"><span class="ln">O restaurante<br class="m" /> inteiro,</span> <span class="ln sem-quebra">do caixa à porta.</span></h1>
+    <p class="sub" id="sub">O pedido entra pelo teclado, a cozinha marca o pronto, o entregador leva e, no fim da noite, você vê na hora se o caixa bateu. Tudo num sistema só.</p>
     <div class="acoes-hero" id="acoes">
-      <a class="btn um" href="/testar-gratis">Testar grátis</a>
-      <a class="btn dois" href="#produto" id="verProduto">Ver o produto</a>
+      <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+      <a class="btn dois" href="#produto" id="verProduto">Ver o produto<span class="seta" aria-hidden="true">↓</span></a>
     </div>
+    <p class="hero-nota" id="heroNota">Primeiro mês sem cobrança. O cadastro não pede cartão.</p>
   </div>
 </section>

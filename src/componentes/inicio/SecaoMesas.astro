@@ -4,13 +4,14 @@ import Mesas from '../telas/Mesas.astro'
 import Moldura from '../telas/Moldura.astro'
 ---
 <section class="secao" id="mesas" aria-labelledby="mTit">
-  <div class="sec-cab">
-    <h2 class="serifa" id="mTit">A mesa com a conta aberta, rodada por rodada.</h2>
-    <p>O mapa mostra cada mesa livre ou ocupada, há quanto tempo a conta está aberta, quem abriu e quanto já soma. Cada rodada lançada entra na conta e sai na impressora da cozinha, só com o que é novo; na hora de pagar, a mesa recebe uma parte de cada vez ou divide em partes iguais. Mesas e contas fazem parte do plano Profissional.</p>
+  <div class="sec-cab centro">
+    <h2 class="serifa revela" id="mTit">A mesa com a conta aberta, rodada por rodada.</h2>
+    <p class="revela" style="--i:1">O mapa mostra cada mesa livre ou ocupada, há quanto tempo a conta está aberta, quem abriu e quanto já soma. Cada rodada lançada entra na conta da mesa. Na cozinha, ela vai sair na impressora de cada setor, só com o que é novo, quando o programa da impressora estiver pronto (em breve); a tela da cozinha mostra só balcão e delivery. Na hora de pagar, a mesa recebe uma parte de cada vez ou divide em partes iguais. Mesas e contas fazem parte do plano Profissional.</p>
   </div>
   <div class="sec-tela">
     <Moldura classe="m-mesas" rotulo="O mapa de mesas e a conta da mesa 4 do Luneli, lado a lado: três rodadas lançadas, taxa de serviço, valor por pessoa e o que já foi pago.">
       <Mesas />
     </Moldura>
+    <p class="legenda-tela"><b>Mapa de mesas e conta da mesa 4</b> · no sistema são duas telas, aqui lado a lado · plano Profissional</p>
   </div>
 </section>

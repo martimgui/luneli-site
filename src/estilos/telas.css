@@ -4,21 +4,26 @@
   Tipo: 13 conteúdo · 12 rótulo cinza · 16 título · 26 total · números tabulares.
   Cada tela tem container-type:inline-size: no celular o mesmo desenho se empilha.
 */
-.pdv{--p-bg:#0F1115;--p-s1:#16191F;--p-s2:#1D2128;--p-s3:#272B34;--p-fundo-campo:#111318;
-  --p-linha:rgba(220,228,240,.075);--p-linha2:rgba(220,228,240,.14);
-  --p-t1:#ECEEF2;--p-t2:#A9AFBA;--p-t3:#858C98;
-  --p-acao:#F2B66B;--p-acao-t:#1B1407;--p-acao-txt:#F2B66B;--p-acao-bg:rgba(242,182,107,.09);--p-acao-borda:rgba(242,182,107,.45);
-  --p-ok:#8FD0A6;--p-ok-bg:rgba(143,208,166,.09);--p-ok-borda:rgba(143,208,166,.25);--p-luar:#D5DCE7;--p-k:rgba(236,238,242,.08);
-  --p-veu:rgba(8,9,12,.5);
+.pdv{--p-bg:#141414;--p-s1:#1B1B1B;--p-s2:#222222;--p-s3:#2A2A2A;--p-fundo-campo:#161616;
+  --p-linha:rgba(255,255,255,.085);--p-linha2:rgba(255,255,255,.16);
+  --p-t1:#F0F0F0;--p-t2:#B0B0B0;--p-t3:#919191;
+  --p-acao:#EDEDED;--p-acao-t:#121212;--p-acao-txt:#E4E4E4;--p-acao-bg:rgba(255,255,255,.08);--p-acao-borda:rgba(255,255,255,.45);
+  --p-ok:#EDEDED;--p-ok-bg:rgba(255,255,255,.07);--p-ok-borda:rgba(255,255,255,.24);--p-luar:#DADADA;--p-k:rgba(255,255,255,.08);
+  --p-veu:rgba(8,8,8,.5);
   position:relative;display:flex;flex-direction:column;height:100%;background:var(--p-bg);color:var(--p-t1);
   font-family:var(--sans);font-size:13px;line-height:1.4;font-weight:450;font-variant-numeric:tabular-nums;letter-spacing:0;
   container-type:inline-size;text-align:left}
-.pdv.claro{--p-bg:#E4E8ED;--p-s1:#F3F5F8;--p-s2:#FAFBFC;--p-s3:#FFFFFF;--p-fundo-campo:#FAFBFC;
-  --p-linha:rgba(22,28,40,.09);--p-linha2:rgba(22,28,40,.17);
-  --p-t1:#14171C;--p-t2:#4A515D;--p-t3:#5F6673;
-  --p-acao:#EDA552;--p-acao-t:#1E1406;--p-acao-txt:#8A5210;--p-acao-bg:rgba(214,138,50,.11);--p-acao-borda:rgba(190,118,36,.55);
-  --p-ok:#2B7A4B;--p-ok-bg:rgba(43,122,75,.09);--p-ok-borda:rgba(43,122,75,.28);--p-luar:#3B4452;--p-k:rgba(22,28,40,.07);
-  --p-veu:rgba(228,232,237,.55)}
+/* a janela: a barra e o conteúdo; recua inteira no segundo tempo do passo 3 (v3, C5) */
+.pj{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;transform-origin:50% 50%;transition:opacity .5s var(--sai),transform .5s var(--sai)}
+.pj.recua{opacity:.12;transform:scale(.96)}
+/* num palco largo (computador grande) a letra sobe meio ponto: a tela se lê como um sistema, não como miniatura */
+@container (min-width:860px){ .pdv{font-size:13.5px} }
+.pdv.claro{--p-bg:#E4E4E4;--p-s1:#F3F3F3;--p-s2:#FAFAFA;--p-s3:#FFFFFF;--p-fundo-campo:#FAFAFA;
+  --p-linha:rgba(0,0,0,.09);--p-linha2:rgba(0,0,0,.17);
+  --p-t1:#121212;--p-t2:#4A4A4A;--p-t3:#5F5F5F;
+  --p-acao:#121212;--p-acao-t:#F5F5F5;--p-acao-txt:#121212;--p-acao-bg:rgba(0,0,0,.08);--p-acao-borda:rgba(0,0,0,.5);
+  --p-ok:#121212;--p-ok-bg:rgba(0,0,0,.07);--p-ok-borda:rgba(0,0,0,.26);--p-luar:#3B3B3B;--p-k:rgba(0,0,0,.07);
+  --p-veu:rgba(228,228,228,.55)}
 .pdv b,.pdv strong{font-weight:600}
 .pdv .num{text-align:right;white-space:nowrap}
 .pdv .t3{color:var(--p-t3)}
@@ -53,7 +58,7 @@
 .seg{display:inline-flex;padding:2px;border-radius:8px;background:var(--p-fundo-campo);box-shadow:inset 0 0 0 1px var(--p-linha)}
 .seg>span{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:6px;color:var(--p-t2);white-space:nowrap;transition:background-color .25s ease,color .25s ease}
 .seg>span.at{background:var(--p-s3);color:var(--p-t1);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
-.claro .seg>span.at{box-shadow:0 1px 2px rgba(22,28,40,.14)}
+.claro .seg>span.at{box-shadow:0 1px 2px rgba(0,0,0,.14)}
 .seg.cheio{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
 .seg.cheio>span{justify-content:center}
 .bt{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:34px;padding:0 13px;border-radius:8px;font-weight:600;white-space:nowrap;
@@ -149,9 +154,11 @@
 .tq .ac .bt{width:100%}
 .tq.sel{box-shadow:inset 0 0 0 1px var(--p-acao-borda),0 0 0 3px var(--p-acao-bg)}
 .tq.foi{opacity:0;transform:scale(.97)}
-/* a faixa ocupa o lugar desde o começo (invisível), para nada se mover quando ela aparece */
-.faixa{display:flex;visibility:hidden;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;background:var(--p-ok-bg);box-shadow:inset 0 0 0 1px var(--p-ok-borda);color:var(--p-t1)}
-.faixa.on{visibility:visible}
+/* a faixa "Pedido 248 pronto." entra como um aviso sobre a fila, no pé da tela: não reserva espaço enquanto não existe */
+.faixa{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;display:flex;visibility:hidden;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;
+  background:var(--p-s2);box-shadow:inset 0 0 0 1px var(--p-ok-borda),0 14px 30px -12px rgba(0,0,0,.8);color:var(--p-t1);opacity:0;transform:translateY(6px);
+  transition:opacity .28s var(--sai),transform .28s var(--sai),visibility 0s linear .28s}
+.faixa.on{visibility:visible;opacity:1;transform:none;transition:opacity .28s var(--sai),transform .28s var(--sai),visibility 0s}
 .faixa svg{color:var(--p-ok);flex:none}
 .faixa>span:first-of-type{flex:1;min-width:0}
 .faixa .bt{height:28px;padding:0 10px;font-size:12px}
@@ -181,27 +188,31 @@
 .sai-daqui.foi{opacity:0;transform:translateX(10px)}
 .col .slot{display:grid;grid-template-columns:minmax(0,1fr)}
 .col .slot>*{grid-area:1/1}
-/* o celular: na coluna "Entregue ou retirado hoje", abaixo dos dois últimos, sem cobrir nada */
-.fone{position:absolute;right:22px;bottom:14px;width:calc((100% - 54px) / 4 - 20px);min-width:168px;max-width:200px;height:318px;border-radius:26px;padding:5px;background:#08090B;
-  box-shadow:0 0 0 1px rgba(214,224,240,.14),0 18px 36px -12px rgba(0,0,0,.8);z-index:4;
-  transform:translateY(16px);opacity:0;transition:opacity .35s var(--sai),transform .45s var(--sai)}
-.fone.on{transform:none;opacity:1}
-.fone .tl{height:100%;border-radius:21px;background:#14171C;color:#ECEEF2;padding:10px 12px;overflow:hidden;display:flex;flex-direction:column}
-.fone .tl .bar{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:#ECEEF2;padding:0 6px}
-.fone .tl h5{font-size:14px;font-weight:650;letter-spacing:-.01em;margin-top:8px}
-.fone .abas{display:flex;gap:10px;margin-top:6px;font-size:11.5px;color:#A9AFBA;border-bottom:1px solid rgba(220,228,240,.1)}
-.fone .abas span{padding-bottom:5px;white-space:nowrap}
-.fone .abas span.at{color:#ECEEF2;font-weight:600;box-shadow:inset 0 -2px 0 #ECEEF2}
-.fone .card{margin-top:10px;border-radius:14px;background:#1E2229;box-shadow:inset 0 0 0 1px rgba(220,228,240,.08);padding:10px 11px}
-.fone .card .s{display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.fone .card .s b{display:inline-flex;align-items:center;gap:6px;color:#ECEEF2}
-.fone .card .s span{color:#858C98}
-.fone .card .nm{font-size:14px;font-weight:650;margin-top:8px}
-.fone .card .en{font-size:12px;color:#A9AFBA;margin-top:2px;line-height:1.4}
-.fone .card .vl{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;color:#A9AFBA}
-.fone .card .vl b{color:#ECEEF2;white-space:nowrap}
-.fone .card .ln2{display:flex;gap:12px;margin-top:8px;font-size:12px;color:#D5DCE7;font-weight:500}
-.fone .card .bt{margin-top:10px;width:100%;height:34px;border-radius:10px;background:#F2B66B;color:#1B1407}
+/* o segundo tempo do passo 3: a janela inteira recua (.pj.recua) e o celular do entregador entra sozinho, no
+   palco, com cerca de 300×620 (encolhe no palco baixo); o pé dele fica no pé da janela recuada (a escala de 0,96 em
+   volta do centro deixa 2 % de folga embaixo), com sombra */
+.fone{position:absolute;left:50%;bottom:2%;z-index:4;width:300px;height:min(620px,calc(96% - 24px));border-radius:36px;padding:7px;background:#080808;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16),0 40px 80px rgba(0,0,0,.6);pointer-events:none;
+  transform:translateX(-50%) translateY(14px) scale(.96);transform-origin:50% 100%;opacity:0;transition:opacity .5s var(--sai),transform .5s var(--sai)}
+.fone.on{transform:translateX(-50%);opacity:1}
+/* a cópia fixa (celular e tablet): sozinha, numa moldura própria, sempre visível */
+.fone.fone-fixo{position:relative;left:auto;top:auto;bottom:auto;margin:0 auto;height:620px;transform:none;opacity:1}
+.fone .tl{height:100%;border-radius:30px;background:#151515;color:#EDEDED;padding:16px 16px 14px;overflow:hidden;display:flex;flex-direction:column}
+.fone .tl .bar{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:#EDEDED;padding:0 8px}
+.fone .tl h5{font-size:18px;font-weight:650;letter-spacing:-.012em;margin-top:16px}
+.fone .abas{display:flex;gap:14px;margin-top:12px;font-size:13.5px;color:#ABABAB;border-bottom:1px solid rgba(255,255,255,.1)}
+.fone .abas span{padding-bottom:7px;white-space:nowrap}
+.fone .abas span.at{color:#EDEDED;font-weight:600;box-shadow:inset 0 -2px 0 #EDEDED}
+.fone .card{margin-top:16px;border-radius:16px;background:#202020;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);padding:14px 14px}
+.fone .card .s{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.fone .card .s b{display:inline-flex;align-items:center;gap:7px;color:#EDEDED}
+.fone .card .s span{color:#898989}
+.fone .card .nm{font-size:17px;font-weight:650;margin-top:12px;letter-spacing:-.01em}
+.fone .card .en{font-size:13.5px;color:#ABABAB;margin-top:3px;line-height:1.45}
+.fone .card .vl{display:flex;justify-content:space-between;gap:8px;margin-top:12px;font-size:13.5px;color:#ABABAB}
+.fone .card .vl b{color:#EDEDED;white-space:nowrap}
+.fone .card .ln2{display:flex;gap:14px;margin-top:12px;font-size:13.5px;color:#DADADA;font-weight:500}
+.fone .card .bt{margin-top:16px;width:100%;height:44px;border-radius:12px;background:#EDEDED;color:#121212;font-size:14px}
 
 /* --- Fechamento do caixa --- */
 .fc{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,63fr) minmax(0,37fr);gap:10px}
@@ -250,8 +261,10 @@
 .mesa.sel{box-shadow:inset 0 0 0 1px var(--p-acao-borda),0 0 0 3px var(--p-acao-bg)}
 .legenda{margin-top:auto;padding-top:12px;display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--p-t3);font-size:12px}
 .legenda span{display:inline-flex;align-items:center;gap:6px}
-.legenda i{width:6px;height:6px;border-radius:50%;background:var(--p-acao)}
-.legenda i.l{background:transparent;box-shadow:inset 0 0 0 1.5px var(--p-t3)}
+/* os sinais da legenda: um ponto cheio e um círculo vazado de 6 px (v3, C10: a regra .legenda i do comparativo, em
+   paginas.css, achatava os dois num traço; o .pdv dá a especificidade para vencê-la) */
+.pdv .legenda i{display:inline-block;flex:none;width:6px;height:6px;margin:0;border-radius:50%;background:var(--p-acao);opacity:1}
+.pdv .legenda i.l{background:transparent;box-shadow:inset 0 0 0 1.5px var(--p-t3)}
 .conta-mesa{padding:14px 16px;display:flex;flex-direction:column;min-height:0}
 .conta-mesa .c1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .conta-mesa .c1 h5{font-size:16px;font-weight:650;letter-spacing:-.01em}
@@ -276,13 +289,10 @@
 /* ----- o palco baixo (janelas de 1280×800): a cozinha volta a uma fileira, o fechamento perde os lançamentos
          e a coluna "Entregue ou retirado hoje" encurta para o celular do entregador não cobrir nada ----- */
 .m-hist .pdv{container-type:size}
-.m-hist .c-ent .ped.min{display:none}
-@container (max-height:520px){
+@container (max-height:540px){
   .cz .tq.fila2{display:none}
   .lanc{display:none}
   .c-ent .ped.min{display:none}
-  .fone{height:296px;bottom:14px;min-width:176px}
-  .fone .card .ln2{display:none}
 }
 /* palco estreito (1280 de largura) e tablet: o tipo do pedido sai do cartão, bairro e hora em duas linhas, atalhos em duas colunas */
 @container (max-width:800px){
@@ -312,7 +322,6 @@
   .ped .a b{font-size:12.5px}
   .ped .a .t3,.ped .sob{display:none}
   .ped .b{flex-direction:column;gap:1px}
-  .fone{position:relative;right:auto;bottom:auto;width:200px;max-width:none;margin:12px auto 0;transform:none;opacity:1}
   .cab-tela .k,.cab-tela .dica-k{display:none}
   .cab-tela{flex-wrap:wrap;row-gap:4px}
   .cab-tela>.t3{order:5;flex-basis:100%;font-size:12px}
@@ -337,7 +346,7 @@
 
 /* movimento reduzido: os estados já desenhados, sem deslocamento */
 @media (prefers-reduced-motion:reduce){
-  [data-de],.sai-daqui,.fone,.seg>span,.bt,.tq,.janela,.janela-fundo{transition:none}
+  [data-de],.sai-daqui,.fone,.pj,.seg>span,.bt,.tq,.janela,.janela-fundo{transition:none}
   [data-de]{transform:none}
   .sai-daqui.foi,.tq.foi{transform:none}
 }

@@ -3,14 +3,19 @@
  * A casca de uma tela do Luneli: a barra do topo e o conteúdo. A barra segue a real (apps/web, Moldura):
  * a marca, as telas na ordem verdadeira (um subconjunto, com "Mais" para o que não cabe), e à direita quem entrou,
  * Ajuda e Sair. Nada de estado do caixa aqui: isso fica na tela Caixa.
+ * A barra e o conteúdo ficam na janela (.pj), que pode recuar inteira (v3, C5: no passo 3 a expedição toda recua,
+ * com a barra); o que entra por cima dela (o celular do entregador) vai no slot "sobre", fora da janela.
  */
 interface Props {
   aba: 'pedido' | 'mesas' | 'cozinha' | 'expedicao' | 'caixa'
   /** O instante em que a tela fica parada fora do palco (as cópias estáticas). */
   estatico: number
   claro?: boolean
+  /** Atributos da janela (barra + conteúdo), para o estado ligado à rolagem (data-cls). */
+  janela?: Record<string, string>
 }
-const { aba, estatico, claro = false } = Astro.props
+const { aba, estatico, claro = false, janela = {} } = Astro.props
+const { class: classeDaJanela, ...atributosDaJanela } = janela
 const TELAS: [Props['aba'] | null, string][] = [
   ['pedido', 'Pedido'],
   [null, 'Clientes'],
@@ -22,6 +27,7 @@ const TELAS: [Props['aba'] | null, string][] = [
 ]
 ---
 <div class:list={['pdv', { claro }]} data-estatico={estatico} aria-hidden="true">
+ <div class:list={['pj', classeDaJanela]} {...atributosDaJanela}>
   <div class="pb">
     <span class="pb-marca">Luneli</span>
     <div class="pb-abas">
@@ -34,4 +40,6 @@ const TELAS: [Props['aba'] | null, string][] = [
     <span class="pb-acao">Sair</span>
   </div>
   <div class="pc"><slot /></div>
+ </div>
+ <slot name="sobre" />
 </div>

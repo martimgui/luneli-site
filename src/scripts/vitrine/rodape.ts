@@ -1,123 +1,121 @@
-// O rodapé da página de início: a folha sobe como uma cortina, a lua cheia aparece inteira e a sombra da Terra
-// a cobre (eclipse), deixando o anel e a palavra. Tudo ligado à rolagem, só transform e opacidade, e só com o
-// rodapé perto da janela. q = quanto da cortina já subiu: 0 quando o rodapé começa a aparecer, 1 no fim da
-// página. Com movimento reduzido, tudo já está no fim. Quando a cortina não cabe na janela (zoom alto, celular
-// deitado), o rodapé vira um bloco normal.
-// Com WebGL a lua é a de verdade (scripts/vitrine/lua.ts) num canvas atrás do SVG; sem WebGL, o SVG faz tudo.
-import { $, limitar, opacidade, porQuadro, semMovimento, transformar } from './comum'
-import { TONS_DA_LUA, criarRenderizador, temWebGL } from './lua'
+// O rodapé da página de início: a folha sobe como uma cortina e mostra a lua cheia com a palavra "Luneli"
+// atravessando-a, uma peça só: as letras são recortadas da luz (escuras sobre a lua, brancas fora dela). No último
+// terço a sombra da Terra cobre a lua e, por onde passa, as letras ficam brancas; o eclipse para em ECLIPSE_FINAL:
+// no repouso sobra um crescente de luz que continua recortando o nome, com o anel fino por trás. Tudo ligado à
+// rolagem, só atributos de SVG, transform e opacidade, e só com o rodapé perto da janela. A frase, o botão e os
+// links entram por uma transição CSS (classe .r-visto, v3, B10): o script só desenha o eclipse.
+// q = quanto da cortina já subiu: 0 quando o rodapé começa a aparecer, 1 no fim da
+// página. No celular, frase, botão e links entram entre 35 % e 55 % da cortina (só a lua segue animada); no
+// computador o botão acende em 0,5. Com movimento reduzido, tudo já está no fim. Quando a cortina não cabe na
+// janela (zoom alto, celular deitado), o rodapé vira um bloco normal.
+import { luneta } from '../../lib/fase-da-lua'
+import { $, limitar, opacidade, porQuadro, semMovimento } from './comum'
+import { colocar, criarLua } from './lua'
+
+
 
 const reduzido = semMovimento()
 const vao = $('#rVao')
 const rodape = $('#rodape')
-const cena = $('.r-cena', rodape)
 const svg = $<SVGSVGElement>('#rSvg')
-const palavra = $<SVGTextElement>('#rPalavra')
 const ceu = $<SVGGElement>('#rCeu')
-const disco = $<SVGCircleElement>('#rDisco')
-const halo = $<SVGCircleElement>('#rHalo')
-const anel = $<SVGCircleElement>('#rAnel')
-const coroa = $<SVGCircleElement>('#rCoroa')
-const referencia = $<SVGCircleElement>('#rLuaRef')
-const canvas = $<HTMLCanvasElement>('#rLua')
-const frase = $('#rFrase')
-const acoes = $('#rAcoes')
-const links = $('.r-links', rodape)
-const fim = $('#rFim')
+const luzG = $<SVGGElement>('#rLuz')
+const recorteDaLuz = $<SVGPathElement>('#rcCaminho')
+const palavra = $<SVGTextElement>('#rPalavra')
+const recorte = $<SVGTextElement>('#rRecorte')
+const cena = $('.r-cena', rodape)
 
 const sai = (x: number): number => 1 - Math.pow(1 - x, 3)
-const lua = (x: number): number => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2)
+const curvaDaLua = (x: number): number => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2)
 const r = (q: number, a: number, d: number): number => limitar((q - a) / d)
 
-/** Um atributo de SVG escrito só quando muda. */
-const escrito = new Map<Element, string>()
-function atributo(el: Element, nome: string, valor: string): void {
-  const chave = `${nome}`
-  if (escrito.get(el) === chave + valor) return
-  escrito.set(el, chave + valor)
-  el.setAttribute(nome, valor)
+/* ===== a lua: o disco e os anéis atrás da palavra; a parte acesa na frente dela, recortando as letras ===== */
+const lua = criarLua(svg, 'lr', 'cheia')
+ceu.append(lua.g)
+lua.luz.id = 'rLuzCaminho'
+luzG.append(lua.luz)
+
+let ultimoEc = -1
+/** A sombra da Terra entra pelo alto, da esquerda, e cobre a lua (ec de 0 a 1, em passos de 0,005); a parte acesa é a luneta que sobra. */
+function sombra(ec: number): void {
+  const ecq = Math.round(ec * 200) / 200
+  if (ecq === ultimoEc) return
+  ultimoEc = ecq
+  const s = 1 - ecq
+  const d = luneta(0, 0, 1, -2.3 * s, -0.55 * s, 1.04)
+  lua.luz.setAttribute('d', d)
+  // o recorte das letras é o mesmo caminho, num <path> próprio do clipPath (sem <use>). Sem nada aceso a cópia
+  // escura some de vez: um recorte vazio não é confiável (o Chrome chegou a mostrar as letras escuras inteiras
+  // no fim do eclipse), então o caminho vira um ponto fora da lua e o texto fica invisível.
+  const aceso = d !== ''
+  recorteDaLuz.setAttribute('d', aceso ? d : 'M-9 -9h0.001v0.001z')
+  recorte.style.visibility = aceso ? 'visible' : 'hidden'
 }
 
-/* ===== a lua de verdade ===== */
-const gl = temWebGL() ? criarRenderizador(canvas) : null
-rodape.classList.toggle('r-gl', gl !== null)
-if (gl === null) canvas.remove()
-const tomDaHora = ((): number => {
-  const h = new Date().getHours()
-  return h >= 10 && h < 15 ? 0 : h >= 15 && h < 18 ? 1 : 2
-})()
-/** A lua dentro do canvas (px de CSS), com folga em volta para o halo. */
-let luaNoCanvas = { cx: 0, cy: 0, r: 0 }
-function colocar(): void {
-  if (gl === null) return
-  const b = referencia.getBoundingClientRect()
-  const c = cena.getBoundingClientRect()
-  const folga = Math.round(b.width * 0.19)
-  canvas.style.left = `${(b.left - c.left - folga).toFixed(1)}px`
-  canvas.style.top = `${(b.top - c.top - folga).toFixed(1)}px`
-  canvas.style.width = `${(b.width + 2 * folga).toFixed(1)}px`
-  canvas.style.height = `${(b.height + 2 * folga).toFixed(1)}px`
-  luaNoCanvas = { cx: folga + b.width / 2, cy: folga + b.height / 2, r: b.width / 2 }
-  gl.medir()
-}
-let ultimoQuadro = ''
-/** A lua cheia, e a sombra da Terra que entra pelo canto de baixo à direita (ec de 0 a 1). */
-function pintarLua(ec: number, forcar = false): void {
-  if (gl === null) return
-  const chave = `${ec.toFixed(4)}|${luaNoCanvas.r.toFixed(1)}`
-  if (!forcar && chave === ultimoQuadro) return
-  ultimoQuadro = chave
-  const s = 1.7 * (1 - ec)
-  gl.desenhar([{ ...luaNoCanvas, theta: 9, phi: 20, halo: 0.9, aro: 0.6, expo: 1.35, sombra: [s, s, 1.04, 1], tom: TONS_DA_LUA[tomDaHora] }])
-}
+let celular = innerWidth < 860
 
 function pintar(q: number): void {
   const vis = sai(r(q, 0.12, 0.4))
   opacidade(ceu, vis)
-  if (gl !== null) opacidade(canvas, vis)
-  // a lua cheia aparece inteira; no último terço a sombra da Terra a cobre: eclipse
-  const ec = lua(r(q, 0.58, 0.32))
-  const o = 52 * (1 - ec)
-  atributo(disco, 'transform', `translate(${o.toFixed(2)} ${o.toFixed(2)})`)
-  pintarLua(ec)
-  // a palavra nasce de dentro da sombra, só depois de ela cobrir o meio do disco
-  const ep = sai(limitar((ec - 0.78) / 0.22))
-  opacidade(palavra, ep)
-  atributo(palavra, 'transform', `translate(0 ${((1 - ep) * 26).toFixed(1)})`)
-  const ane = sai(r(q, 0.86, 0.14))
-  opacidade(anel, ane * 0.92)
-  opacidade(coroa, ane)
-  opacidade(halo, 1 - 0.6 * ec)
-  const partes: [HTMLElement, number, number][] = [
-    [frase, 0.66, 14],
-    [acoes, 0.74, 10],
-    [links, 0.82, 6],
-    [fim, 0.86, 6],
-  ]
-  for (const [el, a, y] of partes) {
-    const e = sai(r(q, a, 0.14))
-    opacidade(el, e)
-    transformar(el, `translateY(${((1 - e) * y).toFixed(2)}px)`)
-  }
+  opacidade(luzG, vis)
+  opacidade(palavra, vis)
+  opacidade(recorte, vis)
+  // a lua começa cheia e a sombra preenche o disco inteiro (ec -> 1, eclipse total) no fim da página
+  const ec = curvaDaLua(r(q, 0.35, 0.55))
+  sombra(ec)
+  opacidade(lua.halo, 1 - 0.85 * ec)
+  opacidade(lua.brilho, 1 - 0.75 * ec)
+  // no celular, sem o anel de fora nem a coroa (v3, C1): só o aro fino a 35 %
+  const ane = celular ? 0 : sai(r(q, 0.8, 0.2))
+  opacidade(lua.anel, ane * 0.5)
+  opacidade(lua.coroa, ane * 0.6)
+  opacidade(lua.aro, celular ? 0.35 : 0.55)
+  // a frase, o botão e os links entram juntos por CSS (.r-visto), uma vez por cruzamento do limiar: no celular a
+  // 0,35 da cortina, no computador a 0,4 (o CSS escalona frase, botão e links em 60 ms)
+  visto(solto || q >= (celular ? 0.35 : 0.4))
+}
+
+let vistoAgora = false
+function visto(sim: boolean): void {
+  if (sim === vistoAgora) return
+  vistoAgora = sim
+  rodape.classList.toggle('r-visto', sim)
 }
 
 /**
- * A palavra cabe inteira dentro do disco: o anel nunca cruza as letras. No celular a cena é recortada
- * para a lua ocupar a largura, e a palavra fica do tamanho que a tela permite.
+ * A composição: a lua no meio da cena e a palavra atravessando-a, mais larga que o disco (o anel passa por trás
+ * das letras, acima e abaixo). No celular a cena é recortada para a lua ocupar a largura.
  */
 function caber(): void {
-  svg.setAttribute('viewBox', innerWidth < 860 ? '250 0 500 560' : '0 0 1000 560')
+  celular = innerWidth < 860
+  svg.setAttribute('viewBox', celular ? '250 0 500 560' : '0 0 1000 560')
+  // a lua com pelo menos 0,8 da largura da palavra (v3, C1): computador 500/620, celular 410/468
+  const R = celular ? 205 : 250
+  const W = celular ? 468 : 620
+  colocar(lua, 500, 280, R, 0)
+  const quadro = `translate(500 280) scale(${R})`
+  luzG.setAttribute('transform', quadro)
+  recorteDaLuz.setAttribute('transform', quadro)
   palavra.style.fontSize = '172px'
   const b = palavra.getBBox()
-  const meia = Math.hypot(b.width / 2, b.height / 2)
-  const f = (172 * 236) / meia
+  const f = (172 * W) / Math.max(1, b.width)
   palavra.style.fontSize = `${f.toFixed(1)}px`
+  recorte.style.fontSize = palavra.style.fontSize
+  // o vão escuro em volta das letras, que interrompe o anel
+  palavra.setAttribute('stroke-width', (f * 0.03).toFixed(1))
   const b2 = palavra.getBBox()
-  palavra.setAttribute('y', (338 + (280 - (b2.y + b2.height * 0.53))).toFixed(1))
-  colocar()
+  const y = (Number(palavra.getAttribute('y')) + (280 - (b2.y + b2.height / 2))).toFixed(1)
+  palavra.setAttribute('y', y)
+  recorte.setAttribute('y', y)
 }
 
 function progresso(): number {
+  if (solto) {
+    // solto (v3): o rodapé rola como um bloco; a lua anda pela posição da própria cena na janela, e chega ao fim
+    // (o crescente de ECLIPSE_FINAL) antes do pé da página
+    const c = cena.getBoundingClientRect()
+    return limitar((innerHeight - c.top) / (c.height + innerHeight * 0.3))
+  }
   const b = vao.getBoundingClientRect()
   return limitar(1 - b.top / b.height)
 }
@@ -130,10 +128,8 @@ function soltar(): void {
   solto = rodape.scrollHeight > rodape.clientHeight + 1
   rodape.classList.toggle('r-solto', solto)
   vao.classList.toggle('r-solto', solto)
-  if (solto) {
-    colocar()
-    pintar(1)
-  }
+  rodape.classList.add('r-decidido')
+  if (solto) pintar(reduzido ? 1 : progresso())
 }
 
 let perto = false
@@ -141,7 +137,7 @@ let q = 0
 const pede = porQuadro(() => pintar(q))
 const aoRolar = (): void => {
   if (!perto) return
-  q = solto ? 1 : progresso()
+  q = progresso()
   pede()
 }
 
@@ -150,26 +146,24 @@ soltar()
 void document.fonts.ready.then(() => {
   caber()
   soltar()
-  if (reduzido || solto) pintar(1)
+  if (reduzido) pintar(1)
 })
-if (gl !== null) {
-  // as texturas chegam depois: o quadro atual é refeito com as crateras
-  void gl.pronto.then(() => pintarLua(reduzido || solto ? 1 : lua(r(q, 0.58, 0.32)), true))
-}
 addEventListener(
   'resize',
   porQuadro(() => {
     caber()
     soltar()
-    ultimoQuadro = ''
-    if (!reduzido) pintar(solto ? 1 : progresso())
+    if (!reduzido) pintar(progresso())
     else pintar(1)
   }),
 )
 
 if (reduzido) pintar(1)
 else {
-  // a rolagem só é ouvida com o rodapé a menos de uma tela de distância
+  // a rolagem só é ouvida com o rodapé a menos de uma tela de distância. Esconder o rodapé fixo enquanto está
+  // longe (visibility: hidden) foi tentado e desfeito: a pintura dele passava a acontecer no meio da rolagem,
+  // num quadro só de 160 a 230 ms no celular (CPU 4x); pintado uma vez no carregamento, ele fica em cache no
+  // compositor e custa quase nada por quadro.
   new IntersectionObserver(
     (entradas) => {
       perto = entradas.some((e) => e.isIntersecting)
@@ -178,7 +172,7 @@ else {
     { rootMargin: '100% 0px' },
   ).observe(vao)
   addEventListener('scroll', aoRolar, { passive: true })
-  pintar(solto ? 1 : progresso())
+  pintar(progresso())
   // o foco pelo teclado num link do rodapé traz a cortina inteira
   rodape.addEventListener('focusin', () => {
     if (!solto && progresso() < 0.999) scrollTo({ top: document.documentElement.scrollHeight, behavior: 'auto' })

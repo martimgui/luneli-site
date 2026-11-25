@@ -1,4 +1,14 @@
 ---
-import EmPreparacao from "../componentes/EmPreparacao.astro"
+import EmPreparacao from '../componentes/EmPreparacao.astro'
 ---
-<EmPreparacao titulo="Privacidade" />
+<EmPreparacao
+  titulo="Privacidade"
+  descricao="A política de privacidade do Luneli está em preparação e passa por um jurídico antes do lançamento."
+  lead="A política de privacidade passa por um jurídico antes do lançamento e entra nesta página. O que já vale hoje, no sistema: os dados são do restaurante, a exportação sai quando você pedir, e os dados de um cliente são apagados a pedido dele."
+  pontos={[
+    { titulo: 'Quais dados o sistema guarda', texto: 'Pedidos, clientes e endereços, funcionários e o movimento do caixa: para que servem e por quanto tempo ficam.' },
+    { titulo: 'Quem acessa o quê', texto: 'Cada pessoa do restaurante vê só o que o dono liberou; a equipe da Luneli acessa o que a operação do serviço pede.' },
+    { titulo: 'Exportar e apagar', texto: 'Como pedir a cópia de tudo e como atender o pedido de um cliente para apagar os dados dele.' },
+  ]}
+  nota="A página de contrato de dados (LGPD) traz o lado do operador: o que a Luneli faz com os dados do seu restaurante."
+/>

@@ -1,0 +1,64 @@
+---
+/**
+ * 3b. A noite inteira, num sistema só: um respiro depois da história. A lua nasce à esquerda, cruza o céu e se
+ * põe à direita, do turno aberto ao caixa fechado; em cada nó só a hora e uma palavra, e uma linha com o texto
+ * da etapa que a lua alcançou (scripts/vitrine/noite.ts, ligado à rolagem; com movimento reduzido ou sem script,
+ * tudo aceso e a última etapa na linha). Horas, nomes e valores são os mesmos das telas da história. No celular,
+ * o mesmo arco compacto na largura toda, só com as horas. É a noite do plano Delivery completo (cozinha na tela
+ * e entregador no celular), e o texto diz isso.
+ */
+const EVENTOS = [
+  { hora: '18:00', onde: 'Caixa', texto: 'Ana abre o turno com o troco inicial. O sistema passa a esperar dinheiro, Pix e cartão em separado.' },
+  { hora: '20:58', onde: 'Pedido', texto: 'O 248 entra pelo teclado: Marina, meio a meio grande, Pix. O pedido aparece na tela da pizzaria.' },
+  { hora: '21:04', onde: 'Pizzaria', texto: 'A cozinha marca pronto com um Enter. Na expedição, o pedido aparece em Pronto na hora.' },
+  { hora: '21:05', onde: 'Expedição', texto: 'Saiu com o Diego. O endereço, o telefone e o valor já estão no celular dele.' },
+  { hora: '21:29', onde: 'Entrega', texto: 'Diego cobra R$ 80,00 no Pix e marca Entregue. O pedido sai da rua e vai para os pedidos do dia.' },
+  { hora: '23:40', onde: 'Fechamento', texto: 'Dinheiro, Pix e cartão conferem com o que o sistema esperava. Caixa fechado.' },
+]
+const N = EVENTOS.length
+// o arco: um só caminho, da esquerda para a direita; os nós ficam nos centros das seis colunas de texto
+const X0 = 1000 / N / 2
+const X1 = 1000 - X0
+const ponto = (t: number): { x: number; y: number } => ({ x: X0 + (X1 - X0) * t, y: (1 - t) ** 2 * 270 + 2 * (1 - t) * t * -100 + t * t * 270 })
+const ARCO = `M${X0} 270 Q 500 -100 ${X1} 270`
+---
+<section class="secao noite-inteira" id="noiteInteira" aria-labelledby="nTit">
+  <div class="sec-cab">
+    <h2 class="serifa revela" id="nTit">Uma noite inteira, num sistema só.</h2>
+    <div class="revela" style="--i:1">
+      <p>Cada etapa fala com a seguinte: o pedido que entra no caixa aparece na cozinha, na expedição, no celular do entregador e no fechamento, sem redigitar e sem bilhete.</p>
+      <p class="n-plano">Nesta noite: plano Delivery completo.</p>
+    </div>
+  </div>
+  <div class="ceu-noite" id="nCeu">
+    <svg class="arco" viewBox="0 0 1000 300" aria-hidden="true">
+      <defs>
+        <radialGradient id="nHalo"><stop offset="0" stop-color="#F2B66B" stop-opacity=".35" /><stop offset=".5" stop-color="#E89B32" stop-opacity=".12" /><stop offset="1" stop-color="#E89B32" stop-opacity="0" /></radialGradient>
+      </defs>
+      <path class="arco-fundo" d={ARCO} fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.2" />
+      <path class="arco-aceso" id="nArcoAceso" pathLength="1000" d={ARCO} fill="none" stroke="#F2B66B" stroke-width="1.6" />
+      {EVENTOS.map((_, i) => {
+        const p = ponto(i / (N - 1))
+        return <circle class="no" cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="5" vector-effect="non-scaling-stroke" />
+      })}
+      <g id="nLua" class="n-lua" transform={`translate(${ponto(1).x.toFixed(1)} ${ponto(1).y.toFixed(1)})`}>
+        <g class="n-lua-corpo">
+          <circle r="34" fill="url(#nHalo)" />
+          <circle r="13" fill="#1B1B1B" />
+          <path id="nFase" d="M0 -1A1 1 0 1 1 0 1A1 1 0 1 1 0 -1Z" fill="#F7D39C" transform="rotate(180) scale(13)" />
+          <circle r="13" fill="none" stroke="rgba(242,182,107,.45)" stroke-width="1" vector-effect="non-scaling-stroke" />
+        </g>
+      </g>
+    </svg>
+    <ol class="noite-eventos" aria-label="As seis etapas da noite">
+      {EVENTOS.map((evento, i) => (
+        <li class:list={['n-ev', { ativo: i === N - 1 }]} style={`--i:${i}`} data-texto={evento.texto}>
+          <time class="n-hora" datetime={evento.hora}>{evento.hora}</time>
+          <b class="n-onde">{evento.onde}</b>
+          <span class="so-leitor">: {evento.texto}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="n-linha" aria-hidden="true"><span id="nLinhaTexto">{EVENTOS[N - 1]!.texto}</span></p>
+  </div>
+</section>

@@ -1,0 +1,27 @@
+---
+/**
+ * 1b. A faixa de dores, logo depois da abertura: três coisas que dão errado numa noite cheia e o que o Luneli
+ * faz com cada uma. Cada função está conferida no documento de promessas (cliente pelo telefone com o endereço
+ * salvo; cada cozinha recebe só o que é dela, na tela da cozinha do Delivery completo ou no papel quando o
+ * programa da impressora sair; o esperado por forma de pagamento e a diferença na hora).
+ * Visual quieto (v3): a dor na serifa, a resposta embaixo ou ao lado, sobre fios; sem setas, sem cartões.
+ */
+const DORES = [
+  { dor: 'Endereço redigitado errado.', solucao: 'O cliente aparece pelo telefone, com o endereço salvo.' },
+  { dor: 'Pizza esquecida porque a comanda foi para o lugar errado.', solucao: 'Cada cozinha recebe só o que é dela: na tela da cozinha (Delivery completo) ou no papel (em breve).' },
+  { dor: 'Caixa que não bate no fim da noite.', solucao: 'O esperado por forma de pagamento, e a diferença na hora.' },
+]
+---
+<section class="dores" id="dores" aria-labelledby="doTit">
+  <div class="do-in">
+    <h2 class="revela" id="doTit">O que dá errado numa noite cheia, o Luneli amarra.</h2>
+    <ul class="do-lista">
+      {DORES.map((item, i) => (
+        <li class="revela" style={`--i:${i + 1}`}>
+          <span class="do-dor">{item.dor}</span>
+          <span class="do-sol">{item.solucao}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

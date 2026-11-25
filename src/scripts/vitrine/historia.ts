@@ -1,73 +1,120 @@
 // A história fixa: a tela do Luneli fica parada enquanto o texto avança em quatro passos, e a tela muda
-// junto, ligada à rolagem (não ao relógio). Também: a lua da passagem, a barra de etapas, a profundidade
-// das molduras ao entrar (uma vez) e o "Ver o produto". Com movimento reduzido, cada tela fica no estado parado.
+// junto, ligada à rolagem (não ao relógio). Também: o trilho que liga os passos na coluna do texto (acende
+// conforme a rolagem), o rastro do pedido 248 sob o palco, a profundidade das molduras ao entrar (uma vez), a
+// escala das cópias do tablet e o "Ver o produto". Com movimento reduzido, cada tela fica no estado parado.
 //
-// O palco (as quatro telas) vive num <template> e só é clonado no computador: no celular cada passo já
-// traz a sua tela, e nada do palco é montado nem calculado. A rolagem só trabalha com a seção perto da janela.
+// O palco (as quatro telas) vive num <template> e só é clonado no computador: no celular e no tablet cada passo
+// já traz a sua tela, e nada do palco é montado nem calculado. A rolagem só trabalha com a seção perto da janela,
+// e por quadro só a tela atual é atualizada (as vizinhas, só quando o passo muda).
 import { $, $$, limitar, porQuadro, semMovimento } from './comum'
-import { aplicar, estatico } from './telas'
+import { aplicar, estatico, preparar } from './telas'
+import type { Tela } from './telas'
 
 const reduzido = semMovimento()
-const movel = matchMedia('(max-width: 859px)')
+// até 1149 px a história empilha (CSS): nada do palco é montado nem calculado
+const movel = matchMedia('(max-width: 1149px)')
+// no tablet as cópias ficam no desenho do computador, encolhidas até a largura da coluna (--escala)
+const tablet = matchMedia('(max-width: 1149px) and (min-width: 700px)')
+// no celular cada cópia é recortada no trecho que o passo explica, medido pelo elemento (v3, B1 e B5)
+const celular = matchMedia('(max-width: 699px)')
 const caps = $$('.cap')
-const etapas = $$<HTMLButtonElement>('.etapa')
+const nos = caps.map((c) => c.querySelector<HTMLElement>('.onde .no'))
 const historia = $('#historia')
+const coluna = $('#caps')
 const mHist = $('#mHist')
 const fixo = $('#fixo')
 const passagem = $('#produto')
-const plDisco = $<SVGCircleElement>('#plDisco')
-const plHalo = $<SVGCircleElement>('#plHaloC')
-let telas: HTMLElement[] = []
+const rastroTexto = $('#rastroTexto')
+const rastroFz = $$('.rastro-fz')
+const rastroPlano = $('#rastroPlano')
+let telas: Tela[] = []
 let atual = -1
 let perto = true
+/** O centro de cada nó do trilho, medido a partir do topo da coluna do texto. */
+let nosY: number[] = []
+let ultimoAvanco = ''
+let ultimoRastro = ''
 
 /** No computador, o palco sai do <template> para dentro da moldura, uma vez. */
 function montarPalco(): void {
   if (telas.length > 0 || movel.matches) return
   const molde = document.getElementById('tplPalco')
   if (!(molde instanceof HTMLTemplateElement)) return
-  $('.vidro', mHist).append(molde.content.cloneNode(true))
-  telas = $$('#mHist .pdv')
+  // as telas vivem num invólucro que encolhe junto quando o palco é mais estreito que o desenho (--escala)
+  const escala = document.createElement('div')
+  escala.className = 'palco-escala'
+  escala.append(molde.content.cloneNode(true))
+  $('.vidro', mHist).append(escala)
+  telas = $$('#mHist .pdv').map(preparar)
   atual = -1
 }
 
-/** A altura do palco e a posição em que ele fica preso: centrado na janela, com folga para a barra de etapas. */
+/** A altura do palco e a posição em que ele fica preso: centrado na janela, com folga para o rastro. */
 function medir(): void {
+  if (tablet.matches) {
+    const w = caps[0]?.querySelector<HTMLElement>('.cap-tela')?.clientWidth ?? 0
+    if (w) coluna.style.setProperty('--escala', Math.min(1, w / 820).toFixed(4))
+  }
   if (movel.matches) return
   const vh = innerHeight
   const w = mHist.clientWidth
   if (!w) return
-  const alt = Math.round(limitar(w * 0.66, 440, Math.max(440, vh - 130)))
+  const alt = Math.round(limitar(w * 0.66, 440, Math.max(440, vh - 120)))
   mHist.style.setProperty('--alturaTela', `${alt}px`)
-  fixo.style.setProperty('--fixoTop', `${Math.max(20, Math.round((vh - alt - 50) / 2))}px`)
+  // as telas são desenhadas com pelo menos 820 px (o desenho de computador; a regra empilhada vale até 790) e encolhem até caber no palco
+  mHist.style.setProperty('--escala', Math.min(1, w / 820).toFixed(4))
+  fixo.style.setProperty('--fixoTop', `${Math.max(20, Math.round((vh - alt - 40) / 2))}px`)
 }
 
-/** A lua da passagem (SVG, sem WebGL) vai de nova a crescente conforme a seção chega. Com WebGL a lua de verdade pousa aqui (abertura.ts). */
-const luaGl = document.documentElement.classList.contains('lua-real')
-function luaDaPassagem(vh: number, topo: number): void {
-  if (luaGl) return
-  const e = reduzido ? 1 : limitar((vh - topo) / (vh * 0.75))
-  plDisco.setAttribute('transform', `translate(${(-22 * e).toFixed(2)} 0)`)
-  plHalo.style.opacity = e.toFixed(3)
+/**
+ * O recorte das cópias do celular: do topo do elemento `data-recorte-de` ao pé do mais baixo de
+ * `data-recorte-ate`, com 12 px de folga em cima e 24 embaixo. Escreve --recorte (a margem negativa da tela) e
+ * --recorte-alt (a altura da moldura). Fora do celular, ou sem os atributos, vale o CSS (75 svh e o px fixo).
+ */
+function medirRecortes(): void {
+  for (const tela of $$('.cap-tela')) {
+    const de = tela.dataset.recorteDe
+    const ate = tela.dataset.recorteAte
+    if (!celular.matches || !de || !ate) {
+      tela.style.setProperty('--recorte-alt', '')
+      continue
+    }
+    const pdv = tela.querySelector<HTMLElement>('.moldura.recorta .pdv')
+    const alvo = pdv?.querySelector<HTMLElement>(de)
+    const fins = pdv ? [...pdv.querySelectorAll<HTMLElement>(ate)] : []
+    if (!pdv || !alvo || fins.length === 0) continue
+    const topo = pdv.getBoundingClientRect().top
+    const inicio = Math.max(0, alvo.getBoundingClientRect().top - topo - 12)
+    const fim = Math.max(...fins.map((el) => el.getBoundingClientRect().bottom - topo)) + 24
+    tela.style.setProperty('--recorte', `${Math.round(inicio)}px`)
+    tela.style.setProperty('--recorte-alt', `${Math.round(fim - inicio)}px`)
+  }
+}
+
+/** Onde ficam os nós do trilho (o ícone de fase de cada passo): o trilho vai do primeiro ao último. */
+function medirTrilho(): void {
+  const topo = coluna.getBoundingClientRect().top
+  nosY = nos.map((n) => (n ? n.getBoundingClientRect().top + n.offsetHeight / 2 - topo : 0))
+  if (nosY.length < 2) return
+  coluna.style.setProperty('--trilho-topo', `${Math.round(nosY[0]!)}px`)
+  coluna.style.setProperty('--trilho-alt', `${Math.round(nosY[nosY.length - 1]! - nosY[0]!)}px`)
 }
 
 /** O que a rolagem lê, no evento (com o layout limpo); as escritas ficam para o quadro. */
 interface Leitura {
   vh: number
-  topoDaPassagem: number
   topos: DOMRect[]
 }
 let leitura: Leitura | null = null
 function ler(): void {
-  leitura = { vh: innerHeight, topoDaPassagem: passagem.getBoundingClientRect().top, topos: caps.map((c) => c.getBoundingClientRect()) }
+  leitura = { vh: innerHeight, topos: caps.map((c) => c.getBoundingClientRect()) }
 }
 
 function rolar(): void {
   if (leitura === null) ler()
-  const { vh, topoDaPassagem, topos } = leitura!
+  const { vh, topos } = leitura!
   leitura = null
   const linha = vh * 0.55
-  luaDaPassagem(vh, topoDaPassagem)
   if (movel.matches || telas.length === 0) return
   let i = 0
   topos.forEach((r, j) => {
@@ -77,39 +124,42 @@ function rolar(): void {
   const p = limitar((linha - r.top) / (r.height * 0.78))
   if (i !== atual) {
     atual = i
-    telas.forEach((t, j) => t.classList.toggle('vista', j === i))
+    telas.forEach((t, j) => {
+      // a tela de agora entra pela direita; as que já passaram saem pela esquerda
+      t.raiz.classList.toggle('vista', j === i)
+      t.raiz.classList.toggle('antes', j < i)
+      // as telas que já passaram ficam no fim; as próximas, no começo (só quando o passo muda)
+      if (j < i) aplicar(t, 1)
+      else if (j > i) aplicar(t, 0)
+    })
     caps.forEach((c, j) => c.classList.toggle('ativo', j === i))
   }
   const tela = telas[i]!
-  aplicar(tela, reduzido ? estatico(tela) : p)
-  // as telas que já passaram ficam no fim; as próximas, no começo
-  telas.forEach((t, j) => {
-    if (j < i) aplicar(t, 1)
-    else if (j > i) aplicar(t, 0)
-  })
-  etapas.forEach((e, j) => {
-    e.classList.toggle('feita', j < i)
-    e.classList.toggle('agora', j === i)
-    if (j === i) e.setAttribute('aria-current', 'step')
-    else e.removeAttribute('aria-current')
-    const barra = e.querySelector<HTMLElement>('.tr i')
-    if (barra) barra.style.transform = `scaleX(${j < i ? 1 : j === i ? (reduzido ? 0 : p).toFixed(3) : 0})`
-  })
-}
-
-etapas.forEach((botao, j) =>
-  botao.addEventListener('click', () => {
-    const c = caps[j]!
-    const top = c.getBoundingClientRect().top + scrollY
-    scrollTo({ top: Math.round(top - innerHeight * 0.55 + c.offsetHeight * 0.62), behavior: reduzido ? 'auto' : 'smooth' })
-    // o leitor de tela e o teclado seguem para o título do passo
-    const titulo = c.querySelector<HTMLElement>('h3')
-    if (titulo) {
-      titulo.tabIndex = -1
-      titulo.focus({ preventScroll: true })
+  const instante = reduzido ? estatico(tela.raiz) : p
+  aplicar(tela, instante)
+  // o trilho acende até o nó do passo atual e avança com a rolagem rumo ao seguinte
+  if (nosY.length === caps.length && nosY.length > 1) {
+    const total = Math.max(1, nosY[nosY.length - 1]! - nosY[0]!)
+    const seguinte = nosY[Math.min(i + 1, nosY.length - 1)]!
+    const y = nosY[i]! + (seguinte - nosY[i]!) * (i < nosY.length - 1 ? (reduzido ? 0 : p) : 0)
+    const avanco = limitar((y - nosY[0]!) / total).toFixed(3)
+    if (avanco !== ultimoAvanco) {
+      ultimoAvanco = avanco
+      coluna.style.setProperty('--avanco', avanco)
     }
-  }),
-)
+  }
+  // o rastro do pedido 248 sob o palco: onde ele está neste passo, antes e depois do momento-chave
+  const cap = caps[i]!
+  const em = Number(cap.dataset.rastroEm ?? 1)
+  const texto = (instante >= em ? cap.dataset.rastroDepois : cap.dataset.rastroAntes) ?? ''
+  if (texto !== ultimoRastro) {
+    ultimoRastro = texto
+    rastroTexto.textContent = texto
+    rastroFz.forEach((f, j) => f.classList.toggle('on', j === i))
+  }
+  const plano = cap.dataset.plano ?? ''
+  if (rastroPlano.textContent !== plano) rastroPlano.textContent = plano
+}
 
 const pede = porQuadro(rolar)
 const aoRolar = (): void => {
@@ -133,15 +183,21 @@ addEventListener(
   porQuadro(() => {
     montarPalco()
     medir()
+    medirRecortes()
+    medirTrilho()
     rolar()
   }),
 )
 void document.fonts.ready.then(() => {
   medir()
+  medirRecortes()
+  medirTrilho()
   rolar()
 })
 montarPalco()
 medir()
+medirRecortes()
+medirTrilho()
 rolar()
 
 /* profundidade ao entrar: a tela sai de 0,96 e a luz da borda acende, uma vez */

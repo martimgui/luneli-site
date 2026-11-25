@@ -1,50 +1,41 @@
 ---
 /**
- * O rodapé da página de início: a folha sobe como uma cortina, a lua cheia de verdade aparece inteira e a sombra
- * da Terra a cobre (eclipse), deixando o anel e "Luneli" dentro dele.
- * Tudo ligado à rolagem (scripts/vitrine/rodape.ts), só transform e opacidade; com movimento reduzido vira um
- * bloco normal. Com WebGL a lua é desenhada no canvas (scripts/vitrine/lua.ts); sem WebGL, o grupo #rLuaCss do
- * SVG mostra a imagem da lua cheia com o disco escuro deslizando por cima.
+ * O rodapé da página de início: a folha sobe como uma cortina e mostra a lua cheia com "Luneli" atravessando-a,
+ * uma peça só: as letras são recortadas da luz (escuras sobre a lua, brancas fora dela) e, conforme a sombra da
+ * Terra cobre a lua, ficam brancas por onde ela passa. O eclipse para antes do fim (ECLIPSE_FINAL em
+ * scripts/vitrine/rodape.ts): no repouso sobra um crescente de luz que continua recortando o nome.
+ * Tudo ligado à rolagem (scripts/vitrine/rodape.ts), que desenha a lua (scripts/vitrine/lua.ts) e dá o tamanho
+ * da palavra; com movimento reduzido vira um bloco normal, já no fim. Sem script, fica a palavra sobre o anel.
  */
 import { LINKS_DO_RODAPE as LINKS } from '../lib/links-do-rodape'
 ---
 <div class="r-vao" id="rVao">
   <footer class="rodape" id="rodape" aria-label="Rodapé da Luneli">
     <div class="r-cham">
-      <h2 class="serifa" id="rFrase">Casa cheia, conta certa.</h2>
+      <h2 class="serifa" id="rFrase">Casa cheia, conta conferida.</h2>
+      <p class="r-sub" id="rSub">O primeiro mês não é cobrado e não pede cartão. Crie a conta e veja o pedido andar na sua casa.</p>
       <div class="r-acoes" id="rAcoes">
-        <a class="btn um" href="/testar-gratis">Testar grátis</a>
+        <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+        <a class="r-planos" href="/planos/">ou veja os planos</a>
       </div>
     </div>
     <div class="r-cena">
-      <canvas class="r-lua" id="rLua" aria-hidden="true"></canvas>
       <svg class="r-svg" id="rSvg" viewBox="0 0 1000 560" aria-hidden="true">
         <defs>
-          <linearGradient id="rgTxt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C0CB"/><stop offset=".55" stop-color="#7D8592"/><stop offset="1" stop-color="#3E434C"/></linearGradient>
-          <radialGradient id="rgDisco"><stop offset="0" stop-color="#181A20"/><stop offset=".9" stop-color="#15171C"/><stop offset="1" stop-color="#131519"/></radialGradient>
-          <radialGradient id="rgHalo"><stop offset="0" stop-color="#D6DEEC" stop-opacity=".10"/><stop offset=".45" stop-color="#D6DEEC" stop-opacity=".035"/><stop offset="1" stop-color="#D6DEEC" stop-opacity="0"/></radialGradient>
-          <clipPath id="rcLua"><circle cx="500" cy="280" r="270"/></clipPath>
+          <clipPath id="rcLuz"><path id="rcCaminho" d=""/></clipPath>
         </defs>
-        <g id="rCeu">
-          <g id="rLuaCss">
-            <circle id="rHalo" cx="500" cy="280" r="560" fill="url(#rgHalo)"/>
-            <g clip-path="url(#rcLua)">
-              <image href="/lua/cheia.webp" x="230" y="10" width="540" height="540" opacity=".9"/>
-              <circle id="rDisco" cx="500" cy="280" r="278" fill="url(#rgDisco)"/>
-            </g>
-          </g>
-          <circle id="rLuaRef" cx="500" cy="280" r="270" fill="none" stroke="rgba(220,227,238,.10)" stroke-width="1"/>
-          <circle id="rCoroa" cx="500" cy="280" r="275" fill="none" stroke="rgba(236,240,246,.10)" stroke-width="7"/>
-          <circle id="rAnel" cx="500" cy="280" r="270.5" fill="none" stroke="rgba(242,244,248,.92)" stroke-width="1.6"/>
-        </g>
-        <text class="r-palavra" id="rPalavra" x="500" y="338" text-anchor="middle" fill="url(#rgTxt)">Luneli</text>
+        <g id="rCeu"></g>
+        <circle class="r-semjs" cx="500" cy="280" r="250" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"/>
+        <text class="r-palavra" id="rPalavra" x="500" y="338" text-anchor="middle">Luneli</text>
+        <g id="rLuz"></g>
+        <text class="r-palavra r-recorte" id="rRecorte" x="500" y="338" text-anchor="middle" clip-path="url(#rcLuz)" visibility="hidden">Luneli</text>
       </svg>
     </div>
     <div class="r-pe" id="rPe">
       <nav aria-label="Rodapé">
         <ul class="r-links">{LINKS.map((item) => <li><a href={item.href}>{item.texto}</a></li>)}</ul>
       </nav>
-      <div class="r-fim" id="rFim"><span>© 2026 Luneli · Preços e limites de exemplo, ainda em definição.</span><a class="r-topo" href="#conteudo" id="rTopo">Voltar ao topo</a></div>
+      <div class="r-fim" id="rFim"><span>© 2026 Luneli · Preços em definição. Nada é cobrado nesta versão.</span><a class="r-topo" href="#conteudo" id="rTopo">Voltar ao topo</a></div>
     </div>
   </footer>
 </div>

@@ -1,12 +1,14 @@
 ---
-import Base from '../layouts/Base.astro'
+import EmPreparacao from '../componentes/EmPreparacao.astro'
 ---
-<Base titulo="Situação do sistema | Luneli">
-  <section class="pagina estreita" aria-labelledby="h-pagina">
-    <div class="in">
-      <h1 id="h-pagina">Situação do sistema</h1>
-      <p class="lead">A página que mostra se o sistema está funcionando fica fora do servidor principal, para continuar no ar mesmo quando ele cai.</p>
-      <p class="preparo">Ela ainda não está no ar.</p>
-    </div>
-  </section>
-</Base>
+<EmPreparacao
+  titulo="Situação do sistema"
+  descricao="A página pública de situação do Luneli ainda não está no ar."
+  lead="A página que mostra se o sistema está funcionando fica fora do servidor principal, para continuar no ar mesmo quando ele cai. Ela ainda não está no ar."
+  situacao="Ainda não está no ar"
+  tituloDosPontos="O que já vale hoje"
+  pontos={[
+    { titulo: 'Aviso dentro do sistema', texto: 'Quando a equipe da Luneli registra uma instabilidade, o aviso aparece numa faixa no alto do sistema aberto no navegador.' },
+    { titulo: 'Esta página, depois', texto: 'Vai mostrar o estado de cada parte (sistema, e-mails, entregador) e o histórico das últimas ocorrências.' },
+  ]}
+/>

@@ -1,11 +1,14 @@
 ---
-import Base from '../layouts/Base.astro'
+import EmPreparacao from '../componentes/EmPreparacao.astro'
 ---
-<Base titulo="Contato | Luneli">
-  <section class="pagina estreita" aria-labelledby="h-pagina">
-    <div class="in">
-      <h1 id="h-pagina">Contato</h1>
-      <p class="preparo">O contato será publicado no lançamento.</p>
-    </div>
-  </section>
-</Base>
+<EmPreparacao
+  titulo="Contato"
+  descricao="Os canais de atendimento do Luneli entram nesta página no lançamento."
+  lead="Os canais de atendimento entram nesta página no lançamento. Até lá, as respostas para o que mais se pergunta antes de testar estão em Perguntas frequentes, e o teste grátis não depende de falar com ninguém."
+  situacao="No lançamento"
+  tituloDosPontos="O que vai estar aqui"
+  pontos={[
+    { titulo: 'Atendimento ao restaurante', texto: 'Por onde falar com a Luneli para tirar dúvida, pedir ajuda na implantação ou avisar de um problema.' },
+    { titulo: 'Horário de atendimento', texto: 'Definido antes do lançamento.' },
+  ]}
+/>

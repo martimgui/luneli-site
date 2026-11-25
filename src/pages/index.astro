@@ -3,32 +3,39 @@ import '../estilos/inicio.css'
 import '../estilos/telas.css'
 import Base from '../layouts/Base.astro'
 import Abertura from '../componentes/inicio/Abertura.astro'
+import Dores from '../componentes/inicio/Dores.astro'
 import Passagem from '../componentes/inicio/Passagem.astro'
 import Historia from '../componentes/inicio/Historia.astro'
+import Noite from '../componentes/inicio/Noite.astro'
 import SecaoMesas from '../componentes/inicio/SecaoMesas.astro'
 import Dia from '../componentes/inicio/Dia.astro'
 import Mais from '../componentes/inicio/Mais.astro'
-import Precos from '../componentes/inicio/Precos.astro'
+import ParaQuem from '../componentes/inicio/ParaQuem.astro'
+import Duvidas from '../componentes/inicio/Duvidas.astro'
 ---
 <Base titulo="Luneli: sistema de caixa e gestão para restaurantes, pizzarias e delivery" inicio>
-  {/* A noite: a abertura e a passagem dividem a lua de verdade (um canvas fixo, recortado por este invólucro; scripts/vitrine/abertura.ts). */}
+  {/* A noite: a abertura, a faixa de dores e a passagem, com a lua num quadro preso à janela (position: sticky)
+      que este invólucro limita; a lua fica atrás do título e se apaga antes da passagem (scripts/vitrine/abertura.ts). */}
   <div class="noite" id="noite">
-    <canvas class="lua-gl" id="luaGl" aria-hidden="true"></canvas>
+    <div class="lua-fixa" id="luaFixa" aria-hidden="true"><canvas class="lua-gl" id="luaGl"></canvas><svg class="lua-svg" id="luaSvg"></svg></div>
     <Abertura />
+    <Dores />
     <Passagem />
   </div>
   <Historia />
+  <Noite />
   <SecaoMesas />
   <Dia />
   <Mais />
-  <Precos />
-  <script>
-    import '../scripts/vitrine/abertura'
-  </script>
-  <script>
-    import '../scripts/vitrine/historia'
-  </script>
-  <script>
-    import '../scripts/vitrine/dia'
-  </script>
+  <ParaQuem />
+  <Duvidas />
 </Base>
+
+<script>
+  import '../scripts/vitrine/abertura'
+  import '../scripts/vitrine/cabecalho'
+  import '../scripts/vitrine/historia'
+  import '../scripts/vitrine/noite'
+  import '../scripts/vitrine/dia'
+  import '../scripts/vitrine/revelar'
+</script>

@@ -1,0 +1,29 @@
+---
+/**
+ * 7. Antes de testar: as cinco dúvidas que todo dono tem, cada uma respondida em uma linha (textos conferidos
+ * no documento de promessas e no código da conta: nada é cobrado no teste; o plano é mensal e se cancela pela
+ * própria tela, em Minha conta → Cancelar). Substitui a chamada para os planos: a página termina com uma
+ * chamada só, a do rodapé. Perguntas abertas com details/summary, acessíveis sem script.
+ */
+const DUVIDAS = [
+  { p: 'Preciso de internet?', r: 'Hoje, sim: o Luneli abre no navegador. O caixa que continua vendendo sem internet está sendo feito.' },
+  { p: 'Funciona no meu computador?', r: 'Abre no navegador do computador do balcão, sem instalar nada para vender. Testamos no Google Chrome.' },
+  { p: 'E a impressora?', r: 'Cada cozinha tem a sua comanda, e você escolhe a impressora de cada uma dentro do sistema. A comanda sai pelo programa que liga o computador do balcão à impressora, que ainda está sendo preparado para baixar (em breve). Até lá, a tela da cozinha, do plano Delivery completo, mostra os pedidos sem papel.' },
+  { p: 'Quanto custa?', r: 'O preço está em definição. O primeiro mês não é cobrado e o cadastro não pede cartão.' },
+  { p: 'E se eu não gostar?', r: 'No teste nada é cobrado. Depois, o plano é mensal e você cancela pela própria tela; o acesso segue até o fim do período.' },
+]
+---
+<section class="secao duvidas" id="duvidas" aria-labelledby="duTit">
+  <div class="du-in">
+    <h2 class="serifa revela" id="duTit">Antes de testar, o que todo dono pergunta.</h2>
+    <div class="perguntas du-lista revela" style="--i:1">
+      {DUVIDAS.map((item) => (
+        <details>
+          <summary>{item.p}</summary>
+          <p>{item.r}</p>
+        </details>
+      ))}
+    </div>
+    <p class="du-mais revela" style="--i:2"><a class="ligacao" href="/perguntas/">Todas as perguntas frequentes</a></p>
+  </div>
+</section>

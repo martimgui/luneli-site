@@ -1,4 +1,14 @@
 ---
-import EmPreparacao from "../componentes/EmPreparacao.astro"
+import EmPreparacao from '../componentes/EmPreparacao.astro'
 ---
-<EmPreparacao titulo="Termos de uso" />
+<EmPreparacao
+  titulo="Termos de uso"
+  descricao="Os termos de uso do Luneli estão em preparação e passam por um jurídico antes do lançamento."
+  lead="O texto dos termos passa por um jurídico antes do lançamento e entra nesta página antes de qualquer cobrança. Enquanto isso, nada aqui vale como contrato: o teste grátis não pede cartão e nada é cobrado nesta versão."
+  pontos={[
+    { titulo: 'O que a assinatura inclui', texto: 'O que entra em cada plano, como a cobrança funciona e o que acontece quando um pagamento atrasa.' },
+    { titulo: 'Como cancelar', texto: 'O cancelamento pela própria tela, até quando o acesso continua e o que acontece com os dados depois.' },
+    { titulo: 'O que cabe a cada lado', texto: 'O que a Luneli garante, o que fica por conta do restaurante e como se resolve um problema.' },
+  ]}
+  nota="Dúvida sobre o que o sistema faz hoje? As respostas estão em Perguntas frequentes e na página de planos."
+/>

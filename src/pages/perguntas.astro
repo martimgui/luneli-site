@@ -3,23 +3,25 @@ import Base from '../layouts/Base.astro'
 
 const PERGUNTAS: { p: string; r: string }[] = [
   { p: 'Preciso de cartão para testar?', r: 'Não. O primeiro mês da conta nova não é cobrado e não pede cartão; nesse mês você escolhe o plano sem pagar nada. Nesta versão nada é cobrado: o pagamento ainda não está ligado.' },
-  { p: 'Quanto custa?', r: 'Os preços ainda estão em definição. A página de planos mostra os degraus e o que entra em cada um, com o preço marcado como "ainda não definido".' },
+  { p: 'Quanto custa?', r: 'Os preços ainda estão em definição. A página de planos mostra os quatro degraus, o que entra em cada um e o comparativo completo; o preço aparece como "em definição", e nada é cobrado nesta versão.' },
   { p: 'Tem fidelidade?', r: 'Plano mensal: você cancela pela própria tela quando quiser, e o acesso segue até o fim do período.' },
+  { p: 'E se eu não gostar?', r: 'No teste nada é cobrado. Depois, o plano é mensal e você cancela pela própria tela; o acesso segue até o fim do período.' },
   { p: 'Funciona sem internet?', r: 'Ainda não. Vender sem internet está sendo feito agora, e aparece em "O que vem por aí".' },
   { p: 'Emite nota fiscal?', r: 'Ainda não. A nota fiscal do consumidor (NFC-e) está planejada, como extra para qualquer plano.' },
   { p: 'Preciso comprar algum aparelho para testar?', r: 'Não. Por enquanto o caixa abre no navegador do computador. O programa do caixa para Windows vem em breve.' },
-  { p: 'Os dados são meus?', r: 'Sim. Você exporta tudo quando quiser, e apaga os dados de um cliente a pedido dele, como a LGPD manda.' },
-  { p: 'Como os funcionários entram?', r: 'Com o código do restaurante, que aparece quando você cria a conta, e com o login que você cria para cada um dentro do sistema. Cada um mexe só no que você liberar.' },
+  { p: 'E a impressora?', r: 'Cada cozinha tem a sua comanda, e você escolhe a impressora de cada uma dentro do sistema. A comanda sai pelo programa que liga o computador do balcão à impressora, que ainda está sendo preparado para baixar (em breve). Até lá, a tela da cozinha, do plano Delivery completo, mostra os pedidos sem papel.' },
+  { p: 'Os dados são meus?', r: 'Sim. Em Configurações, você baixa uma cópia quando quiser, também com a assinatura bloqueada: o cardápio, os clientes, os pedidos, o caixa, os funcionários e as configurações, mais as planilhas de clientes e de pedidos, que abrem no Excel (as senhas não saem). E você apaga os dados de um cliente a pedido dele, seguindo a LGPD (o texto de privacidade está em preparação com o jurídico).' },
+  { p: 'Como os funcionários entram?', r: 'Com o código do restaurante, que aparece quando você cria a conta, e com o login que você cria para cada um dentro do sistema. Pedido, todos lançam; cancelar pedido, dar desconto, operar o caixa, mexer no cardápio ou ver os relatórios, só quem você liberar.' },
   { p: 'O entregador tem aplicativo?', r: 'Tem a página Luneli Entregador, que abre no navegador do celular e pode ficar na tela inicial; o celular se liga à loja com um código. Nela ele vê a fila, sai com o pedido, marca a entrega e vê os ganhos do dia. Os aplicativos nas lojas (Google Play e App Store) vêm em breve.' },
-  { p: 'Atende mesas?', r: 'Sim. Mesas e contas fazem parte do plano Profissional (e do Empresarial); no teste grátis, escolha o Profissional para usá-las. O app do garçom vem em breve.' },
+  { p: 'Atende mesas?', r: 'Sim. Mesas e contas fazem parte do plano Profissional (e do Empresarial); no teste grátis, escolha o Profissional para usá-las. A rodada vai sair na impressora da cozinha quando o programa da impressora estiver pronto (em breve); a tela da cozinha mostra só balcão e delivery. O app do garçom vem em breve.' },
   { p: 'Integra com o iFood?', r: 'Ainda não. Está planejado.' },
 ]
 ---
-<Base titulo="Perguntas frequentes | Luneli">
+<Base titulo="Perguntas frequentes | Luneli" descricao="O que costumam perguntar antes de testar o Luneli: cartão, preço, fidelidade, cancelamento, internet, nota fiscal, impressora, mesas e entregador.">
   <section class="pagina media" aria-labelledby="h-pagina">
     <div class="in">
       <h1 id="h-pagina">Perguntas frequentes</h1>
-      <p class="lead">O que costumam perguntar antes de testar. Se faltar alguma, a página de contato chega no lançamento.</p>
+      <p class="lead">O que costumam perguntar antes de testar. Se faltar alguma, os canais de contato entram no lançamento.</p>
       <div class="perguntas">
         {PERGUNTAS.map(({ p, r }) => (
           <details>
@@ -27,6 +29,10 @@ const PERGUNTAS: { p: string; r: string }[] = [
             <p>{r}</p>
           </details>
         ))}
+      </div>
+      <div class="acoes acoes-fim">
+        <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+        <a class="ligacao" href="/planos/">Ver os planos</a>
       </div>
     </div>
   </section>

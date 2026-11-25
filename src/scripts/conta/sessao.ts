@@ -10,5 +10,5 @@ export function sessaoAtual(): Promise<Sessao | null> {
 
 /** Vai para a tela de entrar, voltando para esta página depois. */
 export function irParaEntrar(voltar = location.pathname): void {
-  location.assign(`/entrar?voltar=${encodeURIComponent(voltar)}`)
+  location.assign(`/entrar/?voltar=${encodeURIComponent(voltar)}`)
 }

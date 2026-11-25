@@ -89,6 +89,7 @@ interface BaseDaFuncao {
   frase: string;
   lugar: LugarDaFuncao;
   andamento?: AndamentoDaFuncao;
+  papelEmBreve?: true;
 }
 
 export interface FuncaoDeRecurso extends BaseDaFuncao {
@@ -102,12 +103,12 @@ export interface FuncaoAvulsa extends BaseDaFuncao {
 export type FuncaoDoSite = FuncaoDeRecurso | FuncaoAvulsa;
 
 export const FUNCOES_DO_SITE = [
-  { id: 'balcao_e_delivery', nome: 'Balcão e delivery', frase: 'Do telefone tocando à comanda na cozinha.', lugar: 'essencial', recurso: 'delivery_e_balcao' },
+  { id: 'balcao_e_delivery', nome: 'Balcão e delivery', frase: 'Do telefone tocando ao pedido na cozinha.', lugar: 'essencial', recurso: 'delivery_e_balcao', papelEmBreve: true },
   { id: 'cliente_pelo_telefone', nome: 'Cliente pelo telefone', frase: 'Digitou o telefone, apareceu o cliente, com os endereços e o último pedido.', lugar: 'essencial', recurso: 'delivery_e_balcao' },
   { id: 'atalhos', nome: 'Pedido pelo teclado', frase: 'Atalhos para o que se faz o tempo todo, e o dono escolhe as teclas.', lugar: 'essencial', recurso: 'delivery_e_balcao' },
   { id: 'meio_a_meio', nome: 'Meio a meio', frase: 'De 2 a 4 sabores, cobrando pelo mais caro ou pela média.', lugar: 'essencial', recurso: 'delivery_e_balcao' },
-  { id: 'comanda_configuravel', nome: 'Comanda do seu jeito', frase: 'Oito blocos que mudam de ordem, com tamanho, negrito e invertido.', lugar: 'essencial', recurso: 'impressao' },
-  { id: 'comanda_por_setor', nome: 'Cada cozinha recebe o seu', frase: 'A pizza vai para a pizzaria, a bebida vai para o bar.', lugar: 'essencial', recurso: 'impressao' },
+  { id: 'comanda_configuravel', nome: 'Comanda do seu jeito', frase: 'Oito blocos que mudam de ordem, com tamanho, negrito e invertido.', lugar: 'essencial', recurso: 'impressao', papelEmBreve: true },
+  { id: 'comanda_por_setor', nome: 'Cada cozinha recebe a sua comanda', frase: 'Você escolhe a impressora de cada cozinha: a pizza vai para a pizzaria, a bebida vai para o bar.', lugar: 'essencial', recurso: 'impressao', papelEmBreve: true },
   { id: 'expedicao', nome: 'Expedição', frase: 'O pedido anda nas etapas: em preparo, pronto, saiu, entregue.', lugar: 'essencial', recurso: 'expedicao' },
   { id: 'taxa_por_faixa', nome: 'Taxa de entrega por faixa de km', frase: 'Faixas de km que você monta, e a taxa fixa por endereço.', lugar: 'essencial', recurso: 'taxa_por_distancia' },
   { id: 'varios_caixas', nome: 'Vários caixas', frase: 'Mais de um caixa aberto ao mesmo tempo, e o fechamento com a diferença na tela.', lugar: 'essencial', recurso: 'varios_caixas' },
@@ -122,6 +123,7 @@ export const FUNCOES_DO_SITE = [
   { id: 'pedido_pelo_qrcode', nome: 'Pedido pelo QR code', frase: 'O cliente escaneia o QR da mesa e faz o pedido pelo próprio celular. Tudo cai na conta da mesa.', lugar: 'extra', recurso: 'cardapio_qrcode', andamento: 'planejado' },
   { id: 'nota_fiscal', nome: 'Nota fiscal (NFC-e)', frase: 'A nota fiscal do consumidor emitida pelo próprio caixa.', lugar: 'extra', existe: false, andamento: 'planejado' },
   { id: 'vender_sem_internet', nome: 'Vender sem internet', frase: 'O caixa continua vendendo quando a internet cai.', lugar: 'todos', existe: false, andamento: 'fazendo' },
+  { id: 'programa_da_impressora', nome: 'Programa da impressora', frase: 'O programa que liga o computador do balcão à impressora, para a comanda sair no papel.', lugar: 'todos', existe: false, andamento: 'fazendo' },
   { id: 'caixa_para_windows', nome: 'Caixa para Windows', frase: 'O programa do caixa instalado no computador do restaurante.', lugar: 'todos', existe: false, andamento: 'fazendo' },
   { id: 'apps_nas_lojas', nome: 'Apps nas lojas', frase: 'O app do entregador e do garçom na Google Play e na App Store.', lugar: 'todos', existe: false, andamento: 'planejado' },
   { id: 'ifood', nome: 'iFood', frase: 'Os pedidos do iFood entrando direto no caixa.', lugar: 'todos', existe: false, andamento: 'planejado' },
@@ -136,10 +138,11 @@ export function funcaoExiste(funcao: FuncaoDoSite): boolean {
   return funcao.existe;
 }
 
-export type MarcaDaFuncao = 'pronta' | 'em_breve';
+export type MarcaDaFuncao = 'pronta' | 'pronta_sem_papel' | 'em_breve';
 
 export function marcaDaFuncao(funcao: FuncaoDoSite): MarcaDaFuncao {
-  return funcaoExiste(funcao) ? 'pronta' : 'em_breve';
+  if (!funcaoExiste(funcao)) return 'em_breve';
+  return funcao.papelEmBreve === true ? 'pronta_sem_papel' : 'pronta';
 }
 
 export type ColunaDoFuturo = 'pronto' | AndamentoDaFuncao;

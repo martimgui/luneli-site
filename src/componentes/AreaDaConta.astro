@@ -2,6 +2,7 @@
 /**
  * A moldura de "Minha conta": o menu à esquerda e o conteúdo, que o script da página mostra
  * depois de conferir a sessão (sem sessão, vai para /entrar; funcionário que não é dono vê o aviso).
+ * Fica fora da busca (semIndice): é a área de quem já tem conta.
  */
 import Base from '../layouts/Base.astro'
 
@@ -11,16 +12,16 @@ interface Props {
 const { titulo } = Astro.props
 const caminho = Astro.url.pathname.replace(/\/$/, '')
 const MENU: { href?: string; texto: string }[] = [
-  { href: '/minha-conta', texto: 'Resumo' },
-  { href: '/minha-conta/plano', texto: 'Plano' },
+  { href: '/minha-conta/', texto: 'Resumo' },
+  { href: '/minha-conta/plano/', texto: 'Plano' },
   { texto: 'Pagamento' },
   { texto: 'Faturas' },
   { texto: 'Dados da empresa' },
   { texto: 'Meus dados' },
-  { href: '/minha-conta/cancelar', texto: 'Cancelar' },
+  { href: '/minha-conta/cancelar/', texto: 'Cancelar' },
 ]
 ---
-<Base titulo={`${titulo} | Minha conta | Luneli`}>
+<Base titulo={`${titulo} | Minha conta | Luneli`} semIndice>
   <section class="pagina" aria-labelledby="h-pagina">
     <div class="in area-conta">
       <nav aria-label="Minha conta">
@@ -29,7 +30,7 @@ const MENU: { href?: string; texto: string }[] = [
           {MENU.map((item) => (
             <li>
               {item.href ? (
-                <a href={item.href} aria-current={caminho === item.href ? 'page' : undefined}>{item.texto}</a>
+                <a href={item.href} aria-current={caminho === item.href.replace(/\/$/, '') ? 'page' : undefined}>{item.texto}</a>
               ) : (
                 <span aria-disabled="true">{item.texto}<small>em breve</small></span>
               )}

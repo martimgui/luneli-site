@@ -2,13 +2,13 @@
 import CartaoDaConta from '../componentes/CartaoDaConta.astro'
 import Campo from '../componentes/Campo.astro'
 ---
-<CartaoDaConta titulo="Senha nova">
+<CartaoDaConta titulo="Senha nova" semIndice>
   <p class="aviso aviso-info" id="aviso-link" role="status">Conferindo o link…</p>
   <div class="acoes" id="acoes-tentar" style="margin-top:20px" hidden>
     <button class="btn dois" type="button" id="tentar-de-novo">Tentar de novo</button>
   </div>
   <form id="form-redefinir" class="form" method="post" novalidate hidden>
-    <Campo nome="senhaNova" rotulo="Senha nova" tipo="password" autocomplete="new-password" obrigatorio nota="Pelo menos 8 caracteres." />
+    <Campo nome="senhaNova" rotulo="Senha nova" tipo="password" autocomplete="new-password" obrigatorio nota="Pelo menos 8 caracteres." mostrar />
     <Campo nome="repeticao" rotulo="Repita a senha nova" tipo="password" autocomplete="new-password" obrigatorio />
     <p class="aviso" role="alert" hidden></p>
     <div class="acoes">
@@ -16,8 +16,8 @@ import Campo from '../componentes/Campo.astro'
     </div>
   </form>
   <div class="acoes" id="depois" style="margin-top:20px" hidden>
-    <a class="btn um" href="/entrar">Entrar</a>
-    <a class="ligacao" href="/esqueci-a-senha">Pedir outro link</a>
+    <a class="btn um" href="/entrar/">Entrar</a>
+    <a class="ligacao" href="/esqueci-a-senha/">Pedir outro link</a>
   </div>
   <script>
     import '../scripts/conta/redefinir-senha'

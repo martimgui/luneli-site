@@ -1,0 +1,27 @@
+---
+/**
+ * A página que não existe (v3, B9): na identidade do site, fora da busca (semIndice). A lua nova, apagada com o
+ * aro, diz "não tem nada aqui" sem cor e sem piada; os caminhos levam ao que a pessoa provavelmente procurava.
+ * O build gera 404.html na raiz, que os servidores estáticos comuns servem para endereço desconhecido.
+ */
+import Base from '../layouts/Base.astro'
+import { lunar } from '../componentes/telas/estado'
+---
+<Base titulo="Página não encontrada | Luneli" descricao="Este endereço não existe no site do Luneli." semIndice>
+  <section class="pagina media nao-achou" aria-labelledby="h-pagina">
+    <div class="in">
+      <span class="na-lua" aria-hidden="true"><Fragment set:html={lunar(0, 56)} /></span>
+      <h1 id="h-pagina">Esta página não existe.</h1>
+      <p class="lead">O endereço pode ter mudado, ou faltou uma letra. Daqui você chega ao que importa.</p>
+      <ul class="na-caminhos">
+        <li><a class="ligacao" href="/">O início, com o pedido 248 pela casa</a></li>
+        <li><a class="ligacao" href="/planos/">Os planos e o comparativo</a></li>
+        <li><a class="ligacao" href="/perguntas/">As perguntas frequentes</a></li>
+      </ul>
+      <div class="acoes acoes-fim">
+        <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+        <a class="ligacao" href="/entrar/">Entrar</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,29 +1,74 @@
 ---
+/**
+ * "Testar grátis": o lado esquerdo traz o título da página (h1#h-pagina) e diz o que o teste é (primeiro mês sem
+ * cobrança, sem cartão, plano escolhido depois); o cartão traz o formulário, "Seus dados", em dois grupos,
+ * O restaurante e Você. Os campos, os ids e o contrato com scripts/conta/testar-gratis.ts são os mesmos; depois de
+ * criar a conta, o script troca o título do lado por "Conta criada" e leva o foco a ele.
+ */
 import CartaoDaConta from '../componentes/CartaoDaConta.astro'
 import Campo from '../componentes/Campo.astro'
+import { lunar } from '../componentes/telas/estado'
+
+// v3 (A9): o que acontece depois de criar a conta, em três passos, todos conferidos no fluxo de hoje (o código do
+// restaurante aparece no fim do cadastro; o plano se escolhe em Minha conta com o e-mail confirmado; o sistema abre
+// no navegador). A importação do cardápio por planilha fica de fora até entrar no documento de promessas.
+const DEPOIS = [
+  'Você recebe o código do restaurante, que os funcionários usam para entrar.',
+  'Confirma o e-mail pelo link e escolhe o plano em Minha conta, sem cobrança.',
+  'Abre o sistema no navegador do computador do balcão, cadastra o cardápio e lança o primeiro pedido.',
+]
+const GANHOS = [
+  { titulo: 'Primeiro mês sem cobrança', texto: 'E sem cartão no cadastro. Você conhece o sistema na sua casa antes de decidir.' },
+  { titulo: 'O plano, você escolhe depois', texto: 'Em Minha conta, aqui no site, com o sistema já rodando. Durante o teste, o plano que você escolher vale na hora, sem cobrança.' },
+  { titulo: 'O mesmo login do sistema', texto: 'O e-mail e a senha que você cria aqui abrem o caixa. Os funcionários entram com o código do restaurante.' },
+]
 ---
-<CartaoDaConta titulo="Testar grátis">
+<CartaoDaConta titulo="Testar grátis" descricao="Crie a conta do seu restaurante no Luneli: o primeiro mês não é cobrado e não pede cartão.">
+  <Fragment slot="lado">
+    <h1 id="h-pagina" class="lado-titulo">Crie a conta e veja o pedido andar na sua casa.</h1>
+    <p class="lado-resumo">Primeiro mês sem cobrança, sem cartão; o plano você escolhe depois.</p>
+    <ul class="lado-lista">
+      {GANHOS.map((ganho, i) => (
+        <li><span class="lado-fz" aria-hidden="true"><Fragment set:html={lunar(0.66 * (i + 1), 16)} /></span><span><b>{ganho.titulo}</b>{ganho.texto}</span></li>
+      ))}
+    </ul>
+    <p class="lado-nota">Nesta versão nada é cobrado: o pagamento ainda não está ligado.</p>
+  </Fragment>
   <div id="etapa-formulario">
-    <p class="fraco">O primeiro mês da conta nova não é cobrado e não pede cartão; nesse mês você escolhe o plano sem pagar nada. Nesta versão nada é cobrado: o pagamento ainda não está ligado.</p>
+    <p class="cartao-rotulo" id="h-cartao">Seus dados</p>
+    <p class="fraco">O código do restaurante aparece no fim, para os funcionários entrarem.</p>
     <p class="aviso aviso-info" id="aviso-config" hidden></p>
-    <form id="form-criar" class="form" method="post" novalidate>
-      <Campo nome="nomeDoRestaurante" rotulo="Nome do restaurante" autocomplete="organization" obrigatorio maximo={80} />
-      <Campo nome="nomeDoDono" rotulo="Seu nome" autocomplete="name" obrigatorio maximo={80} />
-      <Campo nome="email" rotulo="E-mail" tipo="email" autocomplete="email" inputmode="email" obrigatorio nota="É com ele que você entra e recebe o link de confirmação." />
-      <Campo nome="telefone" rotulo="Telefone com DDD" tipo="tel" autocomplete="tel" inputmode="tel" obrigatorio maximo={40} nota="Ex.: (11) 98765-4321. O DDD vira o padrão do restaurante." />
-      <Campo nome="senha" rotulo="Senha" tipo="password" autocomplete="new-password" obrigatorio nota="Pelo menos 8 caracteres." />
-      <Campo nome="endereco" rotulo="Endereço do restaurante" autocomplete="off" nota="Dá para pôr depois, em Dados do restaurante." />
+    <form id="form-criar" class="form" method="post" novalidate aria-labelledby="h-cartao">
+      <fieldset class="grupo">
+        <legend>O restaurante</legend>
+        <div class="grupo-campos">
+          <Campo nome="nomeDoRestaurante" rotulo="Nome do restaurante" autocomplete="organization" obrigatorio maximo={80} placeholder="Como aparece na fachada" />
+          <Campo nome="endereco" rotulo="Endereço do restaurante" autocomplete="off" nota="Dá para pôr depois, em Dados do restaurante." />
+        </div>
+      </fieldset>
+      <fieldset class="grupo">
+        <legend>Você</legend>
+        <div class="grupo-campos">
+          <div class="linha-2">
+            <Campo nome="nomeDoDono" rotulo="Seu nome" autocomplete="name" obrigatorio maximo={80} />
+            <Campo nome="telefone" rotulo="Telefone com DDD" tipo="tel" autocomplete="tel" inputmode="tel" obrigatorio maximo={40} placeholder="(11) 98765-4321" nota="O DDD vira o padrão do restaurante." />
+          </div>
+          <Campo nome="email" rotulo="E-mail" tipo="email" autocomplete="email" inputmode="email" obrigatorio nota="É com ele que você entra; é para ele que vai o link de confirmação." />
+          <Campo nome="senha" rotulo="Senha" tipo="password" autocomplete="new-password" obrigatorio nota="Pelo menos 8 caracteres." mostrar />
+        </div>
+      </fieldset>
       <p class="aviso" role="alert" hidden></p>
       <div class="acoes">
         <button class="btn um" type="submit" disabled>Criar minha conta</button>
-        <a class="ligacao" href="/entrar">Já tenho conta</a>
+        <span class="acoes-termos"><a class="ligacao" href="/termos/">Termos</a> e <a class="ligacao" href="/privacidade/">Privacidade</a> (em preparação)</span>
+        <a class="ligacao" href="/entrar/">Já tenho conta</a>
       </div>
     </form>
   </div>
   <div id="etapa-confira" hidden>
     <p class="aviso aviso-ok" role="status" id="aviso-criada">Conta criada.</p>
     <h2>Confira o seu e-mail</h2>
-    <p id="texto-enviado" style="margin-top:8px">Mandamos um link de confirmação para <b id="email-enviado"></b>. Abra o link para confirmar o e-mail e escolher o seu plano.</p>
+    <p id="texto-enviado" style="margin-top:8px">O link de confirmação vai para <b id="email-enviado"></b>. Abra o link para confirmar o e-mail e escolher o seu plano.</p>
     <p class="aviso aviso-erro" id="texto-nao-enviado" style="margin-top:8px" hidden>Não conseguimos mandar o e-mail de confirmação agora. Clique em "Reenviar e-mail" daqui a pouco.</p>
     <p class="aviso aviso-info" id="aviso-telefone" style="margin-top:12px" hidden></p>
     <div class="bloco-codigo">
@@ -34,9 +79,15 @@ import Campo from '../componentes/Campo.astro'
     <p class="aviso" id="aviso-reenvio" role="status" style="margin-top:16px" hidden></p>
     <div class="acoes" style="margin-top:20px">
       <button class="btn dois" type="button" id="reenviar">Reenviar e-mail</button>
-      <a class="ligacao" href="/minha-conta">Ir para minha conta</a>
+      <a class="ligacao" href="/minha-conta/">Ir para minha conta</a>
     </div>
   </div>
+  <Fragment slot="depois">
+    <h2 class="depois-titulo" id="h-depois">Depois de criar a conta</h2>
+    <ol class="depois-lista" aria-labelledby="h-depois">
+      {DEPOIS.map((passo, i) => <li><span class="depois-n" aria-hidden="true">{i + 1}</span><span>{passo}</span></li>)}
+    </ol>
+  </Fragment>
   <script>
     import '../scripts/conta/testar-gratis'
   </script>

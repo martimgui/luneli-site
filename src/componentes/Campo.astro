@@ -1,7 +1,8 @@
 ---
 /**
  * Um campo de formulário acessível: rótulo ligado ao campo, nota e erro ligados por aria-describedby.
- * O erro (`erro-<nome>`) é preenchido pelo script da página.
+ * O erro (`erro-<nome>`) é preenchido pelo script da página. Um campo de senha com `mostrar` ganha o botão
+ * "Mostrar", que troca o tipo do campo (o script deste componente roda uma vez por página).
  */
 interface Props {
   nome: string
@@ -12,25 +13,47 @@ interface Props {
   obrigatorio?: boolean
   maximo?: number
   inputmode?: 'text' | 'numeric' | 'tel' | 'email'
+  /** No campo de senha: o botão que mostra ou esconde o que foi digitado. */
+  mostrar?: boolean
+  placeholder?: string
 }
-const { nome, rotulo, tipo = 'text', autocomplete = 'off', nota, obrigatorio = false, maximo = 200, inputmode } = Astro.props
+const { nome, rotulo, tipo = 'text', autocomplete = 'off', nota, obrigatorio = false, maximo = 200, inputmode, mostrar = false, placeholder } = Astro.props
 const descrito = [nota ? `nota-${nome}` : null, `erro-${nome}`].filter(Boolean).join(' ')
 const ehEmail = tipo === 'email'
+const comBotao = mostrar && tipo === 'password'
 ---
 <div class="campo">
   <label for={nome}>{rotulo}{!obrigatorio && <span class="fraco"> (opcional)</span>}</label>
-  <input
-    id={nome}
-    name={nome}
-    type={tipo}
-    autocomplete={autocomplete}
-    maxlength={maximo}
-    required={obrigatorio}
-    inputmode={inputmode}
-    autocapitalize={ehEmail || tipo === 'password' ? 'none' : undefined}
-    spellcheck={ehEmail || tipo === 'password' ? 'false' : undefined}
-    aria-describedby={descrito}
-  />
+  <div class:list={{ 'campo-senha': comBotao }}>
+    <input
+      id={nome}
+      name={nome}
+      type={tipo}
+      autocomplete={autocomplete}
+      maxlength={maximo}
+      required={obrigatorio}
+      inputmode={inputmode}
+      placeholder={placeholder}
+      autocapitalize={ehEmail || tipo === 'password' ? 'none' : undefined}
+      spellcheck={ehEmail || tipo === 'password' ? 'false' : undefined}
+      aria-describedby={descrito}
+    />
+    {comBotao && <button type="button" class="ver-senha" aria-pressed="false" aria-controls={nome} data-senha={nome}>Mostrar</button>}
+  </div>
   {nota && <p class="nota" id={`nota-${nome}`}>{nota}</p>}
   <p class="erro-campo" id={`erro-${nome}`}></p>
 </div>
+
+<script>
+  // "Mostrar" / "Esconder" a senha: troca o tipo do campo e o estado do botão; o foco fica onde estava.
+  for (const botao of document.querySelectorAll<HTMLButtonElement>('.ver-senha')) {
+    botao.addEventListener('click', () => {
+      const campo = document.getElementById(botao.dataset.senha ?? '')
+      if (!(campo instanceof HTMLInputElement)) return
+      const mostrar = campo.type === 'password'
+      campo.type = mostrar ? 'text' : 'password'
+      botao.setAttribute('aria-pressed', String(mostrar))
+      botao.textContent = mostrar ? 'Esconder' : 'Mostrar'
+    })
+  }
+</script>

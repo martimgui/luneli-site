@@ -18,6 +18,11 @@ const MESAS: { nome: string; tempo?: string; quem: string; valor?: string; nota?
   { nome: 'Mesa 13', tempo: 'há 51 min', quem: 'junto com 12', nota: 'na conta da 12', x: true },
   { nome: 'Varanda 1', quem: 'Livre', x: true },
   { nome: 'Varanda 2', tempo: 'há 22 min', quem: '3 pessoas · Beto', valor: 'R$ 64,50', x: true },
+  // a quarta fileira: só no mapa largo (as cópias estreitas escondem as mesas .x)
+  { nome: 'Mesa 9', quem: 'Livre', x: true },
+  { nome: 'Mesa 10', tempo: 'há 5 min', quem: '2 pessoas · Beto', valor: 'R$ 24,00', x: true },
+  { nome: 'Mesa 11', quem: 'Livre', x: true },
+  { nome: 'Varanda 3', quem: 'Livre', x: true },
 ]
 ---
 <Pdv aba="mesas" estatico={1}>
@@ -36,7 +41,7 @@ const MESAS: { nome: string; tempo?: string; quem: string; valor?: string; nota?
           </div>
         ))}
       </div>
-      <div class="legenda"><span><i></i>Conta aberta</span><span><i class="l"></i>Livre</span><span class="contagem">7 mesas abertas · 5 livres</span></div>
+      <div class="legenda"><span><i></i>Conta aberta</span><span><i class="l"></i>Livre</span><span class="contagem">8 mesas abertas · 8 livres</span></div>
     </section>
     <section class="painel conta-mesa">
       <div class="c1"><h5>Mesa 4</h5><span class="t3">aberta há 38 min · Ana</span></div>

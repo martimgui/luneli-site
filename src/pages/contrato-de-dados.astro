@@ -1,4 +1,13 @@
 ---
-import EmPreparacao from "../componentes/EmPreparacao.astro"
+import EmPreparacao from '../componentes/EmPreparacao.astro'
 ---
-<EmPreparacao titulo="Contrato de dados (LGPD)" />
+<EmPreparacao
+  titulo="Contrato de dados (LGPD)"
+  descricao="O contrato de tratamento de dados do Luneli, como operador, está em preparação."
+  lead="O contrato de tratamento de dados, em que a Luneli aparece como operadora dos dados do seu restaurante, passa por um jurídico antes do lançamento e entra nesta página."
+  pontos={[
+    { titulo: 'O papel de cada um', texto: 'O restaurante decide o que fazer com os dados dos clientes dele; a Luneli os guarda e processa só para o sistema funcionar.' },
+    { titulo: 'Prazos de guarda e exclusão', texto: 'Por quanto tempo cada dado fica e o que acontece quando a conta é cancelada.' },
+    { titulo: 'Segurança', texto: 'As medidas que protegem os dados e como um incidente é comunicado.' },
+  ]}
+/>

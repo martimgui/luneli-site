@@ -1,44 +1,48 @@
 ---
 /**
  * Pronto / Fazendo / Planejado, sem datas. Tudo sai da lista única (@pdv/core): a coluna de cada função
- * segue o que o sistema tem de verdade.
+ * segue o que o sistema tem de verdade. Sem botão sem função: o aviso por e-mail ainda não existe, e a página diz isso.
  */
-import { FUNCOES_DO_SITE, colunaDaFuncao } from '@pdv/core'
+import { FUNCOES_DO_SITE, colunaDaFuncao, marcaDaFuncao } from '@pdv/core'
 import type { ColunaDoFuturo, FuncaoDoSite } from '@pdv/core'
 import Base from '../layouts/Base.astro'
+import { lunar } from '../componentes/telas/estado'
+import Marca from '../componentes/Marca.astro'
 
 const TODAS = FUNCOES_DO_SITE as readonly FuncaoDoSite[]
-const COLUNAS: { coluna: ColunaDoFuturo; titulo: string; texto: string }[] = [
-  { coluna: 'pronto', titulo: 'Pronto', texto: 'Já está no sistema.' },
-  { coluna: 'fazendo', titulo: 'Fazendo', texto: 'Em construção agora.' },
-  { coluna: 'planejado', titulo: 'Planejado', texto: 'Vai entrar, sem data marcada.' },
+const COLUNAS: { coluna: ColunaDoFuturo; titulo: string; texto: string; fase: number }[] = [
+  { coluna: 'pronto', titulo: 'Pronto', texto: 'Já está no sistema. O que sai no papel espera o programa da impressora, que está em Fazendo.', fase: 2 },
+  { coluna: 'fazendo', titulo: 'Fazendo', texto: 'Em construção agora.', fase: 1 },
+  { coluna: 'planejado', titulo: 'Planejado', texto: 'Vai entrar, sem data marcada.', fase: 0.2 },
 ]
 ---
-<Base titulo="O que vem por aí | Luneli">
+<Base titulo="O que vem por aí | Luneli" descricao="O que o Luneli já faz, o que está sendo feito e o que vem depois, sem datas.">
   <section class="pagina" aria-labelledby="h-pagina">
     <div class="in">
       <h1 id="h-pagina">O que vem por aí</h1>
-      <p class="lead">O que o sistema já faz, o que está sendo feito e o que vem depois. Sem datas: só entra como pronto o que já está no sistema.</p>
+      <p class="lead">O que o sistema já faz, o que está sendo feito e o que vem depois. Sem datas: só entra como pronto o que já está no sistema, e a lista é atualizada a cada versão.</p>
       <div class="colunas-futuro">
-        {COLUNAS.map(({ coluna, titulo, texto }) => (
-          <section class="coluna-futuro" aria-labelledby={`col-${coluna}`}>
-            <h2 id={`col-${coluna}`}>{titulo}</h2>
+        {COLUNAS.map(({ coluna, titulo, texto, fase }) => (
+          <section class:list={['coluna-futuro', coluna]} aria-labelledby={`col-${coluna}`}>
+            <h2 id={`col-${coluna}`}><Fragment set:html={lunar(fase, 16)} />{titulo}</h2>
             <p class="fraco">{texto}</p>
             <ul>
               {TODAS.filter((funcao) => colunaDaFuncao(funcao) === coluna).map((funcao) => (
                 <li>
                   <b>{funcao.nome}</b>
                   <p>{funcao.frase}</p>
-                  {coluna !== 'pronto' && (
-                    <button class="btn tres pequeno" type="button" disabled aria-describedby="me-avise-nota">Me avise (em breve)</button>
-                  )}
+                  {marcaDaFuncao(funcao) === 'pronta_sem_papel' && <Marca funcao={funcao} />}
                 </li>
               ))}
             </ul>
           </section>
         ))}
       </div>
-      <p id="me-avise-nota" class="nota-texto" style="margin-top:20px">O "Me avise" ainda não funciona: ele entra em breve.</p>
+      <p class="futuro-nota">Quer saber quando algo daqui ficar pronto? O aviso por e-mail ainda não existe. Por enquanto, esta página muda a cada versão, e o que fica pronto aparece também na página de planos como "Pronta".</p>
+      <div class="acoes acoes-fim">
+        <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+        <a class="ligacao" href="/planos/">Ver os planos</a>
+      </div>
     </div>
   </section>
 </Base>

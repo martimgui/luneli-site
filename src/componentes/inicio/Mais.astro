@@ -1,21 +1,43 @@
 ---
 /**
- * 6. O que mais existe. "A internet caiu. O caixa continua." ainda não chegou a nenhum cliente: fica como em breve,
- * com a marca lida da lista única e um quadro marcado como exemplo ilustrativo só do que a primeira versão faz
- * (um caixa, no computador onde o Luneli está instalado, e a nuvem sem internet). Abaixo, quatro funções que existem.
+ * 6. O que mais existe: seis funções que já estão no sistema, cada uma pelo problema que resolve no balcão.
+ * Abaixo, em tom menor e marcado como em breve, "A internet caiu. O caixa continua." (ainda não chegou a nenhum
+ * cliente): a marca vem da lista única e o quadro é um exemplo ilustrativo só do que a primeira versão faz
+ * (um caixa, no computador onde o Luneli está instalado, e a nuvem sem internet).
  */
 import { funcaoDoSite } from '@pdv/core'
 import Marca from '../Marca.astro'
 
 const semInternet = funcaoDoSite('vender_sem_internet')
+const FUNCOES: { nome: string; texto: string; marca?: string }[] = [
+  { nome: 'Pagamento dividido e parcial', texto: 'Parte no Pix, parte no cartão, ou a conta em partes iguais entre as pessoas. Na mesa, recebe uma parte de cada vez.' },
+  { nome: 'Taxa de entrega pelo endereço', texto: 'A taxa vem como padrão do lugar, por faixa de km que você monta, e qualquer um pode mudar à mão no pedido. Fica registrado quem mudou.' },
+  { nome: 'Vários caixas', texto: 'Caixa 1, caixa 2: cada um com o seu turno, o seu troco e o seu fechamento, com a diferença na tela.' },
+  { nome: 'Acerto do entregador', texto: 'A conta do dia de cada entregador: entregas, taxas, diária, caixinha e vale. O que sai pela gaveta sai do esperado do caixa.' },
+  { nome: 'Caixinha do motoboy', texto: 'No pedido de entrega, lance o valor, como o cliente pagou e quem ficou com ela. A que fica no caixa entra no esperado do turno.' },
+  { nome: 'Uma comanda por cozinha', texto: 'Você escolhe a impressora de cada cozinha e a ordem dos blocos e dos campos no papel. O papel chega com o programa que liga o computador do balcão à impressora.', marca: 'Papel em breve' },
+]
 ---
 <section class="secao mais" id="mais" aria-labelledby="xTit">
   <div class="mais-in">
-    <div class="m-grande">
-      <div>
-        <h2 class="serifa" id="xTit">A internet caiu. O caixa continua.</h2>
+    <div class="sec-cab largo">
+      <h2 class="serifa revela" id="xTit">O resto da noite, na mesma tela.</h2>
+      <p class="revela" style="--i:1">O que mais o Luneli já faz hoje, sem outro sistema nem planilha ao lado: o dinheiro de cada caixa conferido e a taxa certa em cada entrega.</p>
+    </div>
+    <dl class="lista-mais">
+      {FUNCOES.map((funcao, i) => (
+        <div class="revela" style={`--i:${i % 2}`}>
+          <dt class="serifa">{funcao.nome}</dt>
+          {funcao.marca && <dd class="mais-marca"><span class="pill breve">{funcao.marca}</span></dd>}
+          <dd>{funcao.texto}</dd>
+        </div>
+      ))}
+    </dl>
+    <div class="breve revela">
+      <div class="breve-txt">
         <div class="marca-funcao"><Marca funcao={semInternet} /></div>
-        <p class="lead">Em breve: sem internet, os pedidos ficam guardados no computador do balcão, onde o Luneli Caixa está instalado, e sobem sozinhos para a nuvem quando a conexão volta.</p>
+        <h3 class="serifa">A internet caiu. O caixa continua.</h3>
+        <p class="lead">Em construção: sem internet, os pedidos ficam guardados no computador do balcão, onde o Luneli Caixa está instalado, e sobem sozinhos para a nuvem quando a conexão volta.</p>
       </div>
       <div class="rede" role="img" aria-label="Exemplo ilustrativo do que está sendo feito: um caixa no computador do balcão continua vendendo sem internet, e a nuvem recebe tudo quando a conexão volta.">
        <div aria-hidden="true">
@@ -28,11 +50,5 @@ const semInternet = funcaoDoSite('vender_sem_internet')
        </div>
       </div>
     </div>
-    <dl class="lista-mais">
-      <div><dt>Pagamento dividido</dt><dd>Parte no Pix, parte no cartão, ou a conta em partes iguais entre as pessoas.</dd></div>
-      <div><dt>Caixinha do motoboy</dt><dd>No pedido de entrega, lance o valor e quem ficou com ela. A que fica no caixa entra no esperado do turno e é paga no acerto do dia.</dd></div>
-      <div><dt>Vários caixas</dt><dd>Caixa 1, caixa 2: cada um com o seu turno, o seu troco e o seu fechamento.</dd></div>
-      <div><dt>Uma comanda por cozinha</dt><dd>Você escolhe a impressora de cada cozinha e a ordem dos blocos e dos campos no papel.</dd></div>
-    </dl>
   </div>
 </section>

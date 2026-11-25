@@ -1,7 +1,7 @@
 /*
-  As páginas internas na identidade D6: planos, perguntas, o que vem por aí, situação, baixar,
-  as páginas da conta (formulários, avisos, cartão, minha conta) e as páginas "em preparação".
-  Superfícies quietas com linhas finas; âmbar só na ação principal; verde só no concluído; vermelho só no erro.
+  As páginas internas na identidade D6 (refinadas em 04/11/2026): planos, perguntas, o que vem por aí, situação,
+  baixar, as páginas da conta (formulários, avisos, cartão, minha conta) e as páginas "em preparação".
+  Superfícies quietas com linhas finas, só em preto, branco e cinza: a ação principal em branco; concluído e erro se distinguem por borda, peso e ícone.
 */
 .pagina{position:relative;padding:clamp(32px,6vh,64px) var(--m) clamp(72px,12vh,128px)}
 .pagina>.in{max-width:1180px;margin:0 auto}
@@ -17,52 +17,166 @@
 .nota-texto{font-size:14px;color:var(--t3)}
 .preparo{margin-top:28px;padding:18px 20px;border-radius:12px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--linha);color:var(--t2);max-width:42em;line-height:1.5}
 .acoes{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:8px}
+.acoes-fim{margin-top:44px;padding-top:28px;border-top:1px solid var(--linha)}
+/* "e-mail" sem quebrar no hífen */
+.sem-quebra{white-space:nowrap}
+.so-leitor{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 
-/* marcas pronta / em breve, lidas da lista única */
-.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:6px;font-size:12.5px;font-weight:500;white-space:nowrap;line-height:1.3}
-.pill.pronta{color:var(--verde);background:rgba(156,207,174,.1)}
-.pill.pronta::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--verde)}
-.pill.breve{color:var(--t2);background:rgba(226,232,240,.07)}
+/* marcas pronta / em breve, lidas da lista única: em texto, sem pílula (v3, C8 e C9): 12 px, espaçado */
+.pill{display:inline-block;padding:0;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.08em;line-height:1.4;color:var(--t3)}
+.pill.pronta{color:var(--t2)}
+.pill.breve{color:var(--t3)}
+/* o terceiro estado pode ser longo: quebra a linha */
+.pill.sem-papel{letter-spacing:.04em;text-wrap:pretty}
 
 /* aviso de exemplo: uma linha discreta, nunca uma caixa colorida */
 .exemplo{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 10px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--linha-2);font-size:13.5px;color:var(--t2)}
 
-/* ===== planos ===== */
-.degraus{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px;align-items:start}
-.degrau{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px 22px 20px;display:flex;flex-direction:column;gap:10px}
-.degrau .situ{font-size:13px;color:var(--t3)}
-.degrau h2{font-size:21px;font-weight:650;letter-spacing:-.015em;line-height:1.15}
-.degrau .provisorio{font-size:13px;color:var(--t3);margin-top:-6px}
-.degrau>p{font-size:15px;line-height:1.5;color:var(--t2)}
-.degrau .inclui{font-size:13.5px;color:var(--t3);margin-top:4px}
-.degrau ul{list-style:none;display:grid;gap:0;margin-top:2px}
-.degrau li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px;line-height:1.35;min-height:38px;padding:6px 0;border-top:1px solid var(--linha)}
-.degrau .preco{margin-top:auto;padding-top:16px;font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.1;display:flex;flex-direction:column;gap:4px}
-.degrau .preco small{font-size:13px;font-weight:450;color:var(--t3);letter-spacing:0}
-.extras{margin-top:40px}
-.extras h2{font-size:19px;font-weight:650;letter-spacing:-.012em;margin-bottom:6px}
-.soon{list-style:none;border-top:1px solid var(--linha);margin-top:12px}
-.soon li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 24px;align-items:center;padding:14px 0;border-bottom:1px solid var(--linha)}
-.soon li b{font-weight:600}
-.soon li p{grid-column:1;font-size:14.5px;color:var(--t2);line-height:1.45}
-.soon li .act{grid-row:1/3;grid-column:2}
-.selos{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:15px;color:var(--t2);list-style:none}
-.selos span{display:inline-flex;align-items:center;gap:8px}
-.selos svg{color:var(--luar)}
-@media (max-width:1000px){.degraus{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:640px){.degraus{grid-template-columns:minmax(0,1fr)}}
+/* ===== páginas em preparação (termos, privacidade, contrato de dados, contato, situação) ===== */
+.prep-cab{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.prep-lista{list-style:none;margin-top:28px;border-top:1px solid var(--linha);max-width:42em}
+.prep-lista li{padding:14px 0;border-bottom:1px solid var(--linha);display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;color:var(--t2);line-height:1.5}
+.prep-lista li b{display:block;color:var(--t1);font-weight:600}
+.prep-lista .fz{margin-top:4px;color:var(--t3)}
+.prep-nota{margin-top:22px;font-size:14px;color:var(--t3);max-width:42em;line-height:1.5}
+
+/* ===== planos: o guia, quatro cartões da mesma altura (no máximo quatro funções cada), as notas e o comparativo ===== */
+/* o guia acima dos cartões: três linhas quietas, sem destacar plano */
+.guia{list-style:none;margin-top:26px;display:grid;gap:8px;font-size:16px;line-height:1.45;color:var(--t2)}
+.guia li{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px}
+.guia svg{flex:none;color:var(--t3)}
+.guia b{color:var(--t1);font-weight:600}
+/* v3 (C9): cantos retos, sem fundo; no computador os cartões são separados por fios verticais de 1 px; os nomes
+   na serifa (32 px); o estado em texto de 12 px */
+.degraus{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:32px;align-items:stretch;border-top:1px solid var(--linha-2);border-bottom:1px solid var(--linha)}
+/* as três partes de cada cartão (topo, botão, lista) em subgrade: os botões ficam na mesma linha mesmo quando um
+   nome quebra em duas */
+.degrau{position:relative;background:none;border-radius:0;padding:26px 24px 26px;display:grid;grid-template-rows:subgrid;grid-row:span 3;gap:18px;align-content:start}
+.degrau>.btn,.degrau>.d-sem-acao{align-self:start}
+.degrau:first-child{padding-left:0}
+.degrau:last-child{padding-right:0}
+.degrau+.degrau{border-left:1px solid var(--linha)}
+.degrau .d-topo{display:grid;gap:6px}
+.degrau .situ{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--amber-vivo)}
+.degrau.breve .situ{color:var(--t3);font-weight:500}
+.pagina .degrau h2{font-family:var(--titulo);font-optical-sizing:auto;font-size:32px;font-weight:500;letter-spacing:-.02em;line-height:1.05;margin-top:4px}
+/* o asterisco do nome provisório (a nota fica abaixo dos cartões) */
+.asterisco{margin-left:1px;font-weight:500;color:var(--t2)}
+.degrau .resumo{font-size:14.5px;line-height:1.5;color:var(--t2);min-height:3em;text-wrap:pretty}
+.degrau .btn{width:100%}
+.degrau .d-sem-acao{min-height:48px;display:flex;align-items:center;padding:0;font-size:13.5px;color:var(--t3);line-height:1.35}
+.degrau .d-lista{display:grid;gap:2px;align-content:start}
+.degrau .inclui{font-size:13px;color:var(--t3);margin-bottom:4px}
+.degrau ul{list-style:none;display:grid;gap:0}
+.degrau li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;font-size:14px;line-height:1.35;min-height:40px;padding:10px 0;border-top:1px solid var(--linha)}
+.degrau .d-mais{margin-top:8px;font-size:13.5px;color:var(--t2)}
+/* a nota única dos preços e a do nome provisório, logo abaixo dos cartões */
+.degraus-notas{margin-top:16px;display:grid;gap:4px;font-size:14px;line-height:1.5;color:var(--t3)}
+.pagina .degraus-notas p{max-width:none;text-wrap:pretty}
+.pagina .degraus-notas p+p{margin-top:0}
+/* a fileira de selos virou uma frase só (v3, C9) */
+.pagina .selos{margin-top:18px;font-size:15px;color:var(--t2);max-width:none}
+.comparativo{margin-top:56px;padding-top:44px;border-top:1px solid var(--linha)}
+.pagina .comparativo h2{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(40px,3.1vw,44px);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.comparativo>p{margin-top:12px;font-size:15px;line-height:1.5;max-width:44em}
+/* a legenda das fases: cheia = pronta, nova = em breve, traço = fora do plano */
+.legenda{list-style:none;display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;font-size:14px;line-height:1.45;color:var(--t2)}
+.legenda li{display:inline-flex;align-items:center;gap:8px}
+.legenda .fz{flex:none;color:var(--t1)}
+.comparativo td.c-pronta_sem_papel .lua{color:var(--t1)}
+.aba-painel li.c-pronta_sem_papel .aba-situ{color:var(--t2)}
+.aba-painel li.c-pronta_sem_papel .aba-situ .fz{color:var(--t1)}
+.legenda i{display:inline-block;width:10px;height:1px;margin:0 2px;background:var(--t3);opacity:.7}
+.tabela-rolagem{margin-top:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.comparativo table{width:100%;min-width:720px;border-collapse:collapse;font-size:14.5px}
+.comparativo th,.comparativo td{text-align:left;vertical-align:top;padding:12px 10px;border-bottom:1px solid var(--linha)}
+.comparativo thead th{font-size:13.5px;font-weight:600;color:var(--t1);padding-bottom:10px;border-bottom:1px solid var(--linha-2);text-align:center;white-space:nowrap}
+.comparativo thead th:first-child{text-align:left;font-weight:500;color:var(--t3)}
+.comparativo th[scope=row]{font-weight:450;padding-left:0;position:sticky;left:0;background:var(--fundo);z-index:1}
+.comparativo th[scope=row] b{display:block;font-weight:600}
+.comparativo th[scope=row] .frase{display:block;margin-top:2px;font-size:13px;color:var(--t3);line-height:1.4;max-width:36em}
+.comparativo thead th:first-child{position:sticky;left:0;background:var(--fundo);z-index:1}
+.comparativo tr.grupo th{padding:26px 0 8px;font-size:13px;font-weight:600;color:var(--t2);border-bottom:1px solid var(--linha-2);position:sticky;left:0;background:var(--fundo)}
+.comparativo tbody:first-of-type tr.grupo th{padding-top:14px}
+.comparativo td{text-align:center;width:14%;position:relative}
+.comparativo td .lua{display:inline-flex;vertical-align:middle;color:var(--t1)}
+.comparativo td.c-nao i{display:inline-block;width:10px;height:1px;vertical-align:middle;background:var(--t3);opacity:.7}
+/* as abas do celular (abaixo de 700 px, no lugar da tabela): uma por plano, as quatro sempre à vista (2 × 2),
+   presas no alto enquanto a lista rola; os painéis têm as mesmas linhas, na mesma ordem */
+.abas-planos{display:none}
+/* v3 (B7): presa no alto, a faixa é uma linha só de 44 px (antes, a grade 2 × 2 tomava 120 px), rolável na
+   horizontal; a aba escolhida é rolada para a vista (o script) e um fio embaixo marca a escolhida */
+.abas-faixa{position:sticky;top:0;z-index:2;background:var(--fundo);box-shadow:0 1px 0 var(--linha-2)}
+.abas{display:flex;gap:0;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.abas::-webkit-scrollbar{display:none}
+.abas [role=tab]{flex:none;height:44px;padding:0 14px;font-size:15px;font-weight:500;line-height:1;white-space:nowrap;color:var(--t2);box-shadow:inset 0 -2px 0 transparent;transition:color .2s ease,box-shadow .2s ease}
+.abas [role=tab]:first-child{padding-left:2px}
+.abas [role=tab][aria-selected=true]{color:var(--t1);font-weight:600;box-shadow:inset 0 -2px 0 var(--t1)}
+.abas [role=tab]:focus-visible{outline-offset:-3px}
+.aba-painel{padding-bottom:4px}
+.aba-painel:focus-visible{outline-offset:4px}
+.aba-titulo{margin:24px 0 2px}
+.js .aba-titulo{display:none}
+.aba-grupo-titulo{padding:22px 0 8px;font-size:13px;font-weight:600;color:var(--t2);border-bottom:1px solid var(--linha-2)}
+.pagina .aba-grupo-titulo{max-width:none}
+.aba-grupo:first-of-type .aba-grupo-titulo{padding-top:12px}
+.aba-painel ul{list-style:none}
+.aba-painel li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start;padding:12px 0;border-bottom:1px solid var(--linha)}
+.aba-funcao b{display:block;font-size:15px;font-weight:600;line-height:1.35}
+.aba-funcao .frase{display:block;margin-top:2px;font-size:13px;color:var(--t3);line-height:1.4}
+.aba-painel li.c-nao b{color:var(--t2);font-weight:500}
+.aba-situ{display:inline-flex;align-items:center;gap:7px;min-height:20px;font-size:13.5px;font-weight:500;color:var(--t1);white-space:nowrap}
+.aba-situ .fz{flex:none}
+.aba-painel li.c-em_breve .aba-situ{color:var(--t2)}
+.aba-painel li.c-em_breve .aba-situ .fz{color:var(--t1)}
+.aba-painel li.c-nao .aba-situ{color:var(--t3)}
+.aba-situ i{display:inline-block;width:10px;height:1px;margin:0 2px;background:currentColor;opacity:.8}
+/* sem script: nada de abas, os quatro painéis um embaixo do outro, cada um com o nome do plano */
+html:not(.js) .abas-faixa{display:none}
+html:not(.js) .aba-painel[hidden]{display:block!important}
+/* os extras: contratados à parte, fora do comparativo */
+.extras{margin-top:48px}
+.extras h3{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+.extras-lista{list-style:none;margin-top:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px;border-top:1px solid var(--linha-2)}
+.extras-lista li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:14px 0;border-bottom:1px solid var(--linha)}
+.extras-fz{display:block;margin-top:3px;color:var(--t1)}
+.extras-lista b{display:block;font-size:15px;font-weight:600;line-height:1.35}
+.extras-lista .frase{display:block;margin-top:2px;font-size:13.5px;color:var(--t3);line-height:1.45}
+.extras-lista .pill{margin-top:8px}
+@media (max-width:1000px){
+  .degraus{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .degrau:nth-child(odd){padding-left:0;border-left:0}
+  .degrau:nth-child(even){padding-right:0}
+  .degrau:nth-child(n+3){border-top:1px solid var(--linha)}
+  .comparativo table{min-width:0}
+  .comparativo thead th{white-space:normal}
+}
+@media (max-width:899px){.extras-lista{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699px){
+  .tabela-rolagem{display:none}
+  .abas-planos{display:block;margin-top:14px}
+  .extras{margin-top:36px}
+}
+@media (max-width:640px){
+  .degraus{grid-template-columns:minmax(0,1fr)}
+  .degrau,.degrau:nth-child(n){padding:24px 0;border-left:0}
+  .degrau+.degrau{border-top:1px solid var(--linha)}
+  .degrau .resumo{min-height:0}
+}
 
 /* ===== o que vem por aí ===== */
 .colunas-futuro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:32px;align-items:start}
-.coluna-futuro{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:20px 22px}
-.coluna-futuro h2{font-size:20px;margin:0}
+.coluna-futuro{background:var(--s1);border-radius:0;box-shadow:inset 0 0 0 1px var(--linha);padding:20px 22px}
+.coluna-futuro.pronto{box-shadow:inset 0 0 0 1px var(--linha-2)}
+.coluna-futuro li .pill{margin-top:6px}
+.coluna-futuro h2{font-size:20px;margin:0;display:flex;align-items:center;gap:10px}
+.coluna-futuro h2 .fz{color:var(--t2)}
 .coluna-futuro>p{margin:4px 0 10px;font-size:14px}
 .coluna-futuro ul{list-style:none}
 .coluna-futuro li{padding:12px 0;border-top:1px solid var(--linha)}
 .coluna-futuro li b{display:block;font-weight:600}
 .coluna-futuro li p{font-size:14px;color:var(--t2);margin-top:3px;line-height:1.45}
-.coluna-futuro .btn{margin-top:6px;margin-left:-4px}
-.coluna-futuro .btn.tres[disabled]{background:none;box-shadow:none;color:var(--t3)}
+.futuro-nota{margin-top:24px;padding:16px 18px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);font-size:14.5px;color:var(--t2);line-height:1.5;max-width:42em}
 @media (max-width:900px){.colunas-futuro{grid-template-columns:minmax(0,1fr)}}
 
 /* ===== perguntas ===== */
@@ -76,40 +190,113 @@
 @media (hover:hover) and (pointer:fine){ .perguntas summary:hover::after{border-color:var(--t1)} }
 
 /* ===== baixar ===== */
-.blocos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
-.bloco{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px;display:grid;gap:10px;align-content:start}
+/* quatro blocos: 4 colunas no computador largo, 2 × 2 no meio, 1 coluna no celular; a marca ou o botão fica no pé */
+.blocos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.bloco{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px;display:flex;flex-direction:column;gap:10px}
+.bloco.agora{box-shadow:inset 0 0 0 1px var(--linha-2)}
 .bloco h2{font-size:19px}
-.bloco p{font-size:15px;color:var(--t2);line-height:1.5}
-.bloco .pill,.bloco .btn{justify-self:start;margin-top:4px}
-@media (max-width:900px){.blocos{grid-template-columns:minmax(0,1fr)}}
+.bloco p{font-size:15px;color:var(--t2);line-height:1.5;margin-bottom:4px}
+.bloco .pill,.bloco .btn{align-self:flex-start;margin-top:auto}
+@media (max-width:1099px){.blocos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.blocos{grid-template-columns:minmax(0,1fr)}}
 
 /* ===== a conta: cartão, formulários e avisos ===== */
 .cartao{background:var(--s1);border-radius:16px;box-shadow:inset 0 0 0 1px var(--linha),0 30px 60px -30px rgba(0,0,0,.8);padding:clamp(22px,3.4vw,36px)}
 .cartao h1{font-size:clamp(34px,4.6vw,44px);margin-bottom:12px}
 .cartao>p.fraco{color:var(--t2);line-height:1.5}
+/* "Seus dados": o rótulo do cartão quando o título da página está no lado */
+.cartao-rotulo{font-size:15px;font-weight:600;line-height:1.4;color:var(--t2)}
+.pagina .cartao-rotulo+p{margin-top:6px}
 .cartao h2{margin-top:22px}
 .form{display:grid;gap:16px;margin-top:20px}
-.campo{display:grid;gap:6px}
-.campo label{font-size:14px;font-weight:500;color:var(--t2)}
-.campo label .fraco{font-weight:450}
+/* align-content:start: sem ele, o campo sem nota (Seu nome) esticava as linhas para a altura do vizinho com nota
+   (Telefone), e o campo descia */
+.campo{display:grid;gap:6px;align-content:start}
+.campo label{font-size:14.5px;font-weight:500;color:var(--t1)}
+.campo label .fraco{font-weight:450;color:var(--t3)}
 .campo .nota{font-size:13px;color:var(--t3);line-height:1.45}
-.campo input{width:100%;height:44px;padding:0 12px;border-radius:8px;border:1px solid rgba(226,232,240,.4);background:#111318;color:var(--t1);transition:border-color .2s ease}
+/* com erro, fica só o erro: a nota ("Pelo menos 8 caracteres.") sai */
+.campo:has(input[aria-invalid=true]) .nota{display:none}
+/* o erro fica a 6 px do campo, com ou sem nota antes dele (o "p+p" geral daria 12 px a mais) */
+.campo .erro-campo{margin-top:0}
+.campo input{width:100%;height:46px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:#101010;color:var(--t1);transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}
 .campo input::placeholder{color:var(--t3)}
-.campo input:focus{outline:2px solid var(--luar);outline-offset:2px}
-.campo input[aria-invalid=true]{border-color:rgba(242,160,142,.75)}
-.campo input[aria-invalid=true]:focus{outline-color:var(--erro)}
+.campo input:focus{outline:2px solid var(--luar);outline-offset:2px;border-color:rgba(255,255,255,.55)}
+@media (hover:hover) and (pointer:fine){ .campo input:hover:not(:focus){border-color:rgba(255,255,255,.55)} }
+/* campo com erro: a borda fica cheia e branca (sem cor), e o erro embaixo leva o "!" num círculo */
+.campo input[aria-invalid=true]{border-color:var(--t1);box-shadow:inset 0 0 0 1px var(--t1)}
+.campo input[aria-invalid=true]:focus{outline-color:var(--t1)}
+/* o campo de senha com o botão "Mostrar" */
+.campo-senha{position:relative}
+.campo-senha input{padding-right:96px}
+.ver-senha{position:absolute;right:6px;top:50%;transform:translateY(-50%);height:32px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:500;color:var(--t2);box-shadow:inset 0 0 0 1px var(--linha-2);transition:color .2s ease,box-shadow .2s ease}
+.ver-senha[aria-pressed=true]{color:var(--t1);box-shadow:inset 0 0 0 1px var(--linha-3)}
+@media (hover:hover) and (pointer:fine){ .ver-senha:hover{color:var(--t1)} }
+/* no toque e na tela estreita: campo de 48 px e o "Mostrar" com 44 px de altura, a 2 px das bordas */
+@media (pointer:coarse),(max-width:859px){
+  .campo input{height:48px}
+  .ver-senha{right:2px;height:44px;padding:0 14px}
+}
+/* grupos do cadastro: O restaurante, Você */
+.grupo{border:0;padding:0;margin:0;min-width:0}
+.grupo+.grupo{margin-top:6px;padding-top:22px;border-top:1px solid var(--linha)}
+/* a legenda flutua para sair da borda do fieldset (senão a linha do grupo a atravessa) */
+.grupo legend{float:left;width:100%;padding:0;margin-bottom:14px;font-size:13.5px;font-weight:600;color:var(--t2);letter-spacing:.01em}
+.grupo-campos{clear:both;display:grid;gap:16px}
+.linha-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 .contagem{font-size:13.5px;color:var(--t3);margin-top:-8px}
-.erro-campo{color:var(--erro);font-size:13.5px;line-height:1.4}
+/* a linha pequena dos termos, entre o botão e "Já tenho conta" */
+.acoes-termos{font-size:13.5px;line-height:1.4;color:var(--t3)}
+.acoes-termos .ligacao{color:var(--t2);font-weight:500}
+.erro-campo{color:var(--t1);font-size:13.5px;font-weight:500;line-height:1.4}
+.erro-campo::before{content:"!";display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-right:7px;border-radius:50%;box-shadow:inset 0 0 0 1px currentColor;font-size:10.5px;font-weight:700;line-height:1;vertical-align:-3px}
 .erro-campo:empty{display:none}
 .aviso{width:fit-content;max-width:100%;padding:11px 14px;border-radius:8px;font-size:14.5px;line-height:1.45;color:var(--t1);background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha-2)}
 .aviso:empty{display:none}
-.aviso-erro{color:#F6CFC5;background:rgba(242,160,142,.09);box-shadow:inset 0 0 0 1px rgba(242,160,142,.35)}
+/* erro e sucesso se distinguem sem cor: o erro tem borda cheia e o "!" num círculo; o sucesso, o sinal de certo */
+.aviso-erro{color:var(--t1);background:var(--s1);box-shadow:inset 0 0 0 1.5px var(--t1)}
+.aviso-erro::before,.aviso-ok::before{content:"";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:9px;border-radius:50%;box-shadow:inset 0 0 0 1.2px currentColor;vertical-align:-4px;font-size:12px;font-weight:700;line-height:1}
+.aviso-erro::before{content:"!"}
 .aviso-info{color:var(--t1);background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha-2)}
-.aviso-ok{color:#CFEBD9;background:rgba(156,207,174,.09);box-shadow:inset 0 0 0 1px rgba(156,207,174,.3)}
+.aviso-ok{color:var(--t1);background:var(--s2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.aviso-ok::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.3 2.2 4.6-5' fill='none' stroke='%23EDEDED' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px 11px no-repeat}
 .aviso .ligacao{min-height:0;color:inherit}
-.codigo-grande{font-size:32px;font-weight:600;letter-spacing:.08em;line-height:1.1;margin:8px 0 10px;font-variant-numeric:tabular-nums}
-.bloco-codigo{margin-top:20px;padding:16px 18px;border-radius:12px;background:var(--s2);box-shadow:inset 0 0 0 1px var(--linha)}
-.bloco-codigo p.fraco{font-size:14px}
+.codigo-grande{font-size:36px;font-weight:600;letter-spacing:.12em;line-height:1.1;margin:8px 0 10px;font-variant-numeric:tabular-nums}
+.bloco-codigo{margin-top:20px;padding:18px 20px;border-radius:12px;background:#101010;box-shadow:inset 0 0 0 1px var(--linha-2);text-align:center}
+.bloco-codigo p.fraco{font-size:14px;max-width:none}
+
+/* a página da conta em duas colunas: o lado (o que o teste é) e o cartão */
+.conta-dupla{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"lado cartao" "depois cartao";grid-template-rows:auto 1fr;gap:0 clamp(32px,5vw,88px);align-items:start}
+.conta-dupla>.lado{grid-area:lado}
+.conta-dupla>.cartao{grid-area:cartao}
+.conta-dupla>.depois-da-conta{grid-area:depois}
+/* "Depois de criar a conta" (v3, A9): três passos numerados, quietos, sob o lado */
+.depois-da-conta{margin-top:32px;max-width:30em}
+.pagina .depois-titulo{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-.005em}
+.depois-lista{list-style:none;margin-top:12px;border-top:1px solid var(--linha)}
+.depois-lista li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:12px 0;border-bottom:1px solid var(--linha);font-size:15px;line-height:1.5;color:var(--t2)}
+.depois-n{font-variant-numeric:tabular-nums;color:var(--t3);font-weight:600}
+/* o título da página (h1) no lado; a margem negativa (0,1275 em: o espaço acima das maiúsculas na Bodoni Moda com
+   esta altura de linha) põe o topo das maiúsculas na mesma altura da borda de cima do cartão */
+.pagina .lado-titulo{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(34px,3.7vw,54px);line-height:1.03;letter-spacing:-.022em;text-wrap:balance;max-width:11em;margin:-.1275em 0 0}
+.lado-resumo{display:none}
+.lado-lista{list-style:none;margin-top:32px;display:grid;gap:0;border-top:1px solid var(--linha);max-width:30em}
+.lado-lista li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid var(--linha);font-size:15px;line-height:1.5;color:var(--t2)}
+.lado-lista li b{display:block;color:var(--t1);font-weight:600}
+.lado-fz{display:block;margin-top:4px;color:var(--t2)}
+.lado-nota{margin-top:20px;font-size:13.5px;color:var(--t3);line-height:1.5}
+@media (max-width:899px){
+  .conta-dupla{grid-template-columns:minmax(0,1fr);grid-template-areas:"lado" "cartao" "depois";grid-template-rows:auto;gap:28px}
+  .depois-da-conta{margin-top:12px}
+  .pagina .lado-titulo{font-size:clamp(30px,7vw,40px);max-width:none;margin-top:0}
+  /* no celular o formulário vem logo depois do título: o cartão perde a moldura */
+  .conta-dupla .cartao{background:none;box-shadow:none;border-radius:0;padding:0}
+  .lado-resumo{display:block;margin-top:12px;font-size:15.5px;color:var(--t2);line-height:1.5}
+  .lado-lista,.lado-nota{display:none}
+}
+@media (max-width:560px){
+  .linha-2{grid-template-columns:minmax(0,1fr)}
+}
 
 /* ===== minha conta ===== */
 .area-conta{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
@@ -118,7 +305,7 @@
 .conta-menu a,.conta-menu span{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:8px;font-weight:500;color:var(--t2);transition:background-color .2s ease,color .2s ease}
 .conta-menu a[aria-current=page]{background:var(--s2);color:var(--t1);font-weight:600}
 .conta-menu span{color:var(--t3)}
-.conta-menu small{font-size:12px;font-weight:500;padding:2px 7px;border-radius:5px;background:rgba(226,232,240,.07);color:var(--t3);white-space:nowrap}
+.conta-menu small{font-size:12px;font-weight:500;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.07);color:var(--t3);white-space:nowrap}
 .conta-menu .sair{margin-top:12px;justify-self:start;height:40px;padding:0 12px}
 @media (hover:hover) and (pointer:fine){ .conta-menu a:not([aria-current]):hover{background:var(--s1);color:var(--t1)} }
 .quem{font-size:14px;color:var(--t3);padding:0 12px;margin-bottom:10px;min-height:1.5em;line-height:1.45}
@@ -131,7 +318,7 @@
 .ficha dt:first-of-type,.ficha dd:first-of-type{border-top:0}
 .lista-planos{list-style:none;margin-top:16px;display:grid;gap:12px}
 .lista-planos li{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:18px 20px;display:grid;gap:8px}
-.lista-planos li.atual{box-shadow:inset 0 0 0 1px rgba(242,182,107,.5)}
+.lista-planos li.atual{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6)}
 .lista-planos h2{font-size:19px;font-weight:650;letter-spacing:-.012em;margin-top:0}
 .lista-planos li>p{font-size:15px;line-height:1.45}
 .lista-planos ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
@@ -147,3 +334,10 @@
 @media (prefers-reduced-motion:reduce){
   .perguntas summary::after{transition:none}
 }
+
+/* ===== a página que não existe (v3) ===== */
+.nao-achou .na-lua{display:block;margin-bottom:28px;color:var(--t2)}
+.nao-achou .na-lua .fz{width:56px;height:56px}
+.na-caminhos{list-style:none;margin-top:24px;border-top:1px solid var(--linha);max-width:36em}
+.na-caminhos li{border-bottom:1px solid var(--linha)}
+.na-caminhos .ligacao{width:100%;min-height:52px}

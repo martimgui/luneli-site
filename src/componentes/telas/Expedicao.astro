@@ -2,9 +2,12 @@
 /**
  * A expedição, como no Luneli: cada pedido na coluna da etapa real (Em preparo, Pronto, Saiu para entrega,
  * Entregue ou retirado hoje), sem valores. O Enter no 248 abre "Quem leva o pedido 248?"; com o Diego escolhido,
- * o pedido vai para Saiu para entrega e aparece no celular dele, na página Luneli Entregador.
+ * o pedido vai para Saiu para entrega. No segundo tempo do passo (a partir de 0,6) a janela inteira (barra e conteúdo) recua e o celular
+ * do entregador entra sozinho, centralizado (Fone.astro); as cópias estáticas param antes disso (instante 0,5)
+ * e mostram o celular numa moldura própria.
  */
 import FaseDaLua from './FaseDaLua.astro'
+import Fone from './Fone.astro'
 import Pdv from './Pdv.astro'
 import { cls, de } from './estado'
 
@@ -13,7 +16,7 @@ interface Props {
 }
 const { instante: p } = Astro.props
 ---
-<Pdv aba="expedicao" estatico={1}>
+<Pdv aba="expedicao" estatico={1} janela={cls(p, { recua: 0.6 })}>
   <div class="cab-tela">
     <h4>Expedição</h4>
     <span class="r dica-k"><span class="k">←</span><span class="k">→</span> escolher · <span class="k">Enter</span> etapa seguinte</span>
@@ -54,6 +57,7 @@ const { instante: p } = Astro.props
       <div class="col-c"><FaseDaLua etapa="entregue" /><span class="nome">Entregue ou retirado hoje</span><span class="n">31</span></div>
       <div class="ped min"><div class="a"><b>#244 Lia<span class="sob"> M.</span></b><span class="t3">Delivery</span></div><div class="b"><span>Pinheiros</span><span>20:36 · 23 min</span></div><div class="e"><span class="pb-av">D</span>Com Diego</div></div>
       <div class="ped min"><div class="a"><b>#243 Otávio</b><span class="t3">Balcão</span></div><div class="b"><span></span><span>20:41 · 18 min</span></div></div>
+      <div class="ped min"><div class="a"><b>#242 Carla<span class="sob"> N.</span></b><span class="t3">Delivery</span></div><div class="b"><span>Sumarezinho</span><span>20:33 · 25 min</span></div><div class="e"><span class="pb-av">C</span>Com Caio</div></div>
     </div>
   </div>
   <div {...cls(p, { on: 0.3, fecha: 0.4 }, 'janela-fundo')}>
@@ -66,19 +70,5 @@ const { instante: p } = Astro.props
       <div class="dica">Setas ou o número escolhem; Enter confirma a saída.</div>
     </div>
   </div>
-  <div {...cls(p, { on: 0.6 }, 'fone')}>
-    <div class="tl">
-      <div class="bar"><span>20:59</span><span>Diego</span></div>
-      <h5>Luneli Entregador</h5>
-      <div class="abas"><span>Para sair</span><span class="at">Na rua · 1</span><span>Ganhos</span></div>
-      <div class="card">
-        <div class="s"><b><FaseDaLua etapa="saiu" />#248</b><span>20:59</span></div>
-        <div class="nm">Marina Okada</div>
-        <div class="en">R. Harmonia, 412<br />ap. 31 · Vila Madalena</div>
-        <div class="vl"><span>Cobrar</span><b>R$ 80,00 · Pix</b></div>
-        <div class="ln2"><span>Ligar</span><span>Abrir no mapa</span></div>
-        <div class="bt">Entregue</div>
-      </div>
-    </div>
-  </div>
+  <Fone slot="sobre" instante={p} classe="fone-palco" />
 </Pdv>

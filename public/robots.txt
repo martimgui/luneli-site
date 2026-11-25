@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# As páginas da conta (minha-conta, confirmar-email, esqueci-a-senha, redefinir-senha) levam noindex no próprio
+# HTML; não ficam bloqueadas aqui, para o buscador conseguir ler o noindex (site v3, 04/11/2026).
+
+Sitemap: https://luneli.com.br/sitemap.xml

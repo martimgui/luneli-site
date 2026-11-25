@@ -1,0 +1,18 @@
+---
+/**
+ * O cabeçalho compacto e fixo da página de início: fica escondido sobre a abertura, some ao descer e volta ao
+ * subir, a partir do fim da abertura (scripts/vitrine/cabecalho.ts). Preto e branco; leva Produto, Planos,
+ * Perguntas, Entrar e Testar grátis. É um div com nav, não um segundo header (um banner só na página, v3); escondido, fica aria-hidden e inert. Sem script não existe (o cabeçalho de cima basta); com movimento reduzido
+ * aparece e some sem deslizar.
+ */
+---
+<div class="cab-fixo" id="cabFixo" aria-hidden="true" inert>
+  <a class="marca" href="/" aria-label="Luneli, início">Luneli</a>
+  <nav class="menu" aria-label="Atalhos">
+    <a class="produto" href="#produto">Produto</a>
+    <a class="precos" href="/planos/">Planos</a>
+    <a href="/perguntas/">Perguntas</a>
+    <a class="entrar" href="/entrar/">Entrar</a>
+    <a class="btn um pequeno" href="/testar-gratis/">Testar grátis</a>
+  </nav>
+</div>

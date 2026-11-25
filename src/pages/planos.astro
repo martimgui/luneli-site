@@ -1,16 +1,25 @@
 ---
 import Base from '../layouts/Base.astro'
 import PlanosDegraus from '../componentes/PlanosDegraus.astro'
+import { GUIA_DOS_DEGRAUS, TEXTO_DOS_DEGRAUS } from '../lib/planos'
+
+const SETA =
+  '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9.5 4.5 13 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 ---
-<Base titulo="Planos e preços | Luneli">
+<Base titulo="Planos e preços | Luneli" descricao="Os planos do Luneli: Essencial, Delivery completo, Profissional e Empresarial. Cada degrau inclui o de baixo; o primeiro mês não é cobrado e não pede cartão.">
   <section class="pagina" aria-labelledby="h-pagina">
     <div class="in">
       <h1 id="h-pagina">Planos e preços</h1>
-      <p class="lead">Quatro degraus: cada um inclui tudo o do degrau de baixo. Os extras se somam a qualquer degrau. Por enquanto, só o plano mensal.</p>
+      <p class="lead">Quatro degraus, do delivery e balcão à rede com várias casas: cada um inclui tudo o do degrau de baixo, e os extras se somam a qualquer um. Os preços ainda estão em definição, e nada é cobrado nesta versão.</p>
+      <ul class="guia" aria-label="Qual plano escolher">
+        {GUIA_DOS_DEGRAUS.map(({ quando, degrau }) => (
+          <li><span>{quando}<span class="so-leitor">:</span></span><Fragment set:html={SETA} /><b>{TEXTO_DOS_DEGRAUS[degrau].nome}.</b></li>
+        ))}
+      </ul>
       <PlanosDegraus completo />
-      <div class="acoes" style="margin-top:36px">
-        <a class="btn um" href="/testar-gratis">Testar grátis</a>
-        <a class="ligacao" href="/o-que-vem-por-ai">Veja o que vem por aí</a>
+      <div class="acoes acoes-fim">
+        <a class="btn um" href="/testar-gratis/">Testar grátis</a>
+        <a class="ligacao" href="/o-que-vem-por-ai/">Veja o que vem por aí</a>
       </div>
     </div>
   </section>

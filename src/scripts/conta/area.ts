@@ -29,7 +29,7 @@ export async function exigirDono(): Promise<Sessao | null> {
     } catch {
       // Sem sessão para encerrar: o resultado é o mesmo.
     }
-    location.assign('/entrar')
+    location.assign('/entrar/')
   })
   let sessao: Sessao | null
   try {

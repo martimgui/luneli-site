@@ -3,6 +3,7 @@
 //   data-cls="pronto@.6"      liga a classe "pronto" a partir de 0,6.
 // No palco da história o script (scripts/vitrine/telas.ts) aplica isso conforme a rolagem; nas cópias estáticas
 // (celular, mesas, PDV de dia) o `instante` vem como prop e o estado já nasce desenhado no HTML, sem depender de script.
+import { caminhoDaFase, fracaoDoDeslocamento } from '../../lib/fase-da-lua'
 
 /** O instante da tela: indefinido no palco (o script decide), um número nas cópias estáticas. */
 export type Instante = number | undefined
@@ -43,21 +44,16 @@ export type Etapa = keyof typeof FASE_DA_ETAPA
 export const FASE_DO_PASSO = [0, 0.66, 1.33, 2] as const
 
 /**
- * O ícone de fase da lua: um disco aceso menos um disco escuro deslocado (d0 de 0, nova, a 2, cheia).
- * O mesmo desenho do protótipo D6, gerado no servidor.
+ * O ícone de fase da lua: o disco apagado (quase invisível) e a parte acesa com o terminador em elipse, a mesma
+ * geometria da lua grande da vitrine (lib/fase-da-lua.ts), acesa pela esquerda como a crescente vista do Brasil.
+ * d0 vai de 0 (nova) a 2 (cheia), como no protótipo D6. Gerado no servidor.
  */
 export function lunar(d0: number, tam = 14, aro = true): string {
   const r = tam / 2 - 0.75
   const c = tam / 2
-  const d = d0 * r
-  let corpo: string
-  if (d <= 0) corpo = `<circle cx="${c}" cy="${c}" r="${r}" fill="currentColor" opacity=".16"/>`
-  else if (d >= 2 * r) corpo = `<circle cx="${c}" cy="${c}" r="${r}" fill="currentColor"/>`
-  else {
-    const x = (c + d / 2).toFixed(3)
-    const h = Math.sqrt(r * r - (d * d) / 4)
-    corpo = `<path d="M${x} ${(c - h).toFixed(3)}A${r} ${r} 0 1 0 ${x} ${(c + h).toFixed(3)}A${r} ${r} 0 0 1 ${x} ${(c - h).toFixed(3)}Z" fill="currentColor"/>`
-  }
+  const d = caminhoDaFase(fracaoDoDeslocamento(d0))
+  const apagado = `<circle cx="${c}" cy="${c}" r="${r}" fill="currentColor" opacity=".16"/>`
+  const aceso = d === '' ? '' : `<path transform="translate(${c} ${c}) scale(${-r} ${r})" d="${d}" fill="currentColor"/>`
   const anel = aro ? `<circle cx="${c}" cy="${c}" r="${r - 0.4}" fill="none" stroke="currentColor" stroke-width=".9" opacity=".5"/>` : ''
-  return `<svg class="fz" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" aria-hidden="true">${anel}${corpo}</svg>`
+  return `<svg class="fz" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" aria-hidden="true">${anel}${apagado}${aceso}</svg>`
 }

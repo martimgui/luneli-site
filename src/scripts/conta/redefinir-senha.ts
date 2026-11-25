@@ -15,8 +15,8 @@ function semLink(texto = LINK_INVALIDO): void {
   avisar(aviso, texto, 'erro')
   form.form.hidden = true
   // Sem link válido, a ação principal é pedir outro: só a apresentação dos dois links muda.
-  const entrar = depois.querySelector<HTMLElement>('a[href="/entrar"]')
-  const outro = depois.querySelector<HTMLElement>('a[href="/esqueci-a-senha"]')
+  const entrar = depois.querySelector<HTMLElement>('a[href="/entrar/"]')
+  const outro = depois.querySelector<HTMLElement>('a[href="/esqueci-a-senha/"]')
   if (entrar && outro) {
     entrar.className = 'btn tres'
     outro.className = 'btn um'

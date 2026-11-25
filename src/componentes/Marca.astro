@@ -1,11 +1,18 @@
 ---
-/** A marca "Pronta" ou "Em breve" de uma função, lida da lista única (@pdv/core). */
+/**
+ * A marca de uma função, em texto (sem pílula): "Pronta", "Em breve" ou, para o que já está no sistema mas cujo
+ * papel depende do programa da impressora, "Pronta no sistema; o papel chega com o programa da impressora (em
+ * breve)". Lida da lista única (@pdv/core). `curta` usa a forma curta do terceiro estado (cartões e abas).
+ */
 import { marcaDaFuncao } from '@pdv/core'
 import type { FuncaoDoSite } from '@pdv/core'
+import { TEXTO_DA_MARCA, TEXTO_CURTO_DA_MARCA } from '../lib/planos'
 
 interface Props {
   funcao: FuncaoDoSite
+  curta?: boolean
 }
 const marca = marcaDaFuncao(Astro.props.funcao)
+const texto = Astro.props.curta ? TEXTO_CURTO_DA_MARCA[marca] : TEXTO_DA_MARCA[marca]
 ---
-{marca === 'pronta' ? <span class="pill pronta">Pronta</span> : <span class="pill breve">Em breve</span>}
+<span class:list={['pill', { pronta: marca === 'pronta', breve: marca !== 'pronta', 'sem-papel': marca === 'pronta_sem_papel' }]}>{texto}</span>

@@ -1,0 +1,33 @@
+---
+/**
+ * O celular do entregador: a página Luneli Entregador com o pedido 248 na rua (endereço, telefone, quanto cobrar
+ * e o botão Entregue). No palco da história entra como o segundo tempo do passo 3, centralizado sobre a
+ * expedição recuada (a partir de 0,6); nas cópias estáticas (`fixo`) aparece sozinho, numa moldura própria.
+ */
+import FaseDaLua from './FaseDaLua.astro'
+import { cls } from './estado'
+
+interface Props {
+  instante?: number
+  /** Sempre visível, fora do palco (a cópia do celular e do tablet). */
+  fixo?: boolean
+  classe?: string
+}
+const { instante: p, fixo = false, classe = '' } = Astro.props
+const atributos = fixo ? { class: ['fone', 'fone-fixo', classe].filter(Boolean).join(' ') } : cls(p, { on: 0.6 }, ['fone', classe].filter(Boolean).join(' '))
+---
+<div {...atributos}>
+  <div class="tl">
+    <div class="bar"><span>20:59</span><span>Diego</span></div>
+    <h5>Luneli Entregador</h5>
+    <div class="abas"><span>Para sair</span><span class="at">Na rua · 1</span><span>Ganhos</span></div>
+    <div class="card">
+      <div class="s"><b><FaseDaLua etapa="saiu" />#248</b><span>20:59</span></div>
+      <div class="nm">Marina Okada</div>
+      <div class="en">R. Harmonia, 412<br />ap. 31 · Vila Madalena</div>
+      <div class="vl"><span>Cobrar</span><b>R$ 80,00 · Pix</b></div>
+      <div class="ln2"><span>Ligar</span><span>Abrir no mapa</span></div>
+      <div class="bt">Entregue</div>
+    </div>
+  </div>
+</div>

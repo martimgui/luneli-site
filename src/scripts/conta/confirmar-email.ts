@@ -4,7 +4,7 @@ import { lerETirarTokenDoEndereco } from '../../lib/conta'
 import { avisar, elemento } from './formulario'
 import { irParaEntrar, sessaoAtual } from './sessao'
 
-const PLANO = '/minha-conta/plano'
+const PLANO = '/minha-conta/plano/'
 const MENSAGENS = {
   confirmado: 'E-mail confirmado. Agora escolha o seu plano.',
   em_uso: 'Este e-mail já é usado por outra conta.',

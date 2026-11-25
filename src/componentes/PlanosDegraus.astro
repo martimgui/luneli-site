@@ -1,61 +1,214 @@
 ---
 /**
- * Os 4 degraus (cada um inclui o de baixo) e os extras, com a marca de cada função lida da lista única.
- * Nenhum preço é inventado: o preço ainda não foi definido.
+ * Os 4 degraus (cada um inclui o de baixo), com a mesma altura e no máximo quatro funções por cartão; abaixo deles,
+ * a nota única dos preços (e a do nome provisório) e, na página de planos, o comparativo completo: toda função da
+ * lista única por plano, mais o que está planejado para todos. Os extras, contratados à parte, ficam numa lista
+ * própria, fora do comparativo. No computador o comparativo é uma tabela; abaixo de 700 px, quatro abas, uma por
+ * plano (sem script, os quatro painéis aparecem um embaixo do outro).
+ * A marca de cada função vem da lista única. Nenhum preço é inventado: o preço ainda não foi definido.
  */
-import { DEGRAUS_DO_SITE, funcoesDoLugar, situacaoDoDegrau } from '@pdv/core'
+import { DEGRAUS_DO_SITE, funcaoDoSite, funcoesDoLugar, marcaDaFuncao, situacaoDoDegrau } from '@pdv/core'
+import type { DegrauDoSite, FuncaoDoSite } from '@pdv/core'
 import Marca from './Marca.astro'
-import { AVISO_DE_EXEMPLO, SITUACAO_DO_DEGRAU, TEXTO_DOS_DEGRAUS } from '../lib/planos'
+import { lunar } from './telas/estado'
+import { DESTAQUES_DO_DEGRAU, SITUACAO_DO_DEGRAU, TEXTO_DA_MARCA, TEXTO_CURTO_DA_MARCA, TEXTO_DOS_DEGRAUS, notaDosPrecos } from '../lib/planos'
 
 interface Props {
-  /** Na página inicial, sem a lista das funções de todos os planos. */
+  /** Na página de planos, com o comparativo completo. */
   completo?: boolean
 }
 const { completo = false } = Astro.props
-const extras = funcoesDoLugar('extra')
-const todos = funcoesDoLugar('todos')
-const CHECK =
-  '<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.2 4.7-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-// Texto provisório até o Gui decidir (03/11): "Plano mensal" e "Implantação guiada" são o que o cofre confirma.
-const SELOS = ['Plano mensal', 'Cancela pela tela', 'Implantação guiada']
+// Uma frase só no lugar da fileira de selos (v3). Texto provisório até o Gui decidir (03/11): "Plano mensal" e
+// "Implantação guiada" são o que o cofre confirma; o selo da implantação fica como pergunta para ele no STATUS.
+const CONDICOES = 'Plano mensal, que você cancela pela própria tela, com implantação guiada.'
+
+const nivel = (degrau: DegrauDoSite): number => DEGRAUS_DO_SITE.indexOf(degrau)
+/** O que o comparativo diz de uma função num degrau: pronta, em breve ou fora do plano. */
+type Celula = 'pronta' | 'pronta_sem_papel' | 'em_breve' | 'nao'
+function celula(funcao: FuncaoDoSite, degrau: DegrauDoSite): Celula {
+  // Os extras são contratados à parte: nunca entram num plano (e nem aparecem no comparativo).
+  const entra = funcao.lugar === 'todos' || (funcao.lugar !== 'extra' && nivel(degrau) >= nivel(funcao.lugar))
+  return entra ? marcaDaFuncao(funcao) : 'nao'
+}
+/** Para o leitor de tela, na tabela. */
+const TEXTO_DA_CELULA: Record<Celula, string> = { ...TEXTO_DA_MARCA, nao: 'Não incluída' }
+/** O texto que aparece nas abas do celular. */
+const TEXTO_DA_ABA: Record<Celula, string> = { ...TEXTO_CURTO_DA_MARCA, nao: 'Não inclui' }
+/** Fases da lua: cheia = pronta, meia = pronta no sistema com o papel em breve, nova (o disco apagado com o aro) = em breve. */
+const LUA: Record<Exclude<Celula, 'nao'>, string> = { pronta: lunar(2, 14), pronta_sem_papel: lunar(1, 14), em_breve: lunar(0, 14) }
+const GRUPOS: { titulo: string; funcoes: FuncaoDoSite[] }[] = [
+  ...DEGRAUS_DO_SITE.map((degrau) => ({ titulo: `${TEXTO_DOS_DEGRAUS[degrau].nome}${degrau === 'essencial' ? '' : ' (e os degraus acima)'}`, funcoes: funcoesDoLugar(degrau) })),
+  { titulo: 'Planejado para todos os planos', funcoes: funcoesDoLugar('todos') },
+]
+const EXTRAS = funcoesDoLugar('extra')
+// O "(em breve)" do título só vale enquanto nenhum extra estiver pronto; com um pronto, cada um mostra a sua marca.
+const extrasEmBreve = EXTRAS.every((funcao) => marcaDaFuncao(funcao) === 'em_breve')
+const NOTA_DOS_PRECOS = notaDosPrecos(DEGRAUS_DO_SITE.filter((degrau) => situacaoDoDegrau(degrau) === 'em_breve').map((degrau) => TEXTO_DOS_DEGRAUS[degrau].nome))
+
 ---
-<p class="exemplo" role="note">{AVISO_DE_EXEMPLO}</p>
 <div class="degraus">
   {DEGRAUS_DO_SITE.map((degrau) => {
     const texto = TEXTO_DOS_DEGRAUS[degrau]
+    const situacao = situacaoDoDegrau(degrau)
+    const proprias = funcoesDoLugar(degrau)
+    const destaques = DESTAQUES_DO_DEGRAU[degrau].map((id) => funcaoDoSite(id))
+    const restantes = proprias.length - destaques.length
     return (
-      <article class="degrau" aria-labelledby={`degrau-${degrau}`}>
-        <span class="situ">{SITUACAO_DO_DEGRAU[situacaoDoDegrau(degrau)]}</span>
-        <h2 id={`degrau-${degrau}`}>{texto.nome}</h2>
-        {texto.provisorio && <span class="provisorio">Nome provisório</span>}
-        <p>{texto.resumo}</p>
-        {texto.inclui && <p class="inclui">{texto.inclui}</p>}
-        <ul>
-          {funcoesDoLugar(degrau).map((funcao) => (
-            <li><span>{funcao.nome}</span><Marca funcao={funcao} /></li>
-          ))}
-        </ul>
-        <p class="preco">R$ —/mês<small>Preço ainda não definido.</small></p>
+      <article class:list={['degrau', { breve: situacao === 'em_breve' }]} aria-labelledby={`degrau-${degrau}`}>
+        <div class="d-topo">
+          <span class="situ">{SITUACAO_DO_DEGRAU[situacao]}</span>
+          <h2 id={`degrau-${degrau}`}>{texto.nome}</h2>
+          <p class="resumo">{texto.para}</p>
+        </div>
+        {situacao === 'em_breve' ? (
+          <p class="d-sem-acao">Ainda não dá para assinar.</p>
+        ) : (
+          <a class="btn dois" href="/testar-gratis/">Começar grátis</a>
+        )}
+        <div class="d-lista">
+          {texto.inclui && <p class="inclui">{texto.inclui}</p>}
+          <ul>
+            {destaques.map((funcao) => (
+              <li><span>{funcao.nome}</span>{marcaDaFuncao(funcao) !== 'pronta' && <Marca funcao={funcao} curta />}</li>
+            ))}
+          </ul>
+          {restantes > 0 && completo && (
+            <a class="ligacao d-mais" href="#comparativo">Mais {restantes} funções, no comparativo</a>
+          )}
+          {restantes > 0 && !completo && (
+            <a class="ligacao d-mais" href="/planos/#comparativo">Mais {restantes} funções, na página de planos</a>
+          )}
+        </div>
       </article>
     )
   })}
 </div>
-<div class="extras">
-  <h2>Extras, para qualquer plano</h2>
-  <ul class="soon">
-    {extras.map((funcao) => (
-      <li><b>{funcao.nome}</b><p>{funcao.frase}</p><div class="act"><Marca funcao={funcao} /></div></li>
-    ))}
-  </ul>
+<div class="degraus-notas">
+  <p>{NOTA_DOS_PRECOS}</p>
 </div>
+<p class="selos">{CONDICOES}</p>
 {completo && (
-  <div class="extras">
-    <h2>Para todos os planos</h2>
-    <ul class="soon">
-      {todos.map((funcao) => (
-        <li><b>{funcao.nome}</b><p>{funcao.frase}</p><div class="act"><Marca funcao={funcao} /></div></li>
-      ))}
+  <section class="comparativo" id="comparativo" aria-labelledby="comparativo-titulo">
+    <h2 id="comparativo-titulo">Comparativo completo</h2>
+    <p class="fraco">Cada degrau inclui tudo o do degrau de baixo.</p>
+    <ul class="legenda" aria-label="Legenda">
+      <li><Fragment set:html={LUA.pronta} />Pronta: já está no sistema</li>
+      <li><Fragment set:html={LUA.pronta_sem_papel} />{TEXTO_DA_MARCA.pronta_sem_papel}</li>
+      <li><Fragment set:html={LUA.em_breve} />Em breve, sem data</li>
+      <li><i aria-hidden="true"></i>Não incluída no plano</li>
     </ul>
-  </div>
+    <div class="tabela-rolagem">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Função</th>
+            {DEGRAUS_DO_SITE.map((degrau) => (
+              <th scope="col">{TEXTO_DOS_DEGRAUS[degrau].nome}</th>
+            ))}
+          </tr>
+        </thead>
+        {GRUPOS.map((grupo) => (
+          <tbody>
+            <tr class="grupo"><th scope="rowgroup" colspan="5">{grupo.titulo}</th></tr>
+            {grupo.funcoes.map((funcao) => (
+              <tr>
+                <th scope="row"><b>{funcao.nome}</b><span class="frase">{funcao.frase}</span></th>
+                {DEGRAUS_DO_SITE.map((degrau) => {
+                  const c = celula(funcao, degrau)
+                  return (
+                    <td class={`c-${c}`}>
+                      {c === 'nao' ? (
+                        <Fragment><i aria-hidden="true"></i><span class="so-leitor">{TEXTO_DA_CELULA.nao}</span></Fragment>
+                      ) : (
+                        <span class="lua" role="img" aria-label={TEXTO_DA_CELULA[c]}><Fragment set:html={LUA[c]} /></span>
+                      )}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        ))}
+      </table>
+    </div>
+    <div class="abas-planos" data-abas>
+      <div class="abas-faixa">
+        <div class="abas" role="tablist" aria-label="Planos do comparativo">
+          {DEGRAUS_DO_SITE.map((degrau, i) => (
+            <button type="button" role="tab" id={`aba-${degrau}`} aria-controls={`painel-${degrau}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{TEXTO_DOS_DEGRAUS[degrau].nome}</button>
+          ))}
+        </div>
+      </div>
+      {DEGRAUS_DO_SITE.map((degrau, i) => (
+        <div class="aba-painel" role="tabpanel" id={`painel-${degrau}`} aria-labelledby={`aba-${degrau}`} tabindex="0" hidden={i !== 0}>
+          <h3 class="aba-titulo">{TEXTO_DOS_DEGRAUS[degrau].nome}</h3>
+          {GRUPOS.map((grupo) => (
+            <div class="aba-grupo">
+              <p class="aba-grupo-titulo">{grupo.titulo}</p>
+              <ul>
+                {grupo.funcoes.map((funcao) => {
+                  const c = celula(funcao, degrau)
+                  return (
+                    <li class={`c-${c}`}>
+                      <span class="aba-funcao"><b>{funcao.nome}</b><span class="frase">{funcao.frase}</span></span>
+                      <span class="aba-situ">{c === 'nao' ? <i aria-hidden="true"></i> : <Fragment set:html={LUA[c]} />}{c === 'pronta_sem_papel' ? <Fragment><span aria-hidden="true">{TEXTO_DA_ABA[c]}</span><span class="so-leitor">{TEXTO_DA_CELULA[c]}</span></Fragment> : TEXTO_DA_ABA[c]}</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+    <section class="extras" aria-labelledby="extras-titulo">
+      <h3 id="extras-titulo">Extras, contratados à parte, para qualquer plano{extrasEmBreve && ' (em breve)'}</h3>
+      <ul class="extras-lista">
+        {EXTRAS.map((funcao) => (
+          <li>
+            <span class="extras-fz"><Fragment set:html={LUA[marcaDaFuncao(funcao)]} /></span>
+            <span><b>{funcao.nome}</b><span class="frase">{funcao.frase}</span>{!extrasEmBreve && <Marca funcao={funcao} />}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </section>
 )}
-<p class="selos">{SELOS.map((selo) => <span><Fragment set:html={CHECK} />{selo}</span>)}</p>
+
+<script>
+  // As abas do comparativo no celular (padrão de abas do WAI-ARIA): clique ou setas esquerda/direita, Home e End.
+  // A seleção acompanha o foco; só o painel da aba escolhida fica visível. Os painéis têm as mesmas linhas na mesma
+  // ordem, então trocar de plano deixa a mesma função no mesmo lugar da tela.
+  for (const bloco of document.querySelectorAll<HTMLElement>('[data-abas]')) {
+    const abas = [...bloco.querySelectorAll<HTMLButtonElement>('[role=tab]')]
+    const paineis = abas.map((aba) => document.getElementById(aba.getAttribute('aria-controls') ?? ''))
+    const escolher = (indice: number, focar: boolean): void => {
+      abas.forEach((aba, i) => {
+        const ativa = i === indice
+        aba.setAttribute('aria-selected', String(ativa))
+        aba.tabIndex = ativa ? 0 : -1
+        const painel = paineis[i]
+        if (painel) painel.hidden = !ativa
+      })
+      if (focar) abas[indice]?.focus()
+      // a faixa é uma linha só, rolável: a aba escolhida vai para a vista dela (sem rolar a página)
+      const aba = abas[indice]
+      const faixa = aba?.parentElement
+      if (aba && faixa) faixa.scrollTo({ left: Math.max(0, aba.offsetLeft - 16), behavior: 'smooth' })
+    }
+    abas.forEach((aba, i) => {
+      aba.addEventListener('click', () => escolher(i, false))
+      aba.addEventListener('keydown', (evento) => {
+        const alvo =
+          evento.key === 'ArrowRight' ? (i + 1) % abas.length
+          : evento.key === 'ArrowLeft' ? (i - 1 + abas.length) % abas.length
+          : evento.key === 'Home' ? 0
+          : evento.key === 'End' ? abas.length - 1
+          : null
+        if (alvo === null) return
+        evento.preventDefault()
+        escolher(alvo, true)
+      })
+    })
+  }
+</script>

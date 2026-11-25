@@ -1,17 +1,53 @@
 ---
-/** Páginas cujo texto passa por um jurídico antes do lançamento (decisão do dono): nada de texto jurídico aqui. */
+/**
+ * Páginas cujo conteúdo ainda não existe (termos, privacidade, contrato de dados, contato, situação): dizem com
+ * clareza o que a página vai trazer e o que já vale hoje, sem fingir que está pronta. Nada de texto jurídico:
+ * o texto passa por um jurídico antes do lançamento (decisão do dono).
+ */
 import Base from '../layouts/Base.astro'
+import { lunar } from './telas/estado'
 
+interface Ponto {
+  titulo: string
+  texto: string
+}
 interface Props {
   titulo: string
+  descricao?: string
+  /** A primeira frase: o que a página é. */
+  lead: string
+  /** A marca de situação, curta ("Em preparação", "Ainda não está no ar"). */
+  situacao?: string
+  /** O que a página vai trazer, ou o que já vale hoje. */
+  tituloDosPontos?: string
+  pontos?: Ponto[]
+  /** Uma nota final, em tom menor. */
+  nota?: string
 }
-const { titulo } = Astro.props
+const { titulo, descricao, lead, situacao = 'Em preparação', tituloDosPontos = 'O que esta página vai trazer', pontos = [], nota } = Astro.props
 ---
-<Base titulo={`${titulo} | Luneli`}>
-  <section class="pagina estreita" aria-labelledby="h-pagina">
+<Base titulo={`${titulo} | Luneli`} descricao={descricao} semIndice>
+  <section class="pagina media" aria-labelledby="h-pagina">
     <div class="in">
+      <div class="prep-cab"><span class="pill breve">{situacao}</span></div>
       <h1 id="h-pagina">{titulo}</h1>
-      <p class="preparo">Em preparação: o texto passa por um jurídico antes do lançamento.</p>
+      <p class="lead">{lead}</p>
+      <slot />
+      {pontos.length > 0 && (
+        <>
+          <h2 style="margin-top:36px">{tituloDosPontos}</h2>
+          <ul class="prep-lista">
+            {pontos.map((ponto, i) => (
+              <li><span aria-hidden="true"><Fragment set:html={lunar((2 * (i + 1)) / (pontos.length + 1), 16)} /></span><span><b>{ponto.titulo}</b>{ponto.texto}</span></li>
+            ))}
+          </ul>
+        </>
+      )}
+      {nota && <p class="prep-nota">{nota}</p>}
+      <div class="acoes" style="margin-top:28px">
+        <a class="ligacao" href="/perguntas/">Perguntas frequentes</a>
+        <a class="ligacao" href="/">Voltar ao início</a>
+      </div>
     </div>
   </section>
 </Base>

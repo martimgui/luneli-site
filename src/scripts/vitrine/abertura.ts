@@ -1,34 +1,23 @@
-// A abertura: a lua nasce atrás do título em eclipse (anel finíssimo no escuro → a luz nasce → a mensagem
-// entra), em cerca de 2,6 s, uma vez por visita. Depois, de tempos em tempos, um ponto âmbar corre sobre o
-// limbo aceso enquanto a página está no topo. Com movimento reduzido, tudo já começa no fim.
-//
-// Com WebGL, a lua é a de verdade (scripts/vitrine/lua.ts: mapas de cor e relevo da NASA) num canvas fixo que
-// cobre a abertura e a passagem: ela fica no lugar enquanto o título sobe, cresce de fio a crescente conforme a
-// rolagem e encolhe até pousar no lugar da lua pequena da passagem, de onde segue com a página. Sem WebGL,
-// ficam os elementos de CSS de sempre (disco escuro deslizando sobre a imagem da lua cheia).
-import { $, LUA, SAI, caixa, circulo, limitar, opacidade, porQuadro, rad, rampa, semMovimento, tracejado, transformar } from './comum'
-import { TONS_DA_LUA, criarRenderizador, temWebGL } from './lua'
-import type { Lua, Renderizador } from './lua'
+// A abertura: a lua minimalista nasce atrás do título em eclipse (anel finíssimo no escuro → a luz nasce num fio
+// de lua por baixo), em cerca de 2,6 s, uma vez por visita. A mensagem é posicionada e mostrada pelo CSS (visível
+// desde a primeira pintura, só com um deslize curto); este script só lê onde ela está para pôr a lua atrás dela
+// (computador) ou acima dela (celular). A lua mora num quadro preso à janela (position: sticky) que cobre a
+// noite: no computador ela fica no lugar enquanto o título sobe, a fase cresce de fio a crescente e ela se apaga
+// antes da passagem; no celular ela sobe com a página (nunca fica sob o texto) e se apaga do mesmo jeito. Tudo em
+// SVG, nítido em qualquer tamanho. Com movimento reduzido, a lua é desenhada uma vez, parada, e rola com a página.
+// As leituras de layout ficam no evento de rolagem (antes de qualquer escrita); o quadro só escreve.
+import { $, LUA, SAI, limitar, opacidade, porQuadro, rampa, semMovimento } from './comum'
+import { colocar, criarLua, fase } from './lua'
+import { criarRenderizador, temWebGL } from './lua-gl'
+import type { Renderizador } from './lua-gl'
 
 const hero = $('#hero')
 const noite = $('#noite')
+const quadroDaLua = $('#luaFixa')
+const svg = $<SVGSVGElement>('#luaSvg')
+const canvas = $<HTMLCanvasElement>('#luaGl')
 const msg = $('#msg')
 const h1 = $('#h1')
-const sub = $('#sub')
-const acoes = $('#acoes')
-const lua = $('#hLua')
-const luz = $('#hLuz')
-const disco = $('#hDisco')
-const halo = $('#hHalo')
-const brilho = $('#hBrilho')
-const coroa = $('#hCoroa')
-const anel = $('#hAnel')
-const aro = $('#hAro')
-const svg = $<SVGSVGElement>('#hFio')
-const gDica = $<SVGGElement>('#hDica')
-const dicaPonta = $<SVGCircleElement>('#hDicaPonta')
-const pLua = $<SVGSVGElement>('#pLua')
-const canvas = $<HTMLCanvasElement>('#luaGl')
 
 const reduzido = semMovimento()
 // ?ha=1.5 congela a abertura num instante, só no `astro dev` (conferência de tela); no site publicado não existe.
@@ -39,21 +28,19 @@ const congelado = ((): number | null => {
   return Number.isFinite(n) && n > 0 ? n : null
 })()
 const FIM = 2.6
-/** Quanto a lua vai esperar pelas texturas antes de começar a abertura mesmo lisa (ms). */
-const ESPERA_PELAS_TEXTURAS = 1400
+/** A fração acesa no fim da abertura: um fio de lua (no celular um pouco mais, com as pontas finas). */
+const FIO = { computador: 0.045, celular: 0.05 }
+/** Até onde a fase cresce enquanto a lua se apaga na rolagem. */
+const CRESCE = 0.3
 
 interface Geometria {
   cx: number
+  /** O centro na página (não na janela). */
   cy: number
   r: number
-  ang: number
-  faixa: number
-  EX: number
-  pendurada: boolean
-  /** O topo da abertura na página (a lua de WebGL é fixa na janela e precisa saber onde a abertura está). */
-  topo: number
+  celular: boolean
 }
-// A altura da janela vem de um elemento de prova com 100svh, lido uma vez por medição: no celular, a barra
+// A altura da janela vem de um criar de prova com 100svh, lido uma vez por medição: no celular, a barra
 // do navegador que some e volta não muda a lua nem a altura da abertura.
 const prova = document.createElement('div')
 prova.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
@@ -61,272 +48,140 @@ document.body.append(prova)
 const alturaDaJanela = (): number => Math.max(prova.offsetHeight || innerHeight, 600)
 
 let G: Geometria | null = null
-let tA = 0
-let dicaT = 0
-let antes: number | null = null
-
-const NS = 'http://www.w3.org/2000/svg'
-interface Camada {
-  w: number
-  c: string
-  L: number
-}
-interface Rastro {
-  g: SVGGElement
-  camadas: { p: SVGPathElement; L: number }[]
-  len: number
-  trilha: SVGPathElement
-}
-let dica: Rastro | null = null
-
-/** Um rastro afunilado sobre um arco de círculo: o ponto âmbar que corre pelo limbo. */
-function rastro(O: { x: number; y: number }, R: number, g1: number, g2: number, alvo: SVGGElement, camadas: Camada[]): Rastro {
-  const ponto = (g: number): [number, number] => [O.x + R * Math.cos(rad(g)), O.y + R * Math.sin(rad(g))]
-  const a = ponto(g1)
-  const b = ponto(g2)
-  const sentido = g2 > g1 ? 1 : 0
-  const d = `M${a[0].toFixed(1)} ${a[1].toFixed(1)} A${R} ${R} 0 0 ${sentido} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`
-  const g = document.createElementNS(NS, 'g')
-  const feitas = camadas.map((cm) => {
-    const p = document.createElementNS(NS, 'path')
-    p.setAttribute('d', d)
-    p.setAttribute('fill', 'none')
-    p.setAttribute('stroke', cm.c)
-    p.setAttribute('stroke-width', String(cm.w))
-    p.setAttribute('stroke-linecap', 'round')
-    g.append(p)
-    return { p, L: cm.L }
-  })
-  alvo.append(g)
-  const trilha = feitas[0]!.p
-  const len = trilha.getTotalLength()
-  for (const c of feitas) {
-    c.p.style.strokeDasharray = `${c.L} ${len + c.L + 10}`
-    c.p.style.strokeDashoffset = String(c.L)
-  }
-  return { g, camadas: feitas, len, trilha }
-}
-
-/** O tom da luz muda com a hora do dia: neutro no almoço, quente à tarde, azulado à noite. */
-const tomDaHora = ((): number => {
-  const h = new Date().getHours()
-  return h >= 10 && h < 15 ? 0 : h >= 15 && h < 18 ? 1 : 2
-})()
-
-/* ===== a lua de verdade (WebGL) ===== */
-const gl: Renderizador | null = reduzido || !temWebGL() ? null : criarRenderizador(canvas)
-const comGl = gl !== null || (reduzido && temWebGL())
-// com movimento reduzido a lua é desenhada uma vez, parada, com a página (o canvas deixa de ser fixo)
-const glParado: Renderizador | null = gl === null && comGl ? criarRenderizador(canvas) : null
-const renderizador = gl ?? glParado
-document.documentElement.classList.toggle('lua-real', renderizador !== null)
-document.documentElement.classList.toggle('lua-parada', glParado !== null)
-if (renderizador === null) canvas.remove()
-/** O topo do invólucro da noite na página (o canvas parado é absoluto dentro dele). */
 let noiteTopo = 0
+let noiteAltura = 0
+let tA = 0
+let antes: number | null = null
+let ultimoQuadro = ''
+/** O que a rolagem lê, no evento: a posição e o topo do quadro preso (ele sai com a noite quando ela acaba). */
+let leitura = { y: scrollY, topo: 0 }
 
-/** A luz da lua sem WebGL: a imagem da lua cheia, mais clara no limbo; o disco escuro faz a fase. */
-function pintarLuz(el: HTMLElement): void {
-  el.style.background = 'url(/lua/cheia.webp) center / 100% 100% no-repeat'
+document.documentElement.classList.toggle('lua-parada', reduzido)
+const renderizador: Renderizador | null = !reduzido && temWebGL() ? criarRenderizador(canvas) : null
+if (renderizador !== null) {
+  svg.style.display = 'none'
+  void renderizador.pronto.then((ok) => {
+    if (ok) pintarDeNovo()
+  })
+} else {
+  canvas.style.display = 'none'
 }
-
-interface Lugar {
-  cx: number
-  cy: number
-  r: number
-}
-/** A lua pequena da passagem, na página (o lugar onde a lua de WebGL pousa). */
-let pouso: Lugar = { cx: 0, cy: 0, r: 0 }
-function medirPouso(): void {
-  const b = pLua.getBoundingClientRect()
-  pouso = { cx: b.left + b.width / 2, cy: b.top + b.height / 2 + scrollY, r: b.width * 0.34 }
-}
+const lua = criarLua(svg, 'lh')
 
 /**
- * A geometria: a lua inteira nasce atrás do título e o limbo aceso fica embaixo, embalando a mensagem,
- * como a lua nova logo depois do pôr do sol. No celular ela fica no alto, acima do título.
+ * A geometria: no computador a lua inteira nasce atrás do título e o limbo aceso fica embaixo, embalando a
+ * mensagem, como a lua nova logo depois do pôr do sol. No celular ela ocupa a faixa entre o cabeçalho e a
+ * mensagem (o CSS reserva pelo menos 22 svh para ela e ancora a mensagem no pé da primeira tela).
  */
 function montar(): void {
   const w = document.documentElement.clientWidth
   const h = alturaDaJanela()
-  const movel = w < 860
-  const topoCab = movel ? 64 : 80
-  hero.style.height = ''
-  const mh = msg.offsetHeight
+  const celular = w < 860
+  const topoCab = celular ? 64 : 80
+  const heroTopo = hero.getBoundingClientRect().top + scrollY
+  const caixa = msg.getBoundingClientRect()
+  const topo = caixa.top + scrollY
+  const mh = caixa.height
   const th = h1.offsetHeight
-  let alt = h
-  if (movel) {
-    const r = Math.round(Math.min(w * 0.36, h * 0.17))
-    const cy = topoCab + 20 + r
-    const topo = cy + r + 34
-    msg.style.top = `${topo}px`
-    alt = Math.max(h, topo + mh + 56)
-    G = { cx: Math.round(w / 2), cy, r, ang: 90, faixa: Math.round(r * 0.1), EX: 0, pendurada: true, topo: 0 }
+  if (celular) {
+    const faixaTopo = heroTopo + topoCab + 12
+    const faixaFundo = topo - 24
+    const r = Math.round(Math.min(w * 0.4, h * 0.19, Math.max(0, (faixaFundo - faixaTopo) / 2)))
+    G = { cx: Math.round(w / 2), cy: Math.round((faixaTopo + faixaFundo) / 2), r, celular }
   } else {
-    let topo = Math.round((h - mh) / 2 + 4)
-    topo = Math.max(topoCab + 40, topo)
-    msg.style.top = `${topo}px`
     const cy = Math.round(topo - th * 0.06)
-    const fundo = topo + mh + 88
-    const r = Math.round(fundo - cy)
-    alt = Math.max(h, fundo + 44)
-    G = { cx: Math.round(w / 2), cy, r, ang: 90, faixa: Math.round(r * 0.075), EX: 0, pendurada: false, topo: 0 }
+    const fundo = topo + mh + 104
+    G = { cx: Math.round(w / 2), cy, r: Math.round(fundo - cy), celular }
   }
-  hero.style.height = `${alt}px`
-  // a caixa da mensagem nasce invisível (sem salto de layout) e só aparece depois de medida
-  msg.style.visibility = 'visible'
-  G.topo = hero.getBoundingClientRect().top + scrollY
   noiteTopo = noite.getBoundingClientRect().top + scrollY
-  const { cx, cy, r, ang, faixa } = G
-  const EX = Math.max(8, Math.round(faixa * 0.5))
-  G.EX = EX
-  circulo(lua, cx, cy, r)
-  circulo(aro, cx, cy, r)
-  circulo(anel, cx, cy, r)
-  const Rd = r + EX
-  caixa(disco, { x: r - Rd, y: r - Rd, w: 2 * Rd, h: 2 * Rd })
-  const borda = (100 * (1 - (EX * 1.2) / Rd)).toFixed(3)
-  // luz cinérea: o disco escuro é um pouco mais claro que o céu e mais claro do lado da luz
-  disco.style.background = `radial-gradient(circle at 50% 78%, #1A1C22 0%, #16181D 52%, #131519 ${borda}%, rgba(19,21,25,0) 100%)`
-  pintarLuz(luz)
-  const Lx = cx + r * Math.cos(rad(ang))
-  const Ly = cy + r * Math.sin(rad(ang))
-  // os chifres do crescente se apagam antes de chegar ao título
-  const mascara = G.pendurada ? '' : `linear-gradient(180deg,transparent 0,transparent ${Math.round(r * 1.1)}px,#000 ${Math.round(r * 1.64)}px)`
-  luz.style.maskImage = mascara
-  circulo(halo, Lx, Ly, Math.round(r * 1.05))
-  halo.style.background = 'radial-gradient(closest-side, rgba(214,222,236,.13), rgba(214,222,236,.045) 42%, rgba(214,222,236,.012) 72%, transparent)'
-  caixa(brilho, { x: Math.round(cx - r * 1.5), y: Math.round(cy - r * 1.3), w: Math.round(r * 3), h: Math.round(r * 2.6) })
-  brilho.style.background = 'radial-gradient(closest-side, rgba(206,216,232,.06), rgba(206,216,232,.02) 55%, transparent)'
-  circulo(coroa, cx, cy, r * 1.06)
-  coroa.style.background = 'radial-gradient(closest-side, transparent 93.6%, rgba(236,240,246,.15) 94.4%, rgba(236,240,246,.04) 97%, transparent 100%)'
-
-  // o ponto âmbar que, de tempos em tempos, corre sobre o limbo aceso (da esquerda para a direita, por baixo)
-  svg.setAttribute('width', String(w))
-  svg.setAttribute('height', String(alt))
-  svg.setAttribute('viewBox', `0 0 ${w} ${alt}`)
-  gDica.textContent = ''
-  const abertura = G.pendurada ? 62 : 50
-  dica = rastro({ x: cx, y: cy }, r + 1.5, 90 + abertura, 90 - abertura, gDica, [
-    { w: 7, c: 'rgba(242,182,107,.16)', L: movel ? 70 : 150 },
-    { w: 2.2, c: 'rgba(242,182,107,.7)', L: movel ? 120 : 260 },
-    { w: 1.2, c: 'rgba(255,214,160,.55)', L: movel ? 200 : 420 },
-  ])
-  opacidade(dica.g, 0)
-  opacidade(dicaPonta, 0)
-  medirPouso()
+  noiteAltura = noite.offsetHeight
+  // o quadro da lua: a janela inteira, preso a ela (ou a noite inteira, parado, com movimento reduzido)
+  const altQuadro = reduzido ? noiteAltura : h
+  quadroDaLua.style.height = reduzido ? '' : `${h}px`
+  quadroDaLua.style.marginBottom = reduzido ? '' : `${-h}px`
+  svg.setAttribute('viewBox', `0 0 ${w} ${altQuadro}`)
   renderizador?.medir()
-}
-
-/** A mensagem da abertura, no instante t (segundos). */
-function pintarMensagem(t: number): void {
-  const vh = rampa(t, 0.95, 0.95)
-  const vs = rampa(t, 1.12, 0.95)
-  const va = rampa(t, 1.28, 0.9)
-  opacidade(h1, vh)
-  transformar(h1, `translateY(${((1 - vh) * 12).toFixed(2)}px)`)
-  opacidade(sub, vs)
-  transformar(sub, `translateY(${((1 - vs) * 8).toFixed(2)}px)`)
-  opacidade(acoes, va)
-  transformar(acoes, `translateY(${((1 - va) * 6).toFixed(2)}px)`)
-}
-
-/** A abertura em eclipse feita de CSS (sem WebGL), no instante t. */
-function pintarCss(t: number): void {
-  if (G === null) return
-  const esp = G.faixa * rampa(t, 0.55, 1.75, LUA)
-  const an = rampa(t, 0, 0.28, (x) => x) * (1 - rampa(t, 1.0, 1.0, SAI))
-  const desl = esp > 0.05 ? esp + G.EX : 0
-  const dx = -Math.cos(rad(G.ang)) * desl
-  const dy = -Math.sin(rad(G.ang)) * desl
-  transformar(disco, `translate(${dx.toFixed(2)}px,${dy.toFixed(2)}px)`)
-  const f = esp / G.faixa
-  opacidade(luz, esp > 0.05 ? 1 : 0)
-  opacidade(halo, f)
-  opacidade(brilho, f)
-  opacidade(anel, an * 0.95)
-  opacidade(coroa, an)
-  opacidade(aro, 0.35 + 0.65 * Math.max(f, an))
+  ultimoQuadro = ''
 }
 
 /**
- * A lua de WebGL no instante t da abertura e na rolagem y. Fica fixa na janela enquanto o título sobe,
- * cresce de fio (180°) a crescente e encolhe até o lugar da lua da passagem; dali segue com a página.
+ * A lua no instante t da abertura e na rolagem y (px). No computador fica no lugar enquanto o título sobe, cresce
+ * de fio a crescente e se apaga em três quartos da janela; no celular sobe com a página e se apaga em três quintos.
  */
-let ultimoQuadro = ''
-function pintarGl(t: number, y: number): void {
-  if (G === null || renderizador === null) return
+function pintarLua(t: number, y: number, topoDoQuadro: number): void {
+  if (G === null) return
   const vh = alturaDaJanela()
   const f = rampa(t, 0.55, 1.75, LUA)
   const an = rampa(t, 0, 0.28, (x) => x) * (1 - rampa(t, 1.0, 1.0, SAI))
-  const heroCx = G.cx
-  const heroCy = G.topo + G.cy
-  let L: Lua
-  if (glParado !== null) {
-    // parada, com a página: a lua da abertura e a da passagem, as duas desenhadas no mesmo canvas (absoluto na noite)
-    const luas: Lua[] = [
-      { cx: heroCx, cy: heroCy - noiteTopo, r: G.r, theta: 166, phi: 0, halo: 1, anel: 0, tom: TONS_DA_LUA[tomDaHora] },
-      { cx: pouso.cx, cy: pouso.cy - noiteTopo, r: pouso.r, theta: 118, phi: 62, halo: 0.8, tom: TONS_DA_LUA[tomDaHora] },
-    ]
-    renderizador.desenhar(luas)
-    return
-  }
-  // o fim da passagem de bastão: a lua pequena chega ao seu lugar de leitura
-  const chegada = Math.max(1, pouso.cy - vh * 0.42)
-  const e = limitar(y / chegada)
-  const k = LUA(e)
-  const cx = heroCx + (pouso.cx - heroCx) * k
-  const cy = heroCy + (pouso.cy - y - heroCy) * k
-  const r = G.r + (pouso.r - G.r) * k
-  // depois de pousar, continua crescendo enquanto a passagem sobe
-  const e2 = limitar((y - chegada) / (vh * 0.5))
-  const theta = 180 - 14 * f - 48 * e - 22 * e2
-  const phi = 62 * e + 18 * e2
-  if (cy + r * 1.3 < 0) {
-    // já saiu pelo alto: nada a desenhar
-    if (ultimoQuadro !== 'vazio') {
-      ultimoQuadro = 'vazio'
-      renderizador.desenhar([])
-    }
-    return
-  }
-  L = { cx, cy, r, theta, phi, halo: f * (1 - 0.25 * k), anel: an, aro: 0.35 + 0.65 * Math.max(f, an), tom: TONS_DA_LUA[tomDaHora] }
-  const chave = `${cx.toFixed(1)},${cy.toFixed(1)},${r.toFixed(2)},${theta.toFixed(2)},${phi.toFixed(2)},${f.toFixed(3)},${an.toFixed(3)}`
+  const fio = (G.celular ? FIO.celular : FIO.computador) * f
+  const e = limitar(y / (vh * (G.celular ? 0.6 : 0.75)))
+  const kk = LUA(e)
+  const k = fio + (CRESCE - fio) * kk
+  const r = G.r * (1 - (G.celular ? 0.2 : 0.3) * kk)
+  const cyJanela = G.celular ? G.cy - y : G.cy - vh * 0.22 * kk
+  const ang = 90 + 60 * kk
+  const sumico = limitar((e - 0.35) / 0.65)
+  const op = 1 - SAI(sumico)
+  const chave = `${cyJanela.toFixed(1)},${r.toFixed(2)},${k.toFixed(4)},${f.toFixed(3)},${an.toFixed(3)},${op.toFixed(3)},${topoDoQuadro.toFixed(1)}`
   if (chave === ultimoQuadro) return
   ultimoQuadro = chave
-  renderizador.desenhar([L])
+  if (renderizador !== null) {
+    if (op <= 0.001 || cyJanela + r * 1.7 < 0) {
+      renderizador.desenhar([])
+      return
+    }
+    const theta = Math.max(0, 180 - 18 * f - 162 * kk)
+    const phi = 62 * kk
+    const intensidade = 1 - 0.32 * kk
+    renderizador.desenhar([
+      {
+        cx: G.cx,
+        cy: cyJanela - topoDoQuadro,
+        r,
+        theta,
+        phi,
+        halo: f * op * (1 - 0.2 * kk),
+        anel: an * op,
+        aro: (0.35 + 0.65 * Math.max(f, an)) * op,
+        tom: [1.03 * intensidade, 0.99 * intensidade, 0.92 * intensidade],
+      },
+    ])
+    return
+  }
+  if (op <= 0.001 || cyJanela + r * 1.7 < 0) {
+    lua.g.style.visibility = 'hidden'
+    return
+  }
+  lua.g.style.visibility = ''
+  colocar(lua, G.cx, cyJanela - topoDoQuadro, r, ang)
+  fase(lua, k)
+  opacidade(lua.g, op)
+  // v3 (C2): o corpo apagado some duas vezes mais rápido que o limbo aceso: o último resto visível é o fio de luz,
+  // não uma mancha cinza atrás dos botões
+  opacidade(lua.corpo, Math.max(0, 1 - 2 * sumico))
+  opacidade(lua.halo, f * (1 - 0.3 * kk))
+  opacidade(lua.brilho, f * (1 - 0.5 * kk))
+  opacidade(lua.anel, an * 0.95)
+  opacidade(lua.coroa, an)
+  opacidade(lua.aro, 0.35 + 0.65 * Math.max(f, an))
+}
+
+/** Com movimento reduzido: a lua parada, com a página (o quadro cobre a noite inteira). */
+function pintarParado(): void {
+  if (G === null) return
+  colocar(lua, G.cx, G.cy - noiteTopo, G.r, 90)
+  fase(lua, G.celular ? FIO.celular : FIO.computador)
+  opacidade(lua.g, 1)
+  opacidade(lua.halo, 1)
+  opacidade(lua.brilho, 1)
+  opacidade(lua.anel, 0)
+  opacidade(lua.coroa, 0)
+  opacidade(lua.aro, 1)
 }
 
 function pintar(t: number): void {
-  pintarMensagem(t)
-  if (renderizador === null) pintarCss(t)
-  else pintarGl(t, scrollY)
-}
-
-/** O ponto âmbar corre o limbo uma vez só, emendado no fim da abertura. Devolve se ainda está passando. */
-function pontoNoHorizonte(dt: number): boolean {
-  if (dica === null) return false
-  const ESPERA = 0
-  const DURACAO = 2.6
-  dicaT += dt
-  const c = dicaT - ESPERA
-  // com a lua de WebGL fixa na janela, o ponto só faz sentido com a página no topo
-  if (c >= DURACAO || (renderizador !== null && scrollY > 8)) {
-    opacidade(dica.g, 0)
-    opacidade(dicaPonta, 0)
-    return false
-  }
-  const pr = c < 0 ? -1 : LUA(c / DURACAO)
-  const vis = pr >= 0 ? Math.min(1, pr * 9, (1 - pr) * 7) : 0
-  if (vis > 0) {
-    const andou = dica.len * pr
-    for (const cm of dica.camadas) tracejado(cm.p, cm.L - andou)
-    const pt = dica.trilha.getPointAtLength(andou)
-    transformar(dicaPonta, `translate(${pt.x.toFixed(1)}px,${pt.y.toFixed(1)}px)`)
-  }
-  opacidade(dica.g, vis)
-  opacidade(dicaPonta, vis * 0.9)
-  return true
+  if (reduzido) pintarParado()
+  else pintarLua(t, leitura.y, leitura.topo)
 }
 
 let rodando = false
@@ -335,9 +190,8 @@ function quadro(agora: number): void {
   antes = agora
   if (tA < FIM) tA = Math.min(FIM, tA + dt)
   pintar(tA)
-  // depois da abertura o ponto passa uma vez, e então o laço para: nada mais se move sozinho
-  const passando = tA < FIM || pontoNoHorizonte(dt)
-  if (!passando) {
+  // depois da abertura o laço para: nada mais se move sozinho
+  if (tA >= FIM) {
     rodando = false
     return
   }
@@ -361,49 +215,24 @@ function comecar(): void {
   }
 }
 
-function iniciar(): void {
-  montar()
-  if (gl === null) {
-    comecar()
-    // parada: o quadro único é refeito quando as texturas chegam
-    if (glParado !== null) void glParado.pronto.then(pintarGlDeNovo)
-    return
-  }
-  // a abertura espera as texturas um pouco, para a luz já nascer sobre as crateras
-  let comecou = false
-  const vai = (): void => {
-    if (comecou) return
-    comecou = true
-    comecar()
-  }
-  void gl.pronto.then(() => {
-    if (comecou) pintarGlDeNovo()
-    else vai()
-  })
-  setTimeout(vai, ESPERA_PELAS_TEXTURAS)
+/** Lê a rolagem e o quadro (no evento, com o layout limpo) e redesenha a lua. */
+function ler(): void {
+  leitura = { y: scrollY, topo: reduzido ? 0 : quadroDaLua.getBoundingClientRect().top }
 }
 
-/** Redesenha o quadro atual (texturas que chegaram, janela que mudou). */
-function pintarGlDeNovo(): void {
+/** Redesenha o quadro atual (fontes que chegaram, janela que mudou). */
+function pintarDeNovo(): void {
   ultimoQuadro = ''
+  ler()
   pintar(instanteParado())
 }
 
-iniciar()
-// Tab logo depois de carregar: a mensagem já aparece inteira, sem esperar a abertura
-msg.addEventListener(
-  'focusin',
-  () => {
-    if (tA < FIM) {
-      tA = FIM
-      pintar(tA)
-    }
-  },
-  { once: true },
-)
+ler()
+montar()
+comecar()
 void document.fonts.ready.then(() => {
   montar()
-  if (reduzido || congelado !== null || tA >= FIM) pintarGlDeNovo()
+  pintarDeNovo()
 })
 let ultimaLargura = document.documentElement.clientWidth
 addEventListener(
@@ -414,24 +243,27 @@ addEventListener(
     if (matchMedia('(pointer: coarse)').matches && w === ultimaLargura) return
     ultimaLargura = w
     montar()
-    pintarGlDeNovo()
+    pintarDeNovo()
   }),
 )
 
-// a rolagem move a lua de WebGL (só com a abertura ou a passagem perto da janela; o canvas é fixo)
-if (gl !== null) {
+// a rolagem move a lua (só com a noite perto da janela): a leitura fica no evento, a escrita no quadro
+if (!reduzido) {
   let perto = true
   const pede = porQuadro(() => {
-    if (perto) pintarGl(instanteParado(), scrollY)
+    if (perto) pintarLua(instanteParado(), leitura.y, leitura.topo)
   })
+  const aoRolar = (): void => {
+    if (!perto) return
+    ler()
+    pede()
+  }
   new IntersectionObserver(
     (entradas) => {
       perto = entradas.some((e) => e.isIntersecting)
-      canvas.style.visibility = perto ? '' : 'hidden'
-      if (perto) pede()
+      if (perto) aoRolar()
     },
     { rootMargin: '20% 0px' },
   ).observe(noite)
-  addEventListener('scroll', pede, { passive: true })
-  // as texturas podem chegar depois da abertura começar: o próximo quadro já as usa
+  addEventListener('scroll', aoRolar, { passive: true })
 }

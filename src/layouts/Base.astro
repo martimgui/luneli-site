@@ -5,22 +5,21 @@
  * nas outras, o rodapé compacto.
  *
  * As fontes vêm instaladas com o site (pacotes fontsource), sem chamar serviço de fora: só as faces latinas,
- * com preload, e uma face de reserva (Arial, Times New Roman) com as métricas ajustadas pelo capsize, para o
- * texto não pular quando a fonte chega.
+ * com preload (ver a nota no head), e uma face de reserva (Arial, Times New Roman) com as métricas ajustadas
+ * pelo capsize, para o texto não pular quando a fonte chega.
  * TROCA DA SEM SERIFA (Hanken → Manrope): rode `pnpm --filter @pdv/site add @fontsource-variable/manrope`,
  * troque o import do arquivo .woff2 e as métricas abaixo (`@capsizecss/metrics/manrope`) e, em
  * estilos/base.css, --sans:'Manrope Variable'.
  */
 import hankenUrl from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url'
-import bodoniUrl from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url'
+import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2?url'
 import { createFontStack } from '@capsizecss/core'
 import hankenMetricas from '@capsizecss/metrics/hankenGrotesk'
-import bodoniMetricas from '@capsizecss/metrics/bodoniModa'
 import arial from '@capsizecss/metrics/arial'
-import timesNewRoman from '@capsizecss/metrics/timesNewRoman'
 import '../estilos/base.css'
 import '../estilos/paginas.css'
 import Cabecalho from '../componentes/Cabecalho.astro'
+import CabecalhoFixo from '../componentes/CabecalhoFixo.astro'
 import Rodape from '../componentes/Rodape.astro'
 import RodapeEclipse from '../componentes/RodapeEclipse.astro'
 
@@ -29,23 +28,56 @@ interface Props {
   descricao?: string
   /** A página de início: cabeçalho sobre a abertura e o rodapé com o eclipse. */
   inicio?: boolean
+  /** Página de conta (confirmar e-mail, senha, minha conta): fora da busca (noindex) e sem endereço canônico. */
+  semIndice?: boolean
 }
 
 const {
   titulo,
   descricao = 'Luneli é o sistema de caixa e gestão para restaurantes, pizzarias e delivery: pedido pelo teclado, cozinha, expedição, entregador, mesas e fechamento do caixa.',
   inicio = false,
+  semIndice = false,
 } = Astro.props
+// Metadados para busca e para o cartão de link (WhatsApp, redes): o endereço canônico e a imagem vêm do domínio
+// configurado em astro.config.mjs (luneli.com.br, decisão do dono de 02/11; o domínio ainda não foi comprado).
+// O build gera uma pasta por página (/planos/index.html), então o endereço que sempre existe termina em barra:
+// o canônico e o sitemap (pages/sitemap.xml.ts) usam o mesmo formato.
+const caminho = Astro.url.pathname.replace(/\/$/, '')
+const canonico = Astro.site && !semIndice ? new URL(caminho === '' ? '/' : `${caminho}/`, Astro.site).href : undefined
+const imagem = Astro.site ? new URL('/og.png', Astro.site).href : '/og.png'
+// Dados estruturados da página de início (Organization e SoftwareApplication): sem preço nem avaliação, porque
+// o preço está em definição e não há avaliações.
+const dadosEstruturados = inicio
+  ? JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Organization',
+          name: 'Luneli',
+          url: Astro.site?.href ?? '/',
+          logo: imagem,
+          description: 'Sistema de caixa e gestão para restaurantes, pizzarias e delivery.',
+        },
+        {
+          '@type': 'SoftwareApplication',
+          name: 'Luneli',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web',
+          url: Astro.site?.href ?? '/',
+          description: descricao,
+          inLanguage: 'pt-BR',
+        },
+      ],
+    })
+  : null
 
 // Só os caracteres latinos (o site é em português): o mesmo recorte do pacote fontsource.
 const LATIM = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'
 const reservaSans = createFontStack([{ ...hankenMetricas, familyName: 'Hanken Grotesk Variable' }, arial], { fontFaceFormat: 'styleString' })
-const reservaSerifa = createFontStack([{ ...bodoniMetricas, familyName: 'Bodoni Moda Variable' }, timesNewRoman], { fontFaceFormat: 'styleString' })
 const fontes = [
   `@font-face{font-family:'Hanken Grotesk Variable';font-style:normal;font-weight:100 900;font-display:swap;src:url(${hankenUrl}) format('woff2-variations');unicode-range:${LATIM}}`,
-  `@font-face{font-family:'Bodoni Moda Variable';font-style:normal;font-weight:400 900;font-display:swap;src:url(${bodoniUrl}) format('woff2-variations');unicode-range:${LATIM}}`,
+  `@font-face{font-family:'Fraunces Variable';font-style:normal;font-weight:100 900;font-display:swap;src:url(${frauncesUrl}) format('woff2-variations');unicode-range:${LATIM}}`,
   reservaSans.fontFaces,
-  reservaSerifa.fontFaces,
 ].join('\n')
 ---
 <!doctype html>
@@ -55,16 +87,36 @@ const fontes = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titulo}</title>
     <meta name="description" content={descricao} />
-    <meta name="theme-color" content="#0D0E12" />
+    <meta name="theme-color" content="#0D0D0D" />
+    {semIndice && <meta name="robots" content="noindex" />}
+    {canonico && <link rel="canonical" href={canonico} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Luneli" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    {canonico && <meta property="og:url" content={canonico} />}
+    <meta property="og:image" content={imagem} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Luneli: a lua crescente e a frase O restaurante inteiro, do caixa à porta." />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* as duas fontes com preload. Tentou-se tirar o da Bodoni (v2, 04/11): sem ele a serifa chega depois da
+        primeira pintura e a troca move os títulos centrados (CLS 0,0014 medido; a razão de largura entre a
+        Bodoni e a reserva varia por frase, de 0,97 a 1,02, então size-adjust não zera), e numa rede lenta o
+        título da abertura apareceria primeiro em Times. Um subconjunto menor da Bodoni pediria uma ferramenta
+        que não está instalada. */}
     <link rel="preload" as="font" type="font/woff2" crossorigin href={hankenUrl} />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href={bodoniUrl} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={frauncesUrl} />
     <Fragment set:html={`<style>${fontes}</style>`} />
+    {dadosEstruturados && <Fragment set:html={`<script type="application/ld+json">${dadosEstruturados}</script>`} />}
     <script is:inline>document.documentElement.classList.add('js')</script>
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
     <Cabecalho sobre={inicio} />
+    {inicio && <CabecalhoFixo />}
     <main id="conteudo" class:list={{ folha: inicio }} tabindex="-1">
       <slot />
     </main>

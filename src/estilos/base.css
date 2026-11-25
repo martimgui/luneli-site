@@ -1,21 +1,24 @@
 /*
-  Fundações do site Luneli (identidade D6, 03/11/2026).
-  Grafite frio em três superfícies; âmbar só na ação principal; verde só no concluído; vermelho só no erro.
+  Fundações do site Luneli (identidade D6, 03/11/2026; preto e branco desde a noite de 03/11).
+  Só preto, branco e cinzas neutros, sem matiz nenhum: três superfícies de grafite, a ação principal em branco,
+  concluído e erro se distinguem por peso, borda e ícone, nunca por cor.
   Uma sem serifa para tudo (números tabulares) e a serifa só na marca e nos títulos do site.
   Cantos: 4 tecla · 8 controle · 12 painel e moldura · 16 cartão grande.
+  Alvos de toque: tudo o que se toca tem pelo menos 44 px de altura no próprio elemento (marca, links do rodapé,
+  o botão pequeno do cabeçalho no celular).
 
   TROCA DE FONTE: a sem serifa é a --sans abaixo e o arquivo .woff2 importado em layouts/Base.astro.
   Hanken Grotesk (provisória) → Manrope: `pnpm --filter @pdv/site add @fontsource-variable/manrope`, o import e as
   métricas em Base.astro, e aqui --sans:'Manrope Variable','Manrope Variable Fallback',system-ui,sans-serif.
 */
 :root{
-  --fundo:#0D0E12; --fundo-2:#0A0B0E;
-  --s1:#15181D; --s2:#1B1F26; --s3:#242831;
-  --t1:#ECEDEF; --t2:#AEB3BB; --t3:#8B909A;
-  --luar:#DCE3EE; --ambar:#F2B66B; --ambar-claro:#F6C37F; --ambar-t:#1B1407;
-  --verde:#9CCFAE; --erro:#F2A08E;
-  --linha:rgba(226,232,240,.09); --linha-2:rgba(226,232,240,.16); --linha-3:rgba(226,232,240,.4);
-  --titulo:'Bodoni Moda Variable','Bodoni Moda Variable Fallback','Times New Roman',serif;
+  --fundo:#0D0D0D; --fundo-2:#0A0A0A;
+  --s1:#161616; --s2:#1C1C1C; --s3:#262626;
+  --t1:#EDEDED; --t2:#B2B2B2; --t3:#8E8E8E;
+  --amber:#E89B32; --amber-vivo:#F2B66B; --amber-suave:rgba(232,155,50,.14); --amber-borda:rgba(232,155,50,.38);
+  --luar:#E6E6E6; --acao:var(--amber); --acao-claro:var(--amber-vivo); --acao-t:#0D0D0D;
+  --linha:rgba(255,255,255,.09); --linha-2:rgba(255,255,255,.16); --linha-3:rgba(255,255,255,.4);
+  --titulo:'Fraunces Variable',Georgia,'Times New Roman',serif;
   --sans:'Hanken Grotesk Variable','Hanken Grotesk Variable Fallback',system-ui,sans-serif;
   --sai:cubic-bezier(.23,1,.32,1);
   --m:clamp(20px,4.4vw,64px);
@@ -32,49 +35,47 @@ button,input{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer}
 img,svg{display:block;max-width:100%}
 strong,b{font-weight:600}
-:focus-visible{outline:2px solid var(--luar);outline-offset:3px;border-radius:6px}
+:focus-visible{outline:2px solid var(--amber-vivo);outline-offset:3px;border-radius:6px}
 [hidden]{display:none!important}
-.pular{position:fixed;left:16px;top:-60px;z-index:100;padding:10px 16px;border-radius:8px;background:var(--luar);color:var(--fundo);font-weight:600}
+.pular{position:fixed;left:16px;top:-60px;z-index:100;padding:10px 16px;border-radius:8px;background:var(--amber);color:var(--acao-t);font-weight:600}
 .pular:focus{top:16px}
 
 /* a serifa só nos títulos do site */
 .serifa{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;letter-spacing:-.02em;line-height:1.03;text-wrap:balance}
 
-/* botões: principal cheio (âmbar), secundário contorno de 1px, terciário só texto */
+/* botões: principal cheio (branco, letra preta), secundário contorno de 1px, terciário só texto */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:8px;border:1px solid transparent;
   font:600 15px/1 var(--sans);letter-spacing:.003em;white-space:nowrap;text-decoration:none;
-  transition:transform .16s var(--sai),background-color .2s ease,box-shadow .2s ease,color .2s ease}
+  transition:transform .18s var(--sai),background-color .2s ease,box-shadow .25s ease,color .2s ease}
 .btn:active{transform:scale(.97)}
-.btn.um{background:var(--ambar);color:var(--ambar-t)}
+.btn.um{background:var(--acao);color:var(--acao-t);box-shadow:0 0 0 0 rgba(255,255,255,0)}
 /* .btn-papel: nome antigo que o conferidor do contrato ainda procura; os scripts já criam .btn.dois */
 .btn.dois,.btn.btn-papel{color:var(--t1);box-shadow:inset 0 0 0 1px var(--linha-3)}
 .btn.tres{padding:0 4px;color:var(--t2);font-weight:500}
 .btn.pequeno{height:38px;padding:0 16px;font-size:14px}
 .btn.tres.pequeno{padding:0 4px}
+.btn .seta{display:inline-block;margin-left:-3px;transition:transform .25s var(--sai)}
 .btn[disabled],.btn[aria-disabled=true]{cursor:not-allowed;transform:none;background:var(--s2);color:var(--t3);box-shadow:inset 0 0 0 1px var(--linha-2)}
 @media (hover:hover) and (pointer:fine){
-  .btn.um:hover{background:var(--ambar-claro)}
-  .btn.dois:hover,.btn.btn-papel:hover{box-shadow:inset 0 0 0 1px rgba(236,237,239,.6)}
+  .btn.um:hover{background:var(--acao-claro);transform:translateY(-1px);box-shadow:0 10px 26px -8px rgba(232,155,50,.45)}
+  .btn.um:hover:active{transform:scale(.97)}
+  .btn.dois:hover,.btn.btn-papel:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);background:rgba(255,255,255,.04)}
   .btn.tres:hover{color:var(--t1)}
-  .btn[disabled]:hover,.btn[aria-disabled=true]:hover{background:var(--s2);color:var(--t3);box-shadow:inset 0 0 0 1px var(--linha-2)}
+  .btn:hover .seta{transform:translateY(3px)}
+  .btn[disabled]:hover,.btn[aria-disabled=true]:hover{background:var(--s2);color:var(--t3);box-shadow:inset 0 0 0 1px var(--linha-2);transform:none}
 }
 .ligacao{color:var(--t1);font-weight:500;text-decoration:underline;text-decoration-color:var(--linha-3);text-underline-offset:4px;
   min-height:44px;display:inline-flex;align-items:center;transition:text-decoration-color .2s ease}
-@media (hover:hover) and (pointer:fine){ .ligacao:hover{text-decoration-color:var(--t1)} }
-
-/* o grão fino sobre as superfícies escuras grandes */
-.grao::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.055;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:160px 160px}
+@media (hover:hover) and (pointer:fine){ .ligacao:hover{color:var(--amber-vivo);text-decoration-color:var(--amber-vivo)} }
 
 /* ===== cabeçalho comum: a marca, Produto, Preços, Entrar e Testar grátis ===== */
 .cab{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:16px;height:80px;padding:0 var(--m)}
 .cab.sobre{position:absolute;top:0;left:0;right:0}
-.marca{font-family:var(--titulo);font-size:26px;font-weight:600;letter-spacing:.012em;line-height:1;font-optical-sizing:none;font-variation-settings:"opsz" 11;color:var(--t1)}
+.marca{display:inline-flex;align-items:center;min-height:44px;font-family:var(--titulo);font-size:26px;font-weight:600;letter-spacing:.012em;line-height:1;font-optical-sizing:none;font-variation-settings:"opsz" 11;color:var(--t1)}
 .menu{display:flex;align-items:center;gap:clamp(18px,2.4vw,36px);font-size:15px;font-weight:450;color:var(--t2)}
 .menu a{padding:12px 0;transition:color .2s ease}
 .menu a[aria-current=page]{color:var(--t1)}
-.menu a.entrar{color:var(--t1);font-weight:500;padding-left:clamp(18px,2.4vw,36px);border-left:1px solid rgba(236,237,239,.14)}
+.menu a.entrar{color:var(--t1);font-weight:500;padding-left:clamp(18px,2.4vw,36px);border-left:1px solid rgba(255,255,255,.14)}
 .menu .btn{margin-left:clamp(0px,.6vw,8px)}
 @media (hover:hover) and (pointer:fine){ .menu a:not(.btn):hover{color:var(--t1)} }
 @media (max-width:859px){
@@ -82,6 +83,7 @@ strong,b{font-weight:600}
   .marca{font-size:23px}
   .menu{gap:18px;font-size:14.5px}
   .menu a.entrar{border:0;padding-left:0}
+  .cab .btn.pequeno{height:44px}
   .cab.sobre .menu .btn{display:none}
 }
 @media (max-width:479px){
@@ -91,17 +93,18 @@ strong,b{font-weight:600}
 /* ===== rodapé compacto (páginas internas) ===== */
 .rodape-curto{position:relative;margin-top:auto;padding:0 var(--m) 28px}
 .rodape-curto .in{max-width:1180px;margin:0 auto;padding-top:22px;border-top:1px solid var(--linha);display:flex;align-items:flex-start;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;font-size:14px;color:var(--t3)}
-.rodape-curto .r-links{display:flex;flex-wrap:wrap;gap:4px 24px;list-style:none;color:var(--t2)}
-.rodape-curto .r-links a{display:inline-block;padding:6px 0;transition:color .2s ease}
-.rodape-curto .r-marca{font-family:var(--titulo);font-size:20px;font-weight:600;font-optical-sizing:none;font-variation-settings:"opsz" 11;color:var(--t2);padding:4px 0 10px}
+.rodape-curto .r-links{display:flex;flex-wrap:wrap;gap:0 24px;list-style:none;color:var(--t2)}
+.rodape-curto .r-links a{display:inline-flex;align-items:center;min-height:44px;padding:0;transition:color .2s ease}
+.rodape-curto .r-marca{display:inline-flex;align-items:center;min-height:44px;font-family:var(--titulo);font-size:20px;font-weight:600;font-optical-sizing:none;font-variation-settings:"opsz" 11;color:var(--t2);padding:0 0 4px}
 .rodape-curto .r-fim{display:flex;align-items:center;gap:24px;padding:6px 0}
 @media (hover:hover) and (pointer:fine){ .rodape-curto .r-links a:hover{color:var(--t1)} }
 @media (max-width:859px){
   .rodape-curto .in{padding-top:18px;row-gap:10px}
-  .rodape-curto .r-links{gap:2px 18px}
+  .rodape-curto .r-links{gap:0 18px}
 }
 
 /* movimento reduzido: sem pressão nos botões, o resto fica estático em cada folha de estilo */
 @media (prefers-reduced-motion:reduce){
-  .btn:active{transform:none}
+  .btn:active,.btn.um:hover{transform:none}
+  .btn .seta,.btn:hover .seta{transition:none;transform:none}
 }

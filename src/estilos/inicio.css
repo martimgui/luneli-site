@@ -1,183 +1,288 @@
 /*
-  A página de início (identidade D6): a abertura com a lua, a passagem, a história fixa do pedido,
-  as mesas, o PDV de dia, o servidor da casa, a chamada para os planos e o rodapé com o eclipse.
+  A página de início (identidade D6; refinada em 04/11/2026; versão 2 na mesma data): a abertura com a lua, a
+  faixa de dores, a passagem, a história fixa do pedido com o trilho e o rastro (e o celular do entregador no
+  segundo tempo do passo 3), a noite inteira no arco, as mesas, o PDV de dia, o resto da noite, as dúvidas de
+  antes de testar e o rodapé com o eclipse. Corte seco em largura inteira: as folhas não têm cantos arredondados.
 */
 
-/* ===== a folha: tudo antes do rodapé sobe como uma folha opaca sobre o rodapé fixo ===== */
-:root{--r-folha:32px}
-.folha{position:relative;z-index:2;background:var(--fundo);border-radius:0 0 var(--r-folha) var(--r-folha);
-  box-shadow:0 1px 0 rgba(220,227,238,.07),0 40px 80px -20px rgba(0,0,0,.7)}
+/* ===== a folha: tudo antes do rodapé sobe como uma folha opaca sobre o rodapé fixo; a divisa é uma linha de 1 px a 6 % ===== */
+.folha{position:relative;z-index:2;background:var(--fundo);box-shadow:0 1px 0 rgba(255,255,255,.06),0 40px 80px -20px rgba(0,0,0,.7)}
+
+/* ===== entradas suaves: .revela aparece uma vez ao entrar na janela (scripts/vitrine/revelar.ts) ===== */
+html.js .revela{opacity:0;transform:translateY(18px);transition:opacity .75s var(--sai),transform .9s var(--sai);transition-delay:calc(var(--i,0) * 80ms)}
+html.js .revela.visto{opacity:1;transform:none}
+
+/* ===== o cabeçalho compacto e fixo: escondido sobre a abertura; depois some ao descer e volta ao subir (scripts/vitrine/cabecalho.ts) ===== */
+.cab-fixo{position:fixed;z-index:20;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--m);
+  background:var(--fundo);box-shadow:0 1px 0 rgba(255,255,255,.08);transform:translateY(-100%);visibility:hidden;
+  transition:transform .28s var(--sai),visibility 0s linear .28s}
+.cab-fixo.visto{transform:none;visibility:visible;transition:transform .28s var(--sai),visibility 0s}
+.cab-fixo .marca{font-size:22px}
+.cab-fixo .menu{gap:clamp(14px,2vw,28px);font-size:14.5px}
+html:not(.js) .cab-fixo{display:none}
 
 /* ===================== 1. abertura ===================== */
-/* a noite: a abertura e a passagem dividem a lua de verdade, um canvas fixo na janela recortado por este invólucro
-   (o céu fica aqui, e a abertura é transparente para a lua aparecer atrás do título) */
-.noite{position:relative;clip-path:inset(0);background:linear-gradient(180deg,#0A0B0E 0,#0C0D11 55svh,#0D0E12 100svh)}
-/* o grão cobre a noite inteira (abertura e passagem), sobre a lua e sob o texto: a lua cruza a divisa sem emenda */
-.noite::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.055;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:160px 160px}
-.noite>.hero,.noite>.passagem{z-index:1}
-.lua-gl{position:fixed;left:0;top:0;z-index:0;width:100%;height:100vh;height:100lvh;pointer-events:none}
-html:not(.js) .lua-gl{display:none}
-/* com movimento reduzido a lua é desenhada uma vez e rola com a página */
-html.lua-parada .lua-gl{position:absolute;height:100%}
-/* com a lua de WebGL, os pedaços de CSS da lua somem (fica só o ponto âmbar) */
-html.lua-real .ceu>:not(.fio){display:none}
-html.lua-real .p-lua{visibility:hidden}
-.hero{position:relative;height:100vh;height:100svh;min-height:600px;overflow:hidden;overflow:clip;isolation:isolate}
-.msg{position:absolute;z-index:6;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 var(--m);text-align:center}
-/* com script: a caixa só aparece depois de medida (sem salto), e a abertura a traz em ~2,6 s;
-   se o script não vier, uma animação de 0 s com atraso mostra tudo aos 3,5 s */
-.js .msg{bottom:auto;display:block;visibility:hidden}
-.js .msg>*{opacity:0}
-@keyframes mostrar{to{opacity:1;visibility:visible}}
-.js .msg,.js .msg>*{animation:mostrar 0s 3.5s forwards}
-.js .msg:focus-within{visibility:visible}
-.js #acoes:focus-within{opacity:1!important;transform:none!important}
+/* a noite: a abertura, a faixa de dores e a passagem dividem o céu, num quadro preso à janela (sticky) que este
+   invólucro limita (a abertura é transparente para a lua aparecer atrás do título) */
+.noite{position:relative;background:linear-gradient(180deg,#0A0A0A 0,#0C0C0C 55svh,#0D0D0D 100svh)}
+/* o grão: um PNG pequeno (160 px, 4 níveis de branco transparente, 6 KB), pintado uma vez e repetido; a opacidade
+   baixa dá o mesmo pó fino do feTurbulence antigo; some antes da história */
+.noite::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.045;background:url(/grao.png) 0 0/160px 160px repeat;
+  -webkit-mask-image:linear-gradient(180deg,#000 85%,transparent);mask-image:linear-gradient(180deg,#000 85%,transparent)}
+.noite>.hero,.noite>.dores,.noite>.passagem{z-index:1}
+/* o quadro da lua: fica preso ao topo da janela enquanto a noite dura (a altura e a margem negativa, iguais à
+   janela, vêm do script); a lua é desenhada em SVG, nítida em qualquer tamanho; contido, para a rolagem não
+   recalcular o resto da página por causa dele */
+.lua-fixa{position:sticky;top:0;z-index:0;height:100vh;height:100svh;margin-bottom:-100vh;margin-bottom:-100svh;pointer-events:none;overflow:clip;contain:strict}
+.lua-svg,.lua-gl{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+html:not(.js) .lua-fixa{display:none}
+/* com movimento reduzido a lua é desenhada uma vez e rola com a página: o quadro cobre a noite inteira */
+html.lua-parada .lua-fixa{position:absolute;inset:0;height:auto;margin:0;contain:layout paint}
+/* o halo respira devagar depois da abertura, três vezes, só no computador (o celular não repinta o céu à toa) */
+@keyframes respirar{0%,100%{opacity:1}50%{opacity:.7}}
+@media (hover:hover) and (pointer:fine){
+  html.js:not(.lua-parada) #luaSvg .lua-respira{animation:respirar 9s ease-in-out 3.2s 3}
+}
+/* a abertura: a mensagem é posicionada pelo CSS (centrada no computador; no pé da primeira tela no celular) e
+   fica visível desde a primeira pintura: só um deslize curto a partir de 60 % de opacidade, começando em 0,1 s */
+.hero{position:relative;min-height:max(600px,100svh);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px var(--m) 72px;text-align:center;overflow:clip;isolation:isolate}
+.msg{position:relative;z-index:6;width:100%}
+@keyframes entrar{from{opacity:.6;transform:translateY(10px)}to{opacity:1;transform:none}}
+html.js .msg>*{animation:entrar .7s var(--sai) both}
+html.js .kicker{animation-delay:.1s}
+html.js .hero h1{animation-delay:.16s}
+html.js .sub{animation-delay:.28s}
+html.js .acoes-hero{animation-delay:.4s}
+.kicker{font-size:15px;font-weight:500;color:var(--amber-vivo);margin:0 auto 22px;max-width:30em;text-wrap:balance}
 .hero h1{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(46px,min(7.4vw,12.8vh),126px);line-height:.98;letter-spacing:-.024em;font-kerning:normal;text-wrap:balance}
 .hero h1 .ln{display:block;white-space:nowrap}
 .hero h1 br{display:none}
-.sub{margin:28px auto 0;max-width:32em;font-size:20px;line-height:1.45;color:#C9CDD3;font-weight:450;text-wrap:balance}
+.sub{margin:26px auto 0;max-width:34em;font-size:19px;line-height:1.5;color:#C4C4C4;font-weight:450;text-wrap:balance}
 .acoes-hero{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:14px}
+/* a nota sob os botões (v3, A7): o teste sem cobrança e sem cartão, já na primeira tela */
+.hero-nota{margin:16px auto 0;font-size:14px;color:var(--t2);text-wrap:balance}
+html.js .hero-nota{animation-delay:.48s}
 
-/* a lua da abertura: tudo posicionado pelo script (abertura.ts) */
-.ceu{position:absolute;inset:0;z-index:2;pointer-events:none;
-  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 180px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 180px),transparent)}
-.ceu>*{position:absolute}
-.lua{border-radius:50%;overflow:hidden}
-.lua .luz{position:absolute;inset:0;border-radius:50%}
-.lua .disco{position:absolute;border-radius:50%}
-.aro{border-radius:50%;box-shadow:inset 0 0 0 1px rgba(220,227,238,.11);pointer-events:none}
-.halo,.coroa{border-radius:50%;pointer-events:none}
-.anel{border-radius:50%;box-shadow:0 0 0 1.25px rgba(242,244,248,.92);pointer-events:none}
-.brilho{pointer-events:none;opacity:0}
-svg.fio{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+/* ===================== 1b. a faixa de dores: três linhas sobre fios, sem cartões ===================== */
+/* v3 (C3): a dor na serifa (30 px, no máximo 32, bem abaixo dos 60 da passagem), a resposta em 16 px ao lado;
+   sem setas; os fios na largura toda da grade única de 1180 px (C6) */
+.dores{position:relative;padding:clamp(72px,10vh,104px) var(--m) 0}
+.do-in{max-width:1180px;margin:0 auto}
+.dores h2{font-size:14px;font-weight:500;color:var(--t3);letter-spacing:.01em;margin-bottom:14px}
+.do-lista{list-style:none;border-top:1px solid var(--linha)}
+.do-lista li{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:12px 56px;align-items:baseline;padding:22px 0 24px;border-bottom:1px solid var(--linha)}
+.do-dor{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:30px;line-height:1.1;letter-spacing:-.015em;color:var(--t1);text-wrap:balance}
+.do-sol{font-size:16px;line-height:1.5;color:var(--t2);text-wrap:pretty}
 
 /* ===================== 2. passagem para o produto ===================== */
-.passagem{position:relative;padding:clamp(96px,16vh,168px) var(--m) clamp(40px,8vh,80px);text-align:center}
-.p-lua,.passagem h2,.passagem p{position:relative}
+.passagem{position:relative;padding:clamp(96px,14vh,150px) var(--m) clamp(40px,8vh,80px);text-align:center}
 .passagem:focus{outline:none}
-.p-lua{display:block;width:88px;height:88px;margin:0 auto 34px;overflow:visible}
-.passagem h2{font-size:clamp(38px,min(5vw,8.4vh),72px)}
+.passagem h2{font-size:clamp(40px,4.2vw,60px)}
 .passagem p{margin:20px auto 0;max-width:33em;font-size:18px;line-height:1.55;color:var(--t2);text-wrap:balance}
 
 /* ===================== 3. a história fixa ===================== */
 .historia{position:relative;padding:0 var(--m) clamp(40px,8vh,96px)}
-.h-in{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:minmax(0,33fr) minmax(0,67fr);gap:clamp(32px,3.6vw,56px)}
-.caps{position:relative}
-.cap{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:6vh 0}
-.cap:first-child{min-height:80vh}
-.cap .txt{max-width:25em;transition:opacity .35s ease}
-.cap h3{font-family:var(--sans);font-size:clamp(24px,2.1vw,30px);font-weight:650;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.h-in{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:minmax(0,30fr) minmax(0,70fr);gap:clamp(32px,3.6vw,56px)}
+/* a coluna do texto leva o trilho: uma linha fina do primeiro nó ao último (medidos pelo script), que acende
+   conforme a rolagem avança (--avanco), com o ícone de fase de cada passo como nó */
+.caps{position:relative;padding-left:40px}
+.caps::before,.caps::after{content:"";position:absolute;left:7px;top:var(--trilho-topo,0);height:var(--trilho-alt,0);width:1px;pointer-events:none}
+.caps::before{background:rgba(255,255,255,.12)}
+.caps::after{background:rgba(255,255,255,.7);transform-origin:50% 0;transform:scaleY(var(--avanco,0))}
+html:not(.js) .caps::after{display:none}
+/* v3 (B3): cada passo tem pelo menos uma janela de altura, e o passo 3, com os seus dois tempos (a expedição e o
+   celular do entregador), 2,1 janelas: assim um PageDown ou um Espaço (cerca de 0,95 janela) para pelo menos uma
+   vez em cada tempo. No passo 3 o texto fica preso no meio da janela enquanto os dois tempos passam. */
+.cap{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:6vh 0}
+.cap:first-child{min-height:84vh}
+@media (min-width:1150px){
+  .cap:nth-child(3){min-height:210vh;justify-content:flex-start}
+  .cap:nth-child(3) .txt{position:sticky;top:calc(50vh - 120px);margin-top:calc(50vh - 180px)}
+}
+.cap .txt{position:relative;max-width:25em;transition:opacity .35s ease}
+/* os títulos dos passos na serifa dos títulos; a sans fica só no corpo */
+.cap h3{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(36px,3vw,44px);letter-spacing:-.02em;line-height:1.05;text-wrap:balance}
 .cap h3:focus:not(:focus-visible){outline:none}
 .cap p{margin-top:14px;font-size:17px;line-height:1.55;color:var(--t2);text-wrap:pretty}
-.cap .onde{display:none;align-items:center;gap:8px;margin-bottom:14px;font-size:14px;color:var(--t3)}
-.cap .onde svg{color:var(--luar)}
-.js .cap:not(.ativo) .txt{opacity:.7}
+/* a nota do plano: no computador ela vai para a linha de estado sob a tela (.rastro-plano); empilhado, logo abaixo do texto */
+.cap .cap-plano{margin-top:10px;font-size:14px;line-height:1.5;color:var(--t3)}
+@media (min-width:1150px){ html.js .cap .cap-plano{display:none} }
+.rastro-plano{margin-top:6px;min-height:20px;font-size:13.5px;line-height:1.45;color:var(--t3);max-width:62em;text-wrap:pretty}
+html:not(.js) .rastro-plano{display:none}
+.cap .onde{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:13.5px;color:var(--t2);font-weight:500;line-height:1}
+.cap .onde .no{position:absolute;left:-40px;top:-1px;width:16px;height:16px;border-radius:50%;background:var(--fundo);box-shadow:0 0 0 5px var(--fundo);color:var(--t3);transition:color .3s ease}
+.cap .onde .no .fz{width:16px;height:16px}
+.cap.ativo .onde{color:var(--t1)}
+.cap.ativo .onde .no{color:var(--amber)}
+.js .cap:not(.ativo) .txt{opacity:.72}
 .cap-tela{display:none}
 .palco-col{position:relative}
 .fixo{position:sticky;top:var(--fixoTop,64px)}
-/* a barra de etapas: as fases da lua mostram onde a história está */
-.etapas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-bottom:16px}
-.etapa{position:relative;display:flex;align-items:center;gap:9px;height:34px;padding-right:12px;font-size:14px;font-weight:500;color:var(--t3);text-align:left;transition:color .3s ease}
-.etapa .fz{flex:none;color:var(--t3);opacity:.6;transition:color .3s ease,opacity .3s ease}
-.etapa .tr{flex:1;height:1px;background:rgba(226,232,240,.12);position:relative;overflow:hidden;margin-left:4px;display:block}
-.etapa .tr i{position:absolute;inset:0;background:rgba(220,227,238,.55);transform-origin:0 50%;transform:scaleX(0)}
-.etapa:last-child .tr{display:none}
-.etapa.feita{color:var(--t2)} .etapa.feita .fz{color:var(--luar);opacity:1}
-.etapa.agora{color:var(--t1);font-weight:600} .etapa.agora .fz{color:var(--ambar);opacity:1}
-@media (hover:hover) and (pointer:fine){ .etapa:hover{color:var(--t1)} }
+/* o rastro do pedido 248 sob o palco: onde ele está neste passo */
+.rastro{display:flex;align-items:center;gap:8px;margin-top:14px;min-height:22px;font-size:13.5px;color:var(--t3);line-height:1.3}
+.rastro b{color:var(--t1);font-weight:600;white-space:nowrap}
+.rastro-fz{display:none;color:var(--t2)}
+.rastro-fz.on{display:inline-flex}
+html:not(.js) .rastro{display:none}
 
-/* a moldura do produto: objeto bem construído, profundidade ao entrar (uma vez; só com script) */
-.moldura{position:relative;border-radius:12px;isolation:isolate;
-  box-shadow:0 0 0 1px rgba(214,224,240,.09),0 1px 1px rgba(0,0,0,.5),0 6px 12px -4px rgba(0,0,0,.5),0 22px 40px -22px rgba(0,0,0,.85)}
+/* a moldura do produto: um objeto bem construído, mais claro que o fundo, com a luz da borda e a sombra que o
+   descolam da página; profundidade ao entrar (uma vez; só com script) */
+.moldura{position:relative;border-radius:12px;isolation:isolate;background:#151515;
+  box-shadow:0 0 0 1px rgba(255,255,255,.13),0 1px 1px rgba(0,0,0,.5),0 10px 24px -8px rgba(0,0,0,.7),0 36px 80px -24px rgba(0,0,0,.9),0 0 90px -20px rgba(255,255,255,.07)}
 .js .moldura{transform:scale(.96);opacity:.55;transition:transform .9s var(--sai),opacity .9s var(--sai)}
 .moldura::before{content:"";position:absolute;z-index:3;left:24px;right:24px;top:0;height:1px;pointer-events:none;transition:opacity 1.1s ease .15s;
-  background:linear-gradient(90deg,transparent,rgba(238,242,248,.42) 25%,rgba(238,242,248,.42) 75%,transparent)}
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5) 25%,rgba(255,255,255,.5) 75%,transparent)}
 .moldura::after{content:"";position:absolute;z-index:-1;inset:-1px;border-radius:13px;pointer-events:none;transition:opacity 1.1s ease .1s;
-  background:radial-gradient(70% 60% at 50% 0%,rgba(214,224,240,.16),transparent 70%)}
+  background:radial-gradient(70% 60% at 50% 0%,rgba(255,255,255,.2),transparent 70%)}
 .js .moldura::before,.js .moldura::after{opacity:0}
 .js .moldura.aceso{transform:none;opacity:1}
 .js .moldura.aceso::before,.js .moldura.aceso::after{opacity:1}
 .moldura>.vidro{position:relative;border-radius:inherit;overflow:hidden;height:100%}
 .m-hist{height:var(--alturaTela,560px)}
-.js .m-hist .pdv{position:absolute;inset:0;opacity:0;transform:scale(.985);visibility:hidden;
-  transition:opacity .4s var(--sai),transform .5s var(--sai),visibility 0s linear .4s}
-.js .m-hist .pdv.vista{opacity:1;transform:none;visibility:visible;transition:opacity .4s var(--sai),transform .5s var(--sai),visibility 0s}
-/* sem script: cada passo mostra a sua tela também no computador, e o palco e o seletor de tema somem */
+/* num palco mais estreito que 820 px (janelas de 1150 a 1330), as telas mantêm o desenho de computador e encolhem
+   juntas (--escala vem do script): o desenho empilhado é só para as cópias do celular, que têm altura livre */
+.palco-escala{position:absolute;inset:0;width:calc(100% / var(--escala,1));height:calc(100% / var(--escala,1));transform-origin:0 0;transform:scale(var(--escala,1))}
+/* a tela de agora entra pela direita e a que passou sai pela esquerda: a história anda numa direção */
+.js .m-hist .pdv{position:absolute;inset:0;opacity:0;transform:translateX(18px) scale(.985);visibility:hidden;
+  transition:opacity .4s var(--sai),transform .55s var(--sai),visibility 0s linear .4s}
+.js .m-hist .pdv.antes{transform:translateX(-18px) scale(.985)}
+.js .m-hist .pdv.vista{opacity:1;transform:none;visibility:visible;transition:opacity .4s var(--sai),transform .55s var(--sai),visibility 0s}
+/* as cópias de cada passo (celular, tablet e sem script): a moldura cresce com a tela empilhada */
 .cap-tela .moldura{height:auto}
 .cap-tela .pdv{height:auto}
 .cap-tela .pc{flex:none;min-height:0}
 html:not(.js) .cap-tela{display:block;margin-top:22px}
 html:not(.js) .palco-col,html:not(.js) .troca-tema{display:none}
-.m-hist .pdv.vista .fone{visibility:visible}
+/* o celular do entregador nas cópias: sozinho, numa moldura própria; o do palco não aparece nelas */
+/* v3 (C4): o aparelho direto sobre o preto, sem a moldura de fora; a altura vem do conteúdo */
+.cap-tela .m-fone{margin-top:22px;display:grid;place-items:center}
+.cap-tela .fone-palco{display:none}
+/* a legenda sob uma tela: o que ela é */
+.legenda-tela{margin:14px 4px 0;font-size:13.5px;color:var(--t3);line-height:1.45;text-wrap:pretty}
+.legenda-tela b{color:var(--t2);font-weight:600}
 
-/* ===================== 4. mesas ===================== */
+/* ===================== 3b. a noite inteira: um respiro; a lua cruza o arco ===================== */
+.noite-inteira{min-height:70svh;padding-bottom:clamp(24px,4vh,48px)}
+.noite-inteira .sec-cab p{max-width:34em}
+.n-plano{margin-top:10px;font-size:14px;color:var(--amber-vivo)}
+.ceu-noite{max-width:1180px;margin:clamp(24px,4vh,40px) auto 0}
+.arco{display:block;width:100%;height:auto;overflow:visible}
+.arco .no{fill:var(--fundo);stroke:rgba(255,255,255,.35);stroke-width:1;transition:fill .35s ease,stroke .35s ease}
+.arco .no.aceso{fill:var(--amber-vivo);stroke:var(--amber)}
+html:not(.js) .arco .no{fill:var(--amber-vivo);stroke:var(--amber)}
+html:not(.js) .n-lua{display:none}
+.n-lua-corpo{transform-box:fill-box;transform-origin:center}
+/* em cada nó só a hora e uma palavra; o texto do nó alcançado vai para a linha de baixo */
+.noite-eventos{list-style:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 12px;margin-top:-2px;text-align:center}
+.n-ev{display:flex;flex-direction:column;align-items:center}
+.n-hora{font-size:13px;color:var(--t3);font-variant-numeric:tabular-nums;letter-spacing:.01em;transition:color .4s ease}
+.n-onde{display:block;margin-top:3px;font-size:15px;font-weight:600;letter-spacing:-.01em;color:var(--t2);transition:color .4s ease}
+html.js .n-ev.aceso .n-hora{color:var(--t2)}
+html.js .n-ev.aceso .n-onde{color:var(--t1)}
+html:not(.js) .n-onde{color:var(--t1)}
+.n-linha{margin:clamp(22px,3.5vh,36px) auto 0;max-width:36em;min-height:3.2em;text-align:center;font-size:17px;line-height:1.55;color:var(--t2);text-wrap:balance}
+
+/* ===================== 4. mesas: o título centrado, o texto embaixo ===================== */
 .secao{position:relative;padding:clamp(80px,13vh,140px) var(--m)}
 .sec-cab{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 64px;align-items:end}
 .sec-cab h2{font-size:clamp(34px,min(4vw,7vh),58px)}
 .sec-cab p{font-size:17px;line-height:1.55;color:var(--t2);max-width:30em;text-wrap:pretty}
+#mesas .sec-cab{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:20px}
+#mesas .sec-cab h2{font-size:clamp(44px,5.2vw,76px);max-width:12em}
+#mesas .sec-cab p{max-width:560px}
 .sec-tela{max-width:1180px;margin:clamp(36px,6vh,56px) auto 0}
-.m-mesas{height:600px}
+.m-mesas{height:580px}
 
-/* ===================== 5. o PDV de dia (porcelana) ===================== */
-.dia{background:#E6E9EE;color:#14171C;border-radius:28px 28px 0 0;margin-top:clamp(24px,5vh,48px)}
-.dia .sec-cab p{color:#4A515D}
-.dia .moldura{box-shadow:0 0 0 1px rgba(22,28,40,.10),0 1px 1px rgba(22,28,40,.08),0 8px 16px -6px rgba(22,28,40,.14),0 26px 44px -24px rgba(22,28,40,.32)}
+/* ===================== 5. o PDV de dia (porcelana): corte seco em largura inteira ===================== */
+.dia{background:#E8E8E8;color:#121212;margin-top:clamp(24px,5vh,48px)}
+.dia .sec-cab p{color:#4D4D4D}
+.dia .legenda-tela{color:#5A5A5A} .dia .legenda-tela b{color:#2E2E2E}
+.dia .moldura{background:#F3F3F3;box-shadow:0 0 0 1px rgba(0,0,0,.12),0 1px 1px rgba(0,0,0,.08),0 10px 20px -8px rgba(0,0,0,.16),0 34px 60px -28px rgba(0,0,0,.36)}
 .dia .moldura::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,.9) 25%,rgba(255,255,255,.9) 75%,transparent)}
 .dia .moldura::after{display:none}
-.dia :focus-visible{outline-color:#2F3A4A}
-.troca-tema{display:flex;align-items:center;gap:12px;margin-top:22px;font-size:14px;color:#4A515D}
-.seg-site{display:inline-grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:8px;background:#D9DDE4;box-shadow:inset 0 0 0 1px rgba(22,28,40,.08)}
-.seg-site button{position:relative;height:30px;padding:0 14px;border-radius:6px;font-size:14px;color:#4A515D;transition:background-color .2s ease,color .2s ease}
-.seg-site button::before{content:"";position:absolute;inset:-7px}
-.seg-site button[aria-pressed=true]{background:#FBFCFD;color:#14171C;font-weight:600;box-shadow:0 1px 2px rgba(22,28,40,.14),inset 0 0 0 1px #6E7783}
+.dia :focus-visible{outline-color:#121212}
+.troca-tema{display:flex;align-items:center;gap:12px;margin-top:22px;font-size:14px;color:#4D4D4D}
+.seg-site{display:inline-grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:8px;background:#DADADA;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.seg-site button{position:relative;height:30px;padding:0 14px;border-radius:6px;font-size:14px;color:#4D4D4D;transition:background-color .2s ease,color .2s ease}
+.seg-site button[aria-pressed=true]{background:#FCFCFC;color:#121212;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.14),inset 0 0 0 1px #717171}
+/* no toque, a chave Escuro/Claro tem 44 px de altura no próprio botão */
+@media (pointer:coarse),(max-width:859px){ .seg-site button{height:44px;padding:0 18px} }
 @media (forced-colors:active){ .seg-site button[aria-pressed=true]{outline:2px solid Highlight;outline-offset:-2px} }
-.m-dia{height:560px}
+.m-dia{height:500px}
 
-/* ===================== 6. o que mais existe ===================== */
-.mais{background:var(--fundo);border-radius:28px 28px 0 0;margin-top:-28px}
+/* ===================== 6. o resto da noite: título em largura inteira ===================== */
+.mais{background:var(--fundo)}
 .mais-in{max-width:1180px;margin:0 auto}
-.m-grande{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px 72px;align-items:center}
-.mais h2{font-size:clamp(40px,min(5.2vw,8.6vh),80px)}
-.mais .marca-funcao{margin-top:18px}
-.mais .lead{margin-top:18px;font-size:18px;line-height:1.55;color:var(--t2);max-width:30em;text-wrap:pretty}
-.rede{border-radius:12px;background:var(--s1);box-shadow:inset 0 0 0 1px rgba(214,224,240,.08),inset 0 1px 0 rgba(238,242,248,.06);padding:8px 0;font-size:14px;font-variant-numeric:tabular-nums}
-.rede .t{padding:10px 18px 12px;display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600}
+.mais .sec-cab{grid-template-columns:minmax(0,1fr);gap:16px}
+.mais .sec-cab h2{max-width:none}
+.lista-mais{margin-top:clamp(40px,7vh,64px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 56px;border-top:1px solid var(--linha)}
+.lista-mais>div{padding:28px 0 30px;border-bottom:1px solid var(--linha)}
+.lista-mais dt{font-size:26px;line-height:1.1;letter-spacing:-.015em}
+.lista-mais dd{margin-top:10px;font-size:15px;line-height:1.55;color:var(--t2);max-width:32em;text-wrap:pretty}
+.lista-mais dd.mais-marca{margin-top:8px}
+/* o que vem: em tom menor, marcado como em breve */
+.mais-in>.breve{margin-top:clamp(56px,9vh,88px);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px 72px;align-items:center}
+.mais-in>.breve h3{font-size:clamp(28px,min(3.2vw,5.6vh),44px);margin-top:14px}
+.mais-in>.breve .marca-funcao{display:flex}
+.mais-in>.breve .lead{margin-top:14px;font-size:16.5px;line-height:1.55;color:var(--t2);max-width:30em;text-wrap:pretty}
+/* o exemplo do caixa sem internet: cantos retos e só fios entre as linhas (v3, C8) */
+.rede{border-radius:0;background:none;border-top:1px solid var(--linha-2);border-bottom:1px solid var(--linha-2);padding:0;font-size:14px;font-variant-numeric:tabular-nums}
+.rede .t{padding:12px 0 12px;display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600}
 .rede .t span{color:var(--t3);font-weight:500;font-size:13px}
-.rede .l{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:0 18px;height:44px;border-top:1px solid var(--linha)}
+.rede .l{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:0;height:44px;border-top:1px solid var(--linha)}
 .rede .l span{display:inline-flex;align-items:center;gap:8px}
 .rede .l em{font-style:normal;color:var(--t2);display:inline-flex;align-items:center;gap:8px}
 .ponto{width:7px;height:7px;border-radius:50%;background:var(--luar);flex:none}
 .ponto.esp{background:transparent;box-shadow:inset 0 0 0 1.5px var(--t3)}
-.rede .nota{padding:12px 18px 8px;border-top:1px solid var(--linha);color:var(--t3);font-size:13px;line-height:1.5}
-.lista-mais{margin-top:clamp(64px,10vh,104px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--linha)}
-.lista-mais>div{padding:24px 28px 8px 0}
-.lista-mais>div+div{padding-left:28px;border-left:1px solid var(--linha)}
-.lista-mais dt{font-size:17px;font-weight:600;letter-spacing:-.01em}
-.lista-mais dd{margin-top:8px;font-size:15px;line-height:1.55;color:var(--t2)}
+.rede .nota{padding:12px 0 12px;border-top:1px solid var(--linha);color:var(--t3);font-size:13px;line-height:1.5}
 
-/* ===================== 7. preços ===================== */
-.precos{padding:0 var(--m) clamp(96px,15vh,160px)}
-.pr-in{max-width:1180px;margin:0 auto;padding-top:clamp(56px,8vh,80px);border-top:1px solid var(--linha);display:flex;align-items:flex-end;justify-content:space-between;gap:32px 64px;flex-wrap:wrap}
-.precos h2{font-size:clamp(32px,min(3.6vw,6.4vh),52px);max-width:14em}
-.precos p{margin-top:16px;font-size:17px;line-height:1.55;color:var(--t2);max-width:32em}
-.pr-acoes{display:flex;gap:12px;flex-wrap:wrap}
+/* ===================== 6b. para quem serve hoje: duas colunas quietas sobre um fio (v3, A5) ===================== */
+.para-quem{position:relative;padding:clamp(24px,4vh,40px) var(--m) clamp(56px,8vh,80px)}
+.pq-in{max-width:1180px;margin:0 auto;padding-top:clamp(40px,6vh,56px);border-top:1px solid var(--linha)}
+.para-quem h2{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(30px,min(3vw,5.4vh),40px);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
+.pq-colunas{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 56px}
+.pq-colunas h3{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:.01em;padding-bottom:10px;border-bottom:1px solid var(--linha)}
+.pq-colunas p{margin-top:12px;font-size:16px;line-height:1.55;color:var(--t2);max-width:32em;text-wrap:pretty}
+.pq-colunas .ligacao{min-height:0;display:inline}
+
+/* ===================== 7. antes de testar: as cinco dúvidas ===================== */
+/* na grade única de 1180 px (C6): os fios na largura toda, o texto no miolo (cerca de 780 px) */
+.duvidas{padding-top:0;padding-bottom:clamp(96px,15vh,160px)}
+.du-in{--miolo:max(0px,calc((100% - 780px) / 2));max-width:1180px;margin:0 auto;padding-top:clamp(56px,8vh,80px);border-top:1px solid var(--linha)}
+.duvidas h2{font-size:clamp(32px,min(3.6vw,6.4vh),52px);padding-inline:max(0px,calc((100% - 780px) / 2))}
+.duvidas .perguntas{margin-top:clamp(20px,3vh,32px);max-width:none}
+.duvidas .perguntas summary,.duvidas .perguntas details p{padding-inline:max(0px,calc((100% - 780px) / 2));max-width:none}
+.duvidas .perguntas summary{font-size:18px}
+.duvidas .perguntas summary::after{margin-right:calc(4px + max(0px,calc((100% - 780px) / 2)))}
+.du-mais{margin-top:14px;padding-inline:max(0px,calc((100% - 780px) / 2))}
 
 /* ===================== 8. rodapé: a cortina sobe e mostra o eclipse ===================== */
-.r-vao{position:relative;z-index:0;height:100vh;height:100svh;margin-top:calc(-1 * var(--r-folha));clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.r-vao{position:relative;z-index:0;height:100vh;height:100svh;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
 .rodape{position:fixed;left:0;right:0;bottom:0;height:100vh;height:100svh;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;
-  padding:calc(var(--r-folha) + clamp(48px,8vh,96px)) var(--m) 0;background:radial-gradient(120% 70% at 50% 58%,#12141A 0%,#0D0E12 62%,#0B0C0F 100%)}
-.rodape::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.05;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:160px 160px}
+  padding:clamp(48px,8vh,96px) var(--m) 0;background:radial-gradient(120% 70% at 50% 58%,#121212 0%,#0D0D0D 62%,#0B0B0B 100%)}
+.rodape::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.04;background:url(/grao.png) 0 0/160px 160px repeat}
 .r-cham{position:relative;z-index:4;text-align:center}
 .r-cham h2{font-size:clamp(40px,min(5.6vw,9.4vh),92px);line-height:1;letter-spacing:-.022em}
-.r-acoes{margin-top:clamp(22px,3.6vh,34px);display:flex;align-items:center;justify-content:center;gap:14px}
-.r-cena{position:relative;z-index:2;flex:1;min-height:0;display:grid;place-items:center;padding:2vh 0}
-.r-svg{position:absolute;left:0;top:1.5vh;width:100%;height:calc(100% - 3vh);overflow:visible}
-.r-lua{position:absolute;left:0;top:0;pointer-events:none}
-.rodape.r-gl #rLuaCss{display:none}
-.r-palavra{font-family:var(--titulo);font-size:172px;font-weight:600;font-variation-settings:"opsz" 11;font-optical-sizing:none;letter-spacing:1px}
+.r-cham .r-sub{margin:14px auto 0;max-width:30em;font-size:16px;color:var(--t2);text-wrap:balance}
+.r-acoes{margin-top:clamp(22px,3.6vh,34px);display:flex;flex-direction:column;align-items:center;gap:4px}
+.r-planos{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:var(--t2);font-size:15px;text-decoration:underline;text-decoration-color:var(--linha-3);text-underline-offset:4px;transition:color .2s ease,text-decoration-color .2s ease}
+@media (hover:hover) and (pointer:fine){ .r-planos:hover{color:var(--t1);text-decoration-color:var(--t1)} }
+/* a cena da lua: pelo menos 80 px entre o botão e a lua (--r-vao-lua, número de gosto) */
+/* v3 (B2): a cena tem um mínimo (300 px no computador, 280 no celular); se não couber, o rodapé vira o bloco solto */
+.r-cena{--r-vao-lua:clamp(80px,9vh,120px);position:relative;z-index:2;flex:1;min-height:300px;margin-top:var(--r-vao-lua)}
+/* v3 (B10): a frase, o botão e os links entram por uma transição só, quando o script põe .r-visto (o eclipse continua
+   no script) */
+html.js .rodape .r-cham>*,html.js .rodape .r-links,html.js .rodape .r-fim{opacity:0;transform:translateY(10px);transition:opacity .6s var(--sai),transform .7s var(--sai)}
+html.js .rodape.r-visto .r-cham>*,html.js .rodape.r-visto .r-links,html.js .rodape.r-visto .r-fim{opacity:1;transform:none}
+html.js .rodape.r-visto .r-sub{transition-delay:.06s}
+html.js .rodape.r-visto .r-acoes{transition-delay:.12s}
+html.js .rodape.r-visto .r-links{transition-delay:.2s}
+html.js .rodape.r-visto .r-fim{transition-delay:.24s}
+.r-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;contain:layout}
+.r-palavra{font-family:var(--titulo);font-size:172px;font-weight:600;font-variation-settings:"opsz" 11;font-optical-sizing:none;letter-spacing:1px;fill:var(--t1);paint-order:stroke;stroke:var(--fundo);stroke-linejoin:round;stroke-linecap:round}
+/* a palavra escura, recortada da luz da lua (o script a corta pela parte acesa); sem script fica só o anel */
+.r-recorte{fill:#101010;stroke:none}
+html.js .r-semjs{display:none}
 .r-pe{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;padding:22px 0 26px;border-top:1px solid var(--linha);font-size:14px;color:var(--t3)}
 .r-links{display:flex;flex-wrap:wrap;gap:8px 28px;list-style:none;color:var(--t2)}
 .r-links a,.r-topo{display:inline-block;padding:12px 0;transition:color .2s ease}
@@ -188,63 +293,168 @@ html:not(.js) .palco-col,html:not(.js) .troca-tema{display:none}
 /* o rodapé solto: quando a cortina não cabe na janela (zoom alto, celular deitado), vira um bloco normal que rola */
 .r-vao.r-solto{height:auto;clip-path:none}
 .rodape.r-solto{position:relative;height:auto;min-height:100svh}
-.rodape.r-solto .r-cena{min-height:max(44vh,260px)}
+.rodape.r-solto .r-cena{flex:none;height:max(44vh,300px);min-height:0}
 @media (max-height:600px){
   .r-vao{height:auto;clip-path:none}
   .rodape{position:relative;height:auto;min-height:100svh}
-  .r-cena{min-height:max(44vh,260px)}
+  .r-cena{flex:none;height:max(44vh,300px)}
 }
 
+/* janelas baixas (C1): 56 px entre o botão e a lua e os links numa linha só, em 13 px; o topo um pouco mais
+   apertado, para a cortina com a cena de 300 px caber em 1280×720 (depois das regras base do rodapé, que ela vence) */
+@media (min-width:860px) and (max-height:799px){
+  .rodape{padding-top:40px}
+  .r-cham .r-sub{margin-top:10px}
+  .r-acoes{margin-top:18px}
+  .r-cena{--r-vao-lua:56px}
+  .r-pe{padding:12px 0 14px;font-size:13px}
+  .r-links{gap:0 18px;font-size:13px}
+}
+/* a linha única dos links só onde ela cabe (a partir de 1200 px de largura) */
+@media (min-width:1200px) and (max-height:799px){
+  .r-pe{flex-wrap:nowrap}
+  .r-links{flex-wrap:nowrap;gap:0 18px;font-size:13px;white-space:nowrap}
+  .r-links a,.r-topo{padding:12px 0}
+  .r-fim{gap:18px;white-space:nowrap}
+  .r-fim span{white-space:normal;max-width:17em;line-height:1.35}
+}
+/* até o script decidir entre a cortina e o bloco solto (no carregamento), o rodapé não aparece: a troca de fixo
+   para solto não conta como deslocamento da página (CLS) */
+html.js .rodape:not(.r-decidido){visibility:hidden}
+
 /* ===================== telas estreitas ===================== */
+/* até 1149 px a história empilha (o texto e a tela de cada passo): o palco preso à janela só cabe com largura */
+@media (max-width:1149px){
+  .h-in{grid-template-columns:minmax(0,1fr)}
+  .palco-col{display:none}
+  .caps{padding-left:0}
+  .caps::before,.caps::after{display:none}
+  .cap .onde .no{position:static;box-shadow:none;background:none;color:var(--t2)}
+  .cap,.cap:first-child{min-height:0;padding:44px 0 8px}
+  .js .cap:not(.ativo) .txt{opacity:1}
+  .cap-tela{display:block;margin-top:22px}
+  .cap .txt{max-width:34em}
+  .cap h3{font-size:clamp(32px,4.4vw,40px)}
+}
+/* tablet, de 700 a 1149 px: as telas no desenho do computador, desenhadas com 820 px e encolhidas (--escala, do
+   script); botões com no máximo 360 px; duas colunas no resto da noite */
+@media (max-width:1149px) and (min-width:700px){
+  .cap-tela .moldura:not(.m-fone) .vidro{position:relative;height:calc(600px * var(--escala,1))}
+  .cap-tela .tela-escala{position:absolute;inset:0;width:calc(100% / var(--escala,1));height:calc(100% / var(--escala,1));transform-origin:0 0;transform:scale(var(--escala,1))}
+  .cap-tela .tela-escala .pdv{height:100%}
+  .cap-tela .tela-escala .pc{flex:1 1 auto;min-height:0}
+  .lista-mais{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}
+  .acoes-hero .btn,.r-acoes .btn{width:100%;max-width:360px}
+}
 @media (max-width:1100px){
-  .h-in{grid-template-columns:minmax(0,36fr) minmax(0,64fr)}
+  .noite-eventos{gap:0 10px}
 }
 @media (max-width:1100px) and (min-width:860px){ .m-mesas .grade-m{grid-template-columns:repeat(3,minmax(0,1fr))} .m-mesas .grade-m .mesa.x{display:none} }
 @media (max-width:859px){
-  .msg{padding:0 22px}
+  .cab-fixo{padding:0 16px}
+  .cab-fixo .btn.pequeno{height:44px}
+  .cab-fixo .menu a.entrar{border:0;padding-left:0}
+  /* a abertura: a mensagem no pé da primeira tela, e a lua na faixa de cima (pelo menos 22 svh, reservados aqui) */
+  .hero{justify-content:flex-end;padding:calc(64px + 12px + 22svh + 24px) 22px 16px}
+  .kicker{font-size:14px;margin-bottom:16px}
   .hero h1{font-size:clamp(38px,11.4vw,50px);line-height:1.03}
   .hero h1 .ln{display:inline;white-space:normal}
+  .hero h1 .ln.sem-quebra{display:inline-block;white-space:nowrap}
   .hero h1 br.m{display:inline}
-  .sub{font-size:17px;margin-top:18px}
-  .acoes-hero{margin-top:26px;flex-direction:column;align-items:stretch;gap:10px}
-  .acoes-hero .btn{width:100%;height:52px;font-size:16px}
-  .passagem{padding-top:88px;padding-bottom:24px}
+  .sub{font-size:17px;margin-top:16px}
+  .acoes-hero{margin-top:22px;flex-direction:column;align-items:stretch;gap:10px}
+  .acoes-hero .btn{width:100%;height:50px;font-size:16px}
+  .dores{padding-top:72px}
+  .dores h2{font-size:14px}
+  .do-lista li{grid-template-columns:minmax(0,1fr);gap:6px;padding:18px 0 20px}
+  .do-dor{font-size:24px}
+  .do-sol{font-size:16px}
+  .pq-colunas{grid-template-columns:minmax(0,1fr)}
+  .passagem{padding-top:72px;padding-bottom:24px}
   .passagem p{font-size:16.5px}
-  .p-lua{width:64px;height:64px;margin-bottom:26px}
-  .h-in{grid-template-columns:minmax(0,1fr)}
-  .palco-col{display:none}
-  .cap,.cap:first-child{min-height:0;padding:44px 0 8px}
-  .js .cap:not(.ativo) .txt{opacity:1}
-  .cap .onde{display:flex}
+  .cap h3{font-size:clamp(30px,8vw,36px)}
   .cap p{font-size:16px}
-  .cap-tela{display:block;margin-top:22px}
+  .cap .txt{max-width:25em}
+  /* no celular e no tablet as seções respiram menos: o vazio entre elas era maior que a tela */
+  .secao{padding-top:clamp(56px,8vh,88px);padding-bottom:clamp(56px,8vh,88px)}
+  .noite-inteira{min-height:0;padding-bottom:8px}
   .sec-cab{grid-template-columns:minmax(0,1fr)}
+  #mesas .sec-cab h2{font-size:clamp(36px,10vw,44px)}
   .m-mesas,.m-dia{height:auto}
   .m-mesas .pdv,.m-dia .pdv{height:auto}
-  .m-grande{grid-template-columns:minmax(0,1fr)}
-  .mais .lead{font-size:16.5px}
-  .lista-mais{grid-template-columns:minmax(0,1fr)}
-  .lista-mais>div,.lista-mais>div+div{padding:18px 0 14px;border-left:0}
-  .lista-mais>div+div{border-top:1px solid var(--linha)}
-  .pr-acoes{width:100%;flex-direction:column}
-  .pr-acoes .btn{width:100%;height:52px}
-  :root{--r-folha:22px}
-  .rodape{padding-top:calc(var(--r-folha) + 52px)}
+  /* a noite: o arco compacto na largura toda, só com as horas; a lua pequena cresce para se ver */
+  .ceu-noite{margin-top:20px}
+  .n-lua-corpo{transform:scale(1.9)}
+  .arco .no{r:9}
+  .noite-eventos{gap:0 4px;margin-top:2px}
+  .n-hora{font-size:11.5px}
+  .n-onde{display:none}
+  .n-linha{margin-top:18px;font-size:15.5px;min-height:4.7em}
+  .mais-in>.breve{grid-template-columns:minmax(0,1fr)}
+  .mais-in>.breve .lead{font-size:16px}
+  .lista-mais{grid-template-columns:minmax(0,1fr);gap:0}
+  .lista-mais>div{padding:20px 0 20px}
+  .lista-mais dt{font-size:24px}
+  .duvidas .perguntas summary{font-size:16.5px}
+  .rodape{padding-top:52px}
   .r-cham h2{font-size:clamp(36px,10.6vw,46px);line-height:1.04}
-  .r-acoes{flex-direction:column;align-items:stretch;gap:8px;margin-top:24px}
+  .r-cham .r-sub{font-size:15px}
+  .r-acoes{align-items:stretch;gap:6px;margin-top:24px}
   .r-acoes .btn{height:52px}
-  .r-pe{padding:16px 0 22px;row-gap:10px}
-  .r-links{gap:4px 20px}
+  .r-planos{justify-content:center}
+  .r-cena{min-height:280px;--r-vao-lua:clamp(40px,6vh,72px)}
+  .r-pe{padding:12px 0 18px;row-gap:6px}
+  /* os links em duas colunas no celular (C1) */
+  .r-links{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px;width:100%}
+  .r-links a{display:flex;align-items:center;min-height:44px;padding:0}
   .r-fim{width:100%;justify-content:space-between}
+}
+/* celular baixo: a linha de cima da abertura sai para o título, o botão e a nota caberem na primeira tela */
+@media (max-width:859px) and (max-height:759px){
+  .kicker{display:none}
+  /* e a nota do teste grátis (v3, A7) também cabe: botões de 46 px e menos espaço entre eles */
+  .hero{padding-bottom:12px}
+  .acoes-hero{margin-top:16px;gap:8px}
+  .acoes-hero .btn{height:46px}
+  .hero-nota{margin-top:10px}
+}
+/* celular (até 699 px): cada moldura recortada em 75 svh no trecho que o passo explica, com a borda de baixo esmaecida */
+@media (max-width:699px){
+  /* v3 (B1): o recorte é uma margem negativa (encolhe a altura de verdade; o transform deixava a moldura vazia
+     embaixo) e a altura vem do trecho medido pelo script (--recorte-alt), no máximo 80 svh; sem script, 75 svh */
+  .cap-tela .moldura.recorta{max-height:min(var(--recorte-alt,75svh),85svh);overflow:hidden;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 56px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 56px),transparent)}
+  .cap-tela .moldura.recorta .pdv{margin-top:calc(-1 * var(--recorte,0px))}
+  /* passo 1 no celular (v3, B5): fica o que o texto promete (cliente, meio a meio, Pix, F8 e o aviso de registro);
+     saem o campo de busca de item, a nota da taxa, o cabeçalho da lista, as linhas de itens e entrega e o
+     "Dividir pagamento", para o trecho caber em 85 svh também no celular baixo */
+  .cap:first-child .cap-tela .pd-itens>.r:first-child,.cap:first-child .cap-tela .pd-itens>.campo-pdv,.cap:first-child .cap-tela .cli .dica,
+  .cap:first-child .cap-tela .lh,.cap:first-child .cap-tela .pd-fech>.r:first-child,.cap:first-child .cap-tela .pd-fech .fe,.cap:first-child .cap-tela .pd-fech .div{display:none}
+  .cap:first-child .cap-tela .lista{margin-top:0}
+  .cap:first-child .cap-tela .tot{margin-top:0;border-top:0;padding-top:0}
+  /* o celular do entregador: a altura do conteúdo (cerca de 470 px), direto sobre o preto (C4) */
+  .cap-tela .m-fone .fone{height:auto;box-shadow:0 0 0 1px rgba(255,255,255,.16)}
+  .cap-tela .m-fone .fone .tl{height:auto}
+}
+@media (max-width:479px){ .cab-fixo .menu .produto,.cab-fixo .menu .precos{display:none} }
+
+/* tablet (700 a 859 px): os botões empilhados ficam centrados, com no máximo 360 px */
+@media (max-width:859px) and (min-width:700px){
+  .acoes-hero,.r-acoes{align-items:center}
+  .acoes-hero .btn,.r-acoes .btn{width:100%;max-width:360px}
 }
 
 /* movimento reduzido: tudo estático, sem transição de posição; o rodapé vira um bloco normal */
 @media (prefers-reduced-motion:reduce){
+  html.js .revela{opacity:1;transform:none;transition:none}
+  html.js .msg>*{animation:none}
+  .cab-fixo{transition:none}
   .moldura{transform:none;opacity:1;transition:none}
   .moldura::before,.moldura::after{opacity:1;transition:none}
   .m-hist .pdv{transform:none;transition:none}
-  .cap .txt,.etapa,.etapa .fz{transition:none}
+  .cap .txt,.cap .onde .no,.arco .no,.n-hora,.n-onde{transition:none}
+  html.js #luaSvg .lua-respira{animation:none}
   .r-vao{height:auto;clip-path:none}
   .rodape{position:relative;height:auto;min-height:100vh}
-  .r-cena{min-height:max(44vh,260px)}
+  .r-cena{flex:none;height:max(44vh,300px)}
+  html.js .rodape .r-cham>*,html.js .rodape .r-links,html.js .rodape .r-fim{opacity:1;transform:none;transition:none}
 }

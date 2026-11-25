@@ -1,20 +1,20 @@
 ---
-/** O cabeçalho comum: a marca, Produto, Preços, Entrar e Testar grátis. Na inicial o botão some no celular (a abertura tem o seu); nas outras páginas ele fica, e abaixo de 480 px sai o "Produto" para caber. */
+/** O cabeçalho comum: a marca, Produto, Planos, Entrar e Testar grátis. Na inicial o botão some no celular (a abertura tem o seu); nas outras páginas ele fica, e abaixo de 480 px sai o "Produto" para caber. */
 interface Props {
   /** Sobre a abertura da página de início (absoluto, sem fundo). */
   sobre?: boolean
 }
 const { sobre = false } = Astro.props
 const caminho = Astro.url.pathname.replace(/\/$/, '') || '/'
-const atual = (href: string) => (caminho === href ? 'page' : undefined)
+const atual = (href: string) => (caminho === (href.replace(/\/$/, '') || '/') ? 'page' : undefined)
 const produto = caminho === '/' ? '#produto' : '/#produto'
 ---
 <header class:list={['cab', { sobre }]}>
   <a class="marca" href="/" aria-label="Luneli, início">Luneli</a>
   <nav class="menu" aria-label="Principal">
     <a class="produto" href={produto}>Produto</a>
-    <a href="/planos" aria-current={atual('/planos')}>Preços</a>
-    <a class="entrar" href="/entrar" aria-current={atual('/entrar')}>Entrar</a>
-    <a class="btn dois pequeno" href="/testar-gratis">Testar grátis</a>
+    <a href="/planos/" aria-current={atual('/planos/')}>Planos</a>
+    <a class="entrar" href="/entrar/" aria-current={atual('/entrar/')}>Entrar</a>
+    <a class="btn dois pequeno" href="/testar-gratis/">Testar grátis</a>
   </nav>
 </header>

@@ -43,10 +43,28 @@ describe('token do link no fragmento', () => {
     expect(tokenDoFragmento('#outra=1')).toBeNull()
   })
   it('tira o fragmento do endereço depois de ler', () => {
-    window.history.replaceState(null, '', '/confirmar-email?x=1#token=segredo')
+    const temWindow = typeof window !== 'undefined'
+    const estado = { pathname: '/confirmar-email', search: '?x=1', hash: '#token=segredo' }
+    if (!temWindow) {
+      ;(globalThis as Record<string, unknown>).window = {
+        location: estado,
+        history: {
+          replaceState(_data: unknown, _title: string, url: string) {
+            const [caminhoEBusca = '', hash = ''] = url.split('#')
+            const [pathname = '', search = ''] = caminhoEBusca.split('?')
+            estado.pathname = pathname
+            estado.search = search ? `?${search}` : ''
+            estado.hash = hash ? `#${hash}` : ''
+          },
+        },
+      }
+    } else {
+      window.history.replaceState(null, '', '/confirmar-email?x=1#token=segredo')
+    }
     expect(lerETirarTokenDoEndereco()).toBe('segredo')
     expect(window.location.hash).toBe('')
     expect(window.location.pathname + window.location.search).toBe('/confirmar-email?x=1')
+    if (!temWindow) delete (globalThis as Record<string, unknown>).window
   })
 })
 
@@ -58,8 +76,8 @@ describe('formatos', () => {
   })
   it('voltar só para um caminho do próprio site', () => {
     expect(destinoSeguro('/minha-conta/plano')).toBe('/minha-conta/plano')
-    expect(destinoSeguro('https://outro.com')).toBe('/minha-conta')
-    expect(destinoSeguro('//outro.com')).toBe('/minha-conta')
-    expect(destinoSeguro(null)).toBe('/minha-conta')
+    expect(destinoSeguro('https://outro.com')).toBe('/minha-conta/')
+    expect(destinoSeguro('//outro.com')).toBe('/minha-conta/')
+    expect(destinoSeguro(null)).toBe('/minha-conta/')
   })
 })

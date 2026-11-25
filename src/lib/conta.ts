@@ -1,5 +1,5 @@
 // Regras puras da área da conta: telefone e DDD, fuso, token do link, datas e o endereço do sistema.
-import { formatarCentavos, normalizarTelefone } from '@pdv/core'
+import { formatarCentavos, normalizarTelefone } from './core-compat'
 
 /** O telefone do dono, para a criação da conta: só brasileiro, sempre com DDD. */
 export type TelefoneDoDono = { ok: true; ddd: string; e164: string } | { ok: false }
@@ -80,10 +80,11 @@ export function formatarReais(centavos: number): string {
 }
 
 /** O endereço do sistema do restaurante (o caixa no navegador). */
-export const ENDERECO_DO_SISTEMA: string = import.meta.env.PUBLIC_ENDERECO_DO_SISTEMA || 'http://127.0.0.1:5173'
+export const ENDERECO_DO_SISTEMA: string =
+  import.meta.env.PUBLIC_ENDERECO_DO_SISTEMA || (import.meta.env.DEV ? 'http://127.0.0.1:5173' : '')
 
 /** Só caminhos do próprio site para "voltar depois de entrar": nada de endereço de fora. */
-export function destinoSeguro(voltar: string | null, padrao = '/minha-conta'): string {
+export function destinoSeguro(voltar: string | null, padrao = '/minha-conta/'): string {
   if (voltar === null || !voltar.startsWith('/') || voltar.startsWith('//') || voltar.includes('\\')) return padrao
   return voltar
 }
