@@ -6,7 +6,8 @@
 */
 
 /* ===== a folha: tudo antes do rodapé sobe como uma folha opaca sobre o rodapé fixo; a divisa é uma linha de 1 px a 6 % ===== */
-.folha{position:relative;z-index:2;background:var(--fundo);box-shadow:0 1px 0 rgba(255,255,255,.06),0 40px 80px -20px rgba(0,0,0,.7)}
+.folha{position:relative;z-index:2;background:var(--fundo);box-shadow:0 1px 0 var(--linha),0 40px 80px -20px rgba(0,0,0,.7)}
+html[data-modo="claro"] .folha{box-shadow:0 1px 0 var(--linha),0 40px 80px -20px rgba(0,0,0,.18)}
 
 /* ===== entradas suaves: .revela aparece uma vez ao entrar na janela (scripts/vitrine/revelar.ts) ===== */
 html.js .revela{opacity:0;transform:translateY(18px);transition:opacity .75s var(--sai),transform .9s var(--sai);transition-delay:calc(var(--i,0) * 80ms)}
@@ -14,7 +15,7 @@ html.js .revela.visto{opacity:1;transform:none}
 
 /* ===== o cabeçalho compacto e fixo: escondido sobre a abertura; depois some ao descer e volta ao subir (scripts/vitrine/cabecalho.ts) ===== */
 .cab-fixo{position:fixed;z-index:20;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--m);
-  background:var(--fundo);box-shadow:0 1px 0 rgba(255,255,255,.08);transform:translateY(-100%);visibility:hidden;
+  background:var(--fundo);box-shadow:0 1px 0 var(--linha);transform:translateY(-100%);visibility:hidden;
   transition:transform .28s var(--sai),visibility 0s linear .28s}
 .cab-fixo.visto{transform:none;visibility:visible;transition:transform .28s var(--sai),visibility 0s}
 .cab-fixo .marca{font-size:22px}
@@ -25,10 +26,12 @@ html:not(.js) .cab-fixo{display:none}
 /* a noite: a abertura, a faixa de dores e a passagem dividem o céu, num quadro preso à janela (sticky) que este
    invólucro limita (a abertura é transparente para a lua aparecer atrás do título) */
 .noite{position:relative;background:linear-gradient(180deg,#0A0A0A 0,#0C0C0C 55svh,#0D0D0D 100svh)}
+html[data-modo="claro"] .noite{background:linear-gradient(180deg,var(--fundo-2) 0,var(--fundo) 100svh)}
 /* o grão: um PNG pequeno (160 px, 4 níveis de branco transparente, 6 KB), pintado uma vez e repetido; a opacidade
    baixa dá o mesmo pó fino do feTurbulence antigo; some antes da história */
 .noite::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.045;background:url(/grao.png) 0 0/160px 160px repeat;
   -webkit-mask-image:linear-gradient(180deg,#000 85%,transparent);mask-image:linear-gradient(180deg,#000 85%,transparent)}
+html[data-modo="claro"] .noite::after{filter:invert(1);opacity:.035}
 .noite>.hero,.noite>.dores,.noite>.passagem{z-index:1}
 /* o quadro da lua: fica preso ao topo da janela enquanto a noite dura (a altura e a margem negativa, iguais à
    janela, vêm do script); a lua é desenhada em SVG, nítida em qualquer tamanho; contido, para a rolagem não
@@ -58,6 +61,7 @@ html.js .acoes-hero{animation-delay:.4s}
 .hero h1 .ln{display:block;white-space:nowrap}
 .hero h1 br{display:none}
 .sub{margin:26px auto 0;max-width:34em;font-size:19px;line-height:1.5;color:#C4C4C4;font-weight:450;text-wrap:balance}
+html[data-modo="claro"] .sub{color:var(--t2)}
 .acoes-hero{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:14px}
 /* a nota sob os botões (v3, A7): o teste sem cobrança e sem cartão, já na primeira tela */
 .hero-nota{margin:16px auto 0;font-size:14px;color:var(--t2);text-wrap:balance}
@@ -87,8 +91,8 @@ html.js .hero-nota{animation-delay:.48s}
    conforme a rolagem avança (--avanco), com o ícone de fase de cada passo como nó */
 .caps{position:relative;padding-left:40px}
 .caps::before,.caps::after{content:"";position:absolute;left:7px;top:var(--trilho-topo,0);height:var(--trilho-alt,0);width:1px;pointer-events:none}
-.caps::before{background:rgba(255,255,255,.12)}
-.caps::after{background:rgba(255,255,255,.7);transform-origin:50% 0;transform:scaleY(var(--avanco,0))}
+.caps::before{background:var(--linha-2)}
+.caps::after{background:var(--amber);transform-origin:50% 0;transform:scaleY(var(--avanco,0))}
 html:not(.js) .caps::after{display:none}
 /* v3 (B3): cada passo tem pelo menos uma janela de altura, e o passo 3, com os seus dois tempos (a expedição e o
    celular do entregador), 2,1 janelas: assim um PageDown ou um Espaço (cerca de 0,95 janela) para pelo menos uma
@@ -127,8 +131,11 @@ html:not(.js) .rastro{display:none}
 
 /* a moldura do produto: um objeto bem construído, mais claro que o fundo, com a luz da borda e a sombra que o
    descolam da página; profundidade ao entrar (uma vez; só com script) */
-.moldura{position:relative;border-radius:12px;isolation:isolate;background:#151515;
+.moldura{position:relative;border-radius:var(--raio-lg);isolation:isolate;background:#151515;
   box-shadow:0 0 0 1px rgba(255,255,255,.13),0 1px 1px rgba(0,0,0,.5),0 10px 24px -8px rgba(0,0,0,.7),0 36px 80px -24px rgba(0,0,0,.9),0 0 90px -20px rgba(255,255,255,.07)}
+html[data-modo="claro"] .moldura{background:var(--s1);box-shadow:0 0 0 1px var(--linha-2),0 10px 24px -8px rgba(0,0,0,.14),0 24px 48px -20px rgba(0,0,0,.18)}
+html[data-estilo="retro"] .moldura{border-radius:var(--raio-lg);border:1.5px solid var(--linha-3);box-shadow:var(--sombra-retro)}
+html[data-estilo="retro"] .moldura::after{display:none}
 .js .moldura{transform:scale(.96);opacity:.55;transition:transform .9s var(--sai),opacity .9s var(--sai)}
 .moldura::before{content:"";position:absolute;z-index:3;left:24px;right:24px;top:0;height:1px;pointer-events:none;transition:opacity 1.1s ease .15s;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.5) 25%,rgba(255,255,255,.5) 75%,transparent)}
@@ -167,7 +174,7 @@ html:not(.js) .palco-col,html:not(.js) .troca-tema{display:none}
 .n-plano{margin-top:10px;font-size:14px;color:var(--amber-vivo)}
 .ceu-noite{max-width:1180px;margin:clamp(24px,4vh,40px) auto 0}
 .arco{display:block;width:100%;height:auto;overflow:visible}
-.arco .no{fill:var(--fundo);stroke:rgba(255,255,255,.35);stroke-width:1;transition:fill .35s ease,stroke .35s ease}
+.arco .no{fill:var(--fundo);stroke:var(--linha-3);stroke-width:1;transition:fill .35s ease,stroke .35s ease}
 .arco .no.aceso{fill:var(--amber-vivo);stroke:var(--amber)}
 html:not(.js) .arco .no{fill:var(--amber-vivo);stroke:var(--amber)}
 html:not(.js) .n-lua{display:none}
@@ -260,6 +267,8 @@ html:not(.js) .n-onde{color:var(--t1)}
 .r-vao{position:relative;z-index:0;height:100vh;height:100svh;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
 .rodape{position:fixed;left:0;right:0;bottom:0;height:100vh;height:100svh;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;
   padding:clamp(48px,8vh,96px) var(--m) 0;background:radial-gradient(120% 70% at 50% 58%,#121212 0%,#0D0D0D 62%,#0B0B0B 100%)}
+html[data-modo="claro"] .rodape{background:radial-gradient(120% 70% at 50% 58%,var(--s1) 0%,var(--fundo) 62%,var(--fundo-2) 100%)}
+html[data-modo="claro"] .rodape::before{filter:invert(1);opacity:.03}
 .rodape::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.04;background:url(/grao.png) 0 0/160px 160px repeat}
 .r-cham{position:relative;z-index:4;text-align:center}
 .r-cham h2{font-size:clamp(40px,min(5.6vw,9.4vh),92px);line-height:1;letter-spacing:-.022em}
@@ -282,6 +291,7 @@ html.js .rodape.r-visto .r-fim{transition-delay:.24s}
 .r-palavra{font-family:var(--titulo);font-size:172px;font-weight:600;font-variation-settings:"opsz" 11;font-optical-sizing:none;letter-spacing:1px;fill:var(--t1);paint-order:stroke;stroke:var(--fundo);stroke-linejoin:round;stroke-linecap:round}
 /* a palavra escura, recortada da luz da lua (o script a corta pela parte acesa); sem script fica só o anel */
 .r-recorte{fill:#101010;stroke:none}
+html[data-modo="claro"] .r-recorte{fill:var(--fundo)}
 html.js .r-semjs{display:none}
 .r-pe{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;padding:22px 0 26px;border-top:1px solid var(--linha);font-size:14px;color:var(--t3)}
 .r-links{display:flex;flex-wrap:wrap;gap:8px 28px;list-style:none;color:var(--t2)}

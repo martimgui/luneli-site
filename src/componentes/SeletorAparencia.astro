@@ -1,0 +1,207 @@
+---
+/**
+ * Seletor ao vivo de Aparência do Site (Modo, Estilo e Cor principal com as 12 cores do PDV).
+ * Discreto no canto inferior direito; salva no localStorage ('luneli-aparencia') e aplica em <html>.
+ */
+const CORES = [
+  { id: 'ambar', nome: 'Âmbar', escuro: '#F5A524', claro: '#B45309' },
+  { id: 'tomate', nome: 'Tomate', escuro: '#FF6B57', claro: '#D8432B' },
+  { id: 'rosa', nome: 'Rosa', escuro: '#FF7AB6', claro: '#C2286E' },
+  { id: 'roxo', nome: 'Roxo', escuro: '#B08CFF', claro: '#6B3FD4' },
+  { id: 'azul', nome: 'Azul', escuro: '#5AA9FF', claro: '#1F5FD0' },
+  { id: 'turquesa', nome: 'Turquesa', escuro: '#3DD6C6', claro: '#0E7C74' },
+  { id: 'verde', nome: 'Verde', escuro: '#4FD58A', claro: '#1C7A4C' },
+  { id: 'grafite', nome: 'Grafite', escuro: '#E8E3D8', claro: '#2B2A27' },
+  { id: 'coral', nome: 'Coral', escuro: '#FF8A65', claro: '#C64622' },
+  { id: 'indigo', nome: 'Índigo', escuro: '#7B8CFF', claro: '#3949AB' },
+  { id: 'esmeralda', nome: 'Esmeralda', escuro: '#2EE59D', claro: '#0F7B55' },
+  { id: 'lavanda', nome: 'Lavanda', escuro: '#C8A8FF', claro: '#7A49C8' },
+] as const
+---
+<div class="seletor-ap" id="seletorAp">
+  <div class="seletor-ap-painel" id="painelAparencia" role="dialog" aria-label="Aparência do site" hidden>
+    <div class="ap-cab">
+      <span>Aparência do site</span>
+      <button type="button" class="ap-fechar" id="apFechar" aria-label="Fechar painel">×</button>
+    </div>
+
+    <div class="ap-grupo">
+      <span class="ap-rotulo">Modo</span>
+      <div class="ap-seg" role="group" aria-label="Modo de cor">
+        <button type="button" data-ap-modo="escuro" aria-pressed="true">Escuro</button>
+        <button type="button" data-ap-modo="claro" aria-pressed="false">Claro</button>
+      </div>
+    </div>
+
+    <div class="ap-grupo">
+      <span class="ap-rotulo">Estilo</span>
+      <div class="ap-seg" role="group" aria-label="Estilo visual">
+        <button type="button" data-ap-estilo="moderno" aria-pressed="true">Moderno</button>
+        <button type="button" data-ap-estilo="retro" aria-pressed="false">Retrô</button>
+      </div>
+    </div>
+
+    <div class="ap-grupo">
+      <span class="ap-rotulo">Cor principal <em id="apCorNome">Âmbar</em></span>
+      <div class="ap-cores" role="group" aria-label="Cor principal">
+        {CORES.map((c) => (
+          <button
+            type="button"
+            class="ap-cor"
+            data-ap-cor={c.id}
+            data-nome={c.nome}
+            data-escuro={c.escuro}
+            data-claro={c.claro}
+            aria-label={c.nome}
+            title={c.nome}
+            aria-pressed={c.id === 'ambar' ? 'true' : 'false'}
+            style={`--amostra:${c.escuro}`}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="seletor-ap-btn"
+    id="apBotao"
+    aria-label="Aparência do site"
+    aria-expanded="false"
+    aria-controls="painelAparencia"
+    title="Aparência do site"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+    <span class="ap-ponto" aria-hidden="true"></span>
+  </button>
+</div>
+
+<style>
+  .seletor-ap{position:fixed;right:20px;bottom:20px;z-index:60;font-family:var(--sans)}
+  .seletor-ap-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-width:44px;padding:0 12px;border-radius:999px;background:var(--s1);color:var(--t1);border:1px solid var(--linha-2);box-shadow:0 8px 24px -6px rgba(0,0,0,.45);transition:transform .18s var(--sai),border-color .2s ease,background-color .2s ease}
+  .ap-ponto{width:10px;height:10px;border-radius:50%;background:var(--amber);flex:none}
+  @media (hover:hover) and (pointer:fine){
+    .seletor-ap-btn:hover{border-color:var(--amber-borda);transform:translateY(-1px)}
+  }
+  .seletor-ap-painel{position:absolute;right:0;bottom:calc(100% + 10px);width:264px;padding:14px;border-radius:var(--raio-lg);background:var(--s1);color:var(--t1);border:1px solid var(--linha-2);box-shadow:0 18px 44px -10px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}
+  .ap-cab{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--t1)}
+  .ap-fechar{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--raio-sm);color:var(--t2);font-size:18px;line-height:1}
+  .ap-fechar:hover{color:var(--t1);background:var(--s2)}
+  .ap-grupo{display:flex;flex-direction:column;gap:6px}
+  .ap-rotulo{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:500;color:var(--t3)}
+  .ap-rotulo em{font-style:normal;color:var(--t2);font-weight:600}
+  .ap-seg{display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:var(--raio);background:var(--s2);border:1px solid var(--linha)}
+  .ap-seg button{height:30px;border-radius:calc(var(--raio) - 2px);font-size:13px;font-weight:500;color:var(--t2);transition:background-color .15s ease,color .15s ease}
+  .ap-seg button[aria-pressed="true"]{background:var(--s1);color:var(--t1);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.22),inset 0 0 0 1px var(--linha-2)}
+  .ap-cores{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding-top:2px}
+  .ap-cor{width:100%;aspect-ratio:1;border-radius:50%;background:var(--amostra);border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);transition:transform .15s var(--sai),box-shadow .15s ease}
+  .ap-cor:hover{transform:scale(1.1)}
+  .ap-cor[aria-pressed="true"]{border-color:var(--fundo);box-shadow:0 0 0 2px var(--t1)}
+
+  html[data-estilo="retro"] .seletor-ap-btn{border-radius:var(--raio);border:1.5px solid var(--t1);box-shadow:var(--sombra-retro)}
+  html[data-estilo="retro"] .seletor-ap-painel{border:1.5px solid var(--t1);box-shadow:var(--sombra-retro)}
+  html[data-estilo="retro"] .ap-cor{border-radius:var(--raio-sm)}
+
+  @media (max-width:699px){
+    .seletor-ap{right:14px;bottom:14px}
+  }
+</style>
+
+<script>
+  const CHAVE = 'luneli-aparencia'
+  const MODOS = new Set(['escuro', 'claro'])
+  const ESTILOS = new Set(['moderno', 'retro'])
+  const CORES_VALIDAS = new Set([
+    'ambar', 'tomate', 'rosa', 'roxo', 'azul', 'turquesa',
+    'verde', 'grafite', 'coral', 'indigo', 'esmeralda', 'lavanda',
+  ])
+
+  const raiz = document.documentElement
+  const botao = document.getElementById('apBotao')
+  const painel = document.getElementById('painelAparencia')
+  const fechar = document.getElementById('apFechar')
+  const corNomeEl = document.getElementById('apCorNome')
+
+  const estadoAtual = () => ({
+    modo: MODOS.has(raiz.dataset.modo ?? '') ? raiz.dataset.modo! : 'escuro',
+    estilo: ESTILOS.has(raiz.dataset.estilo ?? '') ? raiz.dataset.estilo! : 'moderno',
+    cor: CORES_VALIDAS.has(raiz.dataset.cor ?? '') ? raiz.dataset.cor! : 'ambar',
+  })
+
+  function sincronizarUI() {
+    const { modo, estilo, cor } = estadoAtual()
+    document.querySelectorAll<HTMLButtonElement>('[data-ap-modo]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.apModo === modo))
+    })
+    document.querySelectorAll<HTMLButtonElement>('[data-ap-estilo]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.apEstilo === estilo))
+    })
+    document.querySelectorAll<HTMLButtonElement>('[data-ap-cor]').forEach((b) => {
+      const ativo = b.dataset.apCor === cor
+      b.setAttribute('aria-pressed', String(ativo))
+      const amostra = modo === 'claro' ? b.dataset.claro : b.dataset.escuro
+      if (amostra) b.style.setProperty('--amostra', amostra)
+      if (ativo && corNomeEl && b.dataset.nome) corNomeEl.textContent = b.dataset.nome
+    })
+  }
+
+  function aplicar(proximo: { modo: string; estilo: string; cor: string }) {
+    raiz.dataset.modo = proximo.modo
+    raiz.dataset.estilo = proximo.estilo
+    raiz.dataset.cor = proximo.cor
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    if (meta) meta.content = proximo.modo === 'claro' ? '#F4F3EF' : '#0D0D0D'
+    try {
+      localStorage.setItem(CHAVE, JSON.stringify(proximo))
+    } catch {}
+    sincronizarUI()
+  }
+
+  function alternarPainel(abrir?: boolean) {
+    if (!painel || !botao) return
+    const deveAbrir = abrir ?? painel.hidden
+    painel.hidden = !deveAbrir
+    botao.setAttribute('aria-expanded', String(deveAbrir))
+  }
+
+  botao?.addEventListener('click', (e) => {
+    e.stopPropagation()
+    alternarPainel()
+  })
+  fechar?.addEventListener('click', () => alternarPainel(false))
+
+  document.addEventListener('click', (e) => {
+    if (!painel || painel.hidden) return
+    const alvo = e.target as Node | null
+    if (alvo && !painel.contains(alvo) && alvo !== botao) alternarPainel(false)
+  })
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && painel && !painel.hidden) {
+      alternarPainel(false)
+      botao?.focus()
+    }
+  })
+
+  document.querySelectorAll<HTMLButtonElement>('[data-ap-modo]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const atual = estadoAtual()
+      if (b.dataset.apModo) aplicar({ ...atual, modo: b.dataset.apModo })
+    })
+  })
+  document.querySelectorAll<HTMLButtonElement>('[data-ap-estilo]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const atual = estadoAtual()
+      if (b.dataset.apEstilo) aplicar({ ...atual, estilo: b.dataset.apEstilo })
+    })
+  })
+  document.querySelectorAll<HTMLButtonElement>('[data-ap-cor]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const atual = estadoAtual()
+      if (b.dataset.apCor) aplicar({ ...atual, cor: b.dataset.apCor })
+    })
+  })
+
+  sincronizarUI()
+</script>

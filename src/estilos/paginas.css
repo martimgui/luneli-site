@@ -192,7 +192,8 @@ html:not(.js) .aba-painel[hidden]{display:block!important}
 /* ===== baixar ===== */
 /* quatro blocos: 4 colunas no computador largo, 2 × 2 no meio, 1 coluna no celular; a marca ou o botão fica no pé */
 .blocos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
-.bloco{background:var(--s1);border-radius:12px;box-shadow:inset 0 0 0 1px var(--linha);padding:22px;display:flex;flex-direction:column;gap:10px}
+.bloco{background:var(--s1);border-radius:var(--raio-lg);box-shadow:inset 0 0 0 1px var(--linha);padding:22px;display:flex;flex-direction:column;gap:10px}
+html[data-estilo="retro"] .bloco{border:1.5px solid var(--linha-3);box-shadow:var(--sombra-retro)}
 .bloco.agora{box-shadow:inset 0 0 0 1px var(--linha-2)}
 .bloco h2{font-size:19px}
 .bloco p{font-size:15px;color:var(--t2);line-height:1.5;margin-bottom:4px}
@@ -201,7 +202,9 @@ html:not(.js) .aba-painel[hidden]{display:block!important}
 @media (max-width:640px){.blocos{grid-template-columns:minmax(0,1fr)}}
 
 /* ===== a conta: cartão, formulários e avisos ===== */
-.cartao{background:var(--s1);border-radius:16px;box-shadow:inset 0 0 0 1px var(--linha),0 30px 60px -30px rgba(0,0,0,.8);padding:clamp(22px,3.4vw,36px)}
+.cartao{background:var(--s1);border-radius:var(--raio-card);box-shadow:inset 0 0 0 1px var(--linha),0 30px 60px -30px rgba(0,0,0,.8);padding:clamp(22px,3.4vw,36px)}
+html[data-modo="claro"] .cartao{box-shadow:inset 0 0 0 1px var(--linha-2),0 20px 44px -24px rgba(0,0,0,.16)}
+html[data-estilo="retro"] .cartao{border:1.5px solid var(--linha-3);box-shadow:var(--sombra-retro)}
 .cartao h1{font-size:clamp(34px,4.6vw,44px);margin-bottom:12px}
 .cartao>p.fraco{color:var(--t2);line-height:1.5}
 /* "Seus dados": o rótulo do cartão quando o título da página está no lado */
@@ -219,10 +222,11 @@ html:not(.js) .aba-painel[hidden]{display:block!important}
 .campo:has(input[aria-invalid=true]) .nota{display:none}
 /* o erro fica a 6 px do campo, com ou sem nota antes dele (o "p+p" geral daria 12 px a mais) */
 .campo .erro-campo{margin-top:0}
-.campo input{width:100%;height:46px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:#101010;color:var(--t1);transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}
+.campo input{width:100%;height:46px;padding:0 12px;border-radius:var(--raio);border:1px solid var(--linha-3);background:var(--fundo-2);color:var(--t1);transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}
 .campo input::placeholder{color:var(--t3)}
-.campo input:focus{outline:2px solid var(--luar);outline-offset:2px;border-color:rgba(255,255,255,.55)}
-@media (hover:hover) and (pointer:fine){ .campo input:hover:not(:focus){border-color:rgba(255,255,255,.55)} }
+.campo input:focus{outline:2px solid var(--amber-vivo);outline-offset:2px;border-color:var(--amber)}
+@media (hover:hover) and (pointer:fine){ .campo input:hover:not(:focus){border-color:var(--t2)} }
+html[data-estilo="retro"] .campo input{border-width:1.5px;box-shadow:2px 2px 0 var(--linha-2)}
 /* campo com erro: a borda fica cheia e branca (sem cor), e o erro embaixo leva o "!" num círculo */
 .campo input[aria-invalid=true]{border-color:var(--t1);box-shadow:inset 0 0 0 1px var(--t1)}
 .campo input[aria-invalid=true]:focus{outline-color:var(--t1)}
@@ -262,7 +266,7 @@ html:not(.js) .aba-painel[hidden]{display:block!important}
 .aviso-ok::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.3l2.3 2.2 4.6-5' fill='none' stroke='%23EDEDED' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px 11px no-repeat}
 .aviso .ligacao{min-height:0;color:inherit}
 .codigo-grande{font-size:36px;font-weight:600;letter-spacing:.12em;line-height:1.1;margin:8px 0 10px;font-variant-numeric:tabular-nums}
-.bloco-codigo{margin-top:20px;padding:18px 20px;border-radius:12px;background:#101010;box-shadow:inset 0 0 0 1px var(--linha-2);text-align:center}
+.bloco-codigo{margin-top:20px;padding:18px 20px;border-radius:var(--raio-lg);background:var(--fundo-2);box-shadow:inset 0 0 0 1px var(--linha-2);text-align:center}
 .bloco-codigo p.fraco{font-size:14px;max-width:none}
 
 /* a página da conta em duas colunas: o lado (o que o teste é) e o cartão */

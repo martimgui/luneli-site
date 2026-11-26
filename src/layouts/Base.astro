@@ -22,6 +22,7 @@ import Cabecalho from '../componentes/Cabecalho.astro'
 import CabecalhoFixo from '../componentes/CabecalhoFixo.astro'
 import Rodape from '../componentes/Rodape.astro'
 import RodapeEclipse from '../componentes/RodapeEclipse.astro'
+import SeletorAparencia from '../componentes/SeletorAparencia.astro'
 
 interface Props {
   titulo: string
@@ -111,7 +112,23 @@ const fontes = [
     <link rel="preload" as="font" type="font/woff2" crossorigin href={frauncesUrl} />
     <Fragment set:html={`<style>${fontes}</style>`} />
     {dadosEstruturados && <Fragment set:html={`<script type="application/ld+json">${dadosEstruturados}</script>`} />}
-    <script is:inline>document.documentElement.classList.add('js')</script>
+    <script is:inline>
+      ;(function () {
+        var r = document.documentElement
+        r.classList.add('js')
+        try {
+          var s = JSON.parse(localStorage.getItem('luneli-aparencia') || '{}')
+          var m = s.modo === 'claro' ? 'claro' : 'escuro'
+          var e = s.estilo === 'retro' ? 'retro' : 'moderno'
+          var c = typeof s.cor === 'string' && /^(ambar|tomate|rosa|roxo|azul|turquesa|verde|grafite|coral|indigo|esmeralda|lavanda)$/.test(s.cor) ? s.cor : 'ambar'
+          r.dataset.modo = m
+          r.dataset.estilo = e
+          r.dataset.cor = c
+          var mt = document.querySelector('meta[name="theme-color"]')
+          if (mt && m === 'claro') mt.setAttribute('content', '#F4F3EF')
+        } catch (_) {}
+      })()
+    </script>
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -121,5 +138,6 @@ const fontes = [
       <slot />
     </main>
     {inicio ? <RodapeEclipse /> : <Rodape />}
+    <SeletorAparencia />
   </body>
 </html>

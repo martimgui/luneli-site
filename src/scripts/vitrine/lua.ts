@@ -59,8 +59,8 @@ export function criarLua(svg: SVGSVGElement, id: string, acabamento: Acabamento 
     gradLuz,
     // luz cinérea: o disco apagado é um pouco mais claro que o céu, e mais claro do lado da luz
     gradiente(`${id}-corpo`, 0.68, 0.5, 0.8, [[0, '#1D1D1D'], [0.5, '#181818'], [1, '#131313']]),
-    gradiente(`${id}-halo`, 0.5, 0.5, 0.5, [[0, '#FFFFFF', 0.17], [0.4, '#FFFFFF', 0.055], [0.72, '#FFFFFF', 0.014], [1, '#FFFFFF', 0]]),
-    gradiente(`${id}-brilho`, 0.5, 0.5, 0.5, [[0, '#FFFFFF', 0.075], [0.55, '#FFFFFF', 0.022], [1, '#FFFFFF', 0]]),
+    gradiente(`${id}-halo`, 0.5, 0.5, 0.5, [[0, 'var(--luar-brilho, #FFFFFF)', 0.24], [0.4, 'var(--luar-brilho, #FFFFFF)', 0.08], [0.72, 'var(--luar-brilho, #FFFFFF)', 0.02], [1, 'var(--luar-brilho, #FFFFFF)', 0]]),
+    gradiente(`${id}-brilho`, 0.5, 0.5, 0.5, [[0, 'var(--luar-brilho, #FFFFFF)', 0.11], [0.55, 'var(--luar-brilho, #FFFFFF)', 0.03], [1, 'var(--luar-brilho, #FFFFFF)', 0]]),
   )
   const g = criar('g')
   const brilho = criar('circle', { cx: 0.15, cy: 0, r: 1.6, fill: `url(#${id}-brilho)` })
