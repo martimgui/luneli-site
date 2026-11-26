@@ -57,11 +57,10 @@ html.js .hero h1{animation-delay:.16s}
 html.js .sub{animation-delay:.28s}
 html.js .acoes-hero{animation-delay:.4s}
 .kicker{font-size:15px;font-weight:500;color:var(--amber-vivo);margin:0 auto 22px;max-width:30em;text-wrap:balance}
-.hero h1{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(46px,min(7.4vw,12.8vh),126px);line-height:.98;letter-spacing:-.024em;font-kerning:normal;text-wrap:balance}
+.hero h1{font-family:var(--titulo);font-optical-sizing:auto;font-weight:500;font-size:clamp(46px,min(7.4vw,12.8vh),126px);line-height:.98;letter-spacing:-.024em;font-kerning:normal;text-wrap:balance;color:var(--t1)}
 .hero h1 .ln{display:block;white-space:nowrap}
 .hero h1 br{display:none}
-.sub{margin:26px auto 0;max-width:34em;font-size:19px;line-height:1.5;color:#C4C4C4;font-weight:450;text-wrap:balance}
-html[data-modo="claro"] .sub{color:var(--t2)}
+.sub{margin:26px auto 0;max-width:34em;font-size:19px;line-height:1.5;color:var(--t2);font-weight:450;text-wrap:balance}
 .acoes-hero{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:14px}
 /* a nota sob os botões (v3, A7): o teste sem cobrança e sem cartão, já na primeira tela */
 .hero-nota{margin:16px auto 0;font-size:14px;color:var(--t2);text-wrap:balance}
@@ -271,7 +270,7 @@ html[data-modo="claro"] .rodape{background:radial-gradient(120% 70% at 50% 58%,v
 html[data-modo="claro"] .rodape::before{filter:invert(1);opacity:.03}
 .rodape::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.04;background:url(/grao.png) 0 0/160px 160px repeat}
 .r-cham{position:relative;z-index:4;text-align:center}
-.r-cham h2{font-size:clamp(40px,min(5.6vw,9.4vh),92px);line-height:1;letter-spacing:-.022em}
+.r-cham h2{font-size:clamp(40px,min(5.6vw,9.4vh),92px);line-height:1;letter-spacing:-.022em;color:var(--t1)}
 .r-cham .r-sub{margin:14px auto 0;max-width:30em;font-size:16px;color:var(--t2);text-wrap:balance}
 .r-acoes{margin-top:clamp(22px,3.6vh,34px);display:flex;flex-direction:column;align-items:center;gap:4px}
 .r-planos{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:var(--t2);font-size:15px;text-decoration:underline;text-decoration-color:var(--linha-3);text-underline-offset:4px;transition:color .2s ease,text-decoration-color .2s ease}

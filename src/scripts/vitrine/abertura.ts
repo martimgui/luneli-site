@@ -6,7 +6,7 @@
 // antes da passagem; no celular ela sobe com a página (nunca fica sob o texto) e se apaga do mesmo jeito. Tudo em
 // SVG, nítido em qualquer tamanho. Com movimento reduzido, a lua é desenhada uma vez, parada, e rola com a página.
 // As leituras de layout ficam no evento de rolagem (antes de qualquer escrita); o quadro só escreve.
-import { $, LUA, SAI, limitar, opacidade, porQuadro, rampa, semMovimento } from './comum'
+import { $, LUA, SAI, opacidade, porQuadro, rampa, semMovimento } from './comum'
 import { colocar, criarLua, fase } from './lua'
 import { criarRenderizador, temWebGL } from './lua-gl'
 import type { Renderizador } from './lua-gl'
@@ -30,8 +30,6 @@ const congelado = ((): number | null => {
 const FIM = 2.6
 /** A fração acesa no fim da abertura: um fio de lua (no celular um pouco mais, com as pontas finas). */
 const FIO = { computador: 0.045, celular: 0.05 }
-/** Até onde a fase cresce enquanto a lua se apaga na rolagem. */
-const CRESCE = 0.3
 
 interface Geometria {
   cx: number
@@ -110,31 +108,27 @@ function montar(): void {
  */
 function pintarLua(t: number, y: number, topoDoQuadro: number): void {
   if (G === null) return
-  const vh = alturaDaJanela()
   const f = rampa(t, 0.55, 1.75, LUA)
   const an = rampa(t, 0, 0.28, (x) => x) * (1 - rampa(t, 1.0, 1.0, SAI))
   const fio = (G.celular ? FIO.celular : FIO.computador) * f
-  const e = limitar(y / (vh * (G.celular ? 0.6 : 0.75)))
-  const kk = LUA(e)
-  const k = fio + (CRESCE - fio) * kk
-  const r = G.r * (1 - (G.celular ? 0.2 : 0.3) * kk)
-  const cyJanela = G.celular ? G.cy - y : G.cy - vh * 0.22 * kk
-  const ang = 90 + 60 * kk
-  const sumico = limitar((e - 0.35) / 0.65)
-  const op = 1 - SAI(sumico)
+  const k = fio
+  const r = G.r
+  const cyJanela = G.cy - y
+  const ang = 90
+  const op = 1
   const chave = `${cyJanela.toFixed(1)},${r.toFixed(2)},${k.toFixed(4)},${f.toFixed(3)},${an.toFixed(3)},${op.toFixed(3)},${topoDoQuadro.toFixed(1)}`
   if (chave === ultimoQuadro) return
   ultimoQuadro = chave
   if (renderizador !== null) {
-    if (op <= 0.001 || cyJanela + r * 1.7 < 0) {
+    if (cyJanela + r * 1.7 < 0) {
       canvas.style.opacity = '0'
       renderizador.desenhar([])
       return
     }
-    canvas.style.opacity = op.toFixed(3)
-    const theta = Math.max(92, 180 - 18 * f - 70 * kk)
-    const phi = 54 * kk
-    const intensidade = 1 - 0.35 * kk
+    canvas.style.opacity = '1'
+    const theta = Math.max(92, 180 - 18 * f)
+    const phi = 0
+    const intensidade = 1
     renderizador.desenhar([
       {
         cx: G.cx,
@@ -142,7 +136,7 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
         r,
         theta,
         phi,
-        halo: f * (1 - 0.25 * kk),
+        halo: f,
         anel: an,
         aro: 0.35 + 0.65 * Math.max(f, an),
         tom: [1.03 * intensidade, 0.99 * intensidade, 0.92 * intensidade],
@@ -150,7 +144,7 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
     ])
     return
   }
-  if (op <= 0.001 || cyJanela + r * 1.7 < 0) {
+  if (cyJanela + r * 1.7 < 0) {
     lua.g.style.visibility = 'hidden'
     return
   }
@@ -158,11 +152,9 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
   colocar(lua, G.cx, cyJanela - topoDoQuadro, r, ang)
   fase(lua, k)
   opacidade(lua.g, op)
-  // v3 (C2): o corpo apagado some duas vezes mais rápido que o limbo aceso: o último resto visível é o fio de luz,
-  // não uma mancha cinza atrás dos botões
-  opacidade(lua.corpo, Math.max(0, 1 - 2 * sumico))
-  opacidade(lua.halo, f * (1 - 0.3 * kk))
-  opacidade(lua.brilho, f * (1 - 0.5 * kk))
+  opacidade(lua.corpo, 1)
+  opacidade(lua.halo, f)
+  opacidade(lua.brilho, f)
   opacidade(lua.anel, an * 0.95)
   opacidade(lua.coroa, an)
   opacidade(lua.aro, 0.35 + 0.65 * Math.max(f, an))
