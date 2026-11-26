@@ -121,7 +121,8 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
   const cyJanela = G.cy - y
   const ang = 90 + 60 * kk
   const op = 1
-  const chave = `${cyJanela.toFixed(1)},${r.toFixed(2)},${k.toFixed(4)},${f.toFixed(3)},${an.toFixed(3)},${op.toFixed(3)},${topoDoQuadro.toFixed(1)}`
+  const claro = document.documentElement.dataset.modo === 'claro'
+  const chave = `${cyJanela.toFixed(1)},${r.toFixed(2)},${k.toFixed(4)},${f.toFixed(3)},${an.toFixed(3)},${op.toFixed(3)},${topoDoQuadro.toFixed(1)},${claro ? 1 : 0}`
   if (chave === ultimoQuadro) return
   ultimoQuadro = chave
   if (renderizador !== null) {
@@ -144,6 +145,7 @@ function pintarLua(t: number, y: number, topoDoQuadro: number): void {
         halo: f * (1 - 0.25 * kk),
         anel: an,
         aro: 0.35 + 0.65 * Math.max(f, an),
+        claro,
         tom: [1.03 * intensidade, 0.99 * intensidade, 0.92 * intensidade],
       },
     ])
@@ -234,6 +236,13 @@ comecar()
 void document.fonts.ready.then(() => {
   montar()
   pintarDeNovo()
+})
+new MutationObserver(() => {
+  montar()
+  pintarDeNovo()
+}).observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ['data-modo', 'data-cor'],
 })
 let ultimaLargura = document.documentElement.clientWidth
 addEventListener(
