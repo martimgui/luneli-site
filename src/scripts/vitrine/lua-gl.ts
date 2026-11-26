@@ -85,14 +85,15 @@ void main(){
     lum = lum / (1.0 + 0.45 * lum) * 1.45;
     if (uClaro > 0.5) {
       float borda = clamp(-px + 0.5, 0.0, 1.0);
-      float relevoLua = clamp(dif * 1.45, 0.0, 1.0);
-      vec3 pedra = mix(vec3(0.84, 0.82, 0.78), vec3(0.58, 0.55, 0.50), clamp(alb.r * 2.2, 0.0, 1.0));
-      vec3 crescente = mix(pedra, vec3(0.45, 0.42, 0.38), relevoLua * 0.7);
-      float aDisco = borda * (0.09 + 0.24 * relevoLua) * uLuz;
-      cor = crescente * aDisco;
+      float relevoLua = clamp(dif * 1.55, 0.0, 1.0);
+      float texturaEscura = clamp(0.45 + 0.55 * (1.0 - alb.r * 1.8), 0.25, 1.0);
+      vec3 escuroLunar = vec3(0.14, 0.14, 0.15) * texturaEscura;
+      vec3 claroLunar = vec3(0.95, 0.94, 0.91);
+      float aDisco = borda * (0.04 + 0.68 * relevoLua) * uLuz;
+      cor = mix(claroLunar, escuroLunar, relevoLua) * aDisco;
       alfa = aDisco;
-      float aro = clamp(1.0 - abs(px + 0.8), 0.0, 1.0) * 0.14 * uAro;
-      sobre(cor, alfa, vec3(0.45, 0.42, 0.38) * aro, aro);
+      float aro = clamp(1.0 - abs(px + 0.8), 0.0, 1.0) * 0.18 * uAro;
+      sobre(cor, alfa, vec3(0.18, 0.17, 0.16) * aro, aro);
     } else {
       cor = paraSrgb(lum) * uLuz;
       alfa = clamp(-px + 0.5, 0.0, 1.0);
