@@ -28,7 +28,7 @@ uniform vec2 uCentro;
 uniform float uRaio;
 uniform vec3 uSol;
 uniform mat3 uRot;
-uniform float uAnel, uAro, uHalo, uCinza, uExpo, uRelevo, uTemTex, uLuz, uClaro;
+uniform float uAnel, uAro, uHalo, uCinza, uExpo, uRelevo, uTemTex, uLuz;
 uniform vec3 uTom;
 uniform vec4 uSombra;
 uniform sampler2D uCor, uNorm;
@@ -83,24 +83,13 @@ void main(){
     lum = mix(lum, umbra, cob);
     lum = lum * uTom;
     lum = lum / (1.0 + 0.45 * lum) * 1.45;
-    if (uClaro > 0.5) {
-      float borda = clamp(-px + 0.5, 0.0, 1.0);
-      float relevoLua = clamp(dif * 1.65, 0.0, 1.0);
-      float aDisco = borda * (0.035 + 0.30 * relevoLua) * uLuz;
-      vec3 tinta = mix(vec3(0.50, 0.47, 0.42), uTom * 0.36, relevoLua);
-      cor = tinta * aDisco;
-      alfa = aDisco;
-      float aro = clamp(1.0 - abs(px + 0.6), 0.0, 1.0) * 0.24 * uAro;
-      sobre(cor, alfa, vec3(0.32, 0.29, 0.24) * aro, aro);
-    } else {
-      cor = paraSrgb(lum) * uLuz;
-      alfa = clamp(-px + 0.5, 0.0, 1.0);
-      cor *= alfa;
-      float aro = clamp(1.0 - abs(px + 0.8), 0.0, 1.0) * 0.12 * uAro;
-      sobre(cor, alfa, LUAR * aro, aro);
-    }
+    cor = paraSrgb(lum) * uLuz;
+    alfa = clamp(-px + 0.5, 0.0, 1.0);
+    cor *= alfa;
+    float aro = clamp(1.0 - abs(px + 0.8), 0.0, 1.0) * 0.12 * uAro;
+    sobre(cor, alfa, LUAR * aro, aro);
   }
-  if (px > -1.0 && uClaro < 0.5) {
+  if (px > -1.0) {
     vec2 dir = rho > 0.0001 ? d / rho : vec2(0.0, 1.0);
     vec3 n = vec3(dir.x, -dir.y, 0.0);
     float lit = max(smoothstep(0.0, 0.35, dot(n, uSol)), 0.6 * smoothstep(0.8, 1.0, uSol.z));
@@ -112,10 +101,8 @@ void main(){
   if (uAnel > 0.001) {
     float a = clamp(1.6 - abs(px - 0.7), 0.0, 1.0) * 0.92 * uAnel;
     float c = exp(-max(px, 0.0) / (0.045 * uRaio)) * 0.16 * uAnel * step(0.0, px);
-    vec3 corAnel = uClaro > 0.5 ? vec3(0.32, 0.29, 0.24) : LUAR;
-    vec3 brilhoAnel = uClaro > 0.5 ? vec3(0.25, 0.23, 0.20) : vec3(0.95, 0.957, 0.973);
-    sobre(cor, alfa, corAnel * c, c);
-    sobre(cor, alfa, brilhoAnel * a, a);
+    sobre(cor, alfa, LUAR * c, c);
+    sobre(cor, alfa, vec3(0.95, 0.957, 0.973) * a, a);
   }
   gl_FragColor = vec4(cor, alfa);
 }`
@@ -142,7 +129,6 @@ export interface Lua {
   expo?: number
   relevo?: number
   luz?: number
-  claro?: boolean
   tom?: readonly [number, number, number]
   /** A sombra da Terra: centro (x, y em raios), raio (em raios) e força. */
   sombra?: readonly [number, number, number, number]
@@ -158,7 +144,7 @@ export interface Renderizador {
   perdido: boolean
 }
 
-const UNIFORMES = ['uRes', 'uCentro', 'uRaio', 'uSol', 'uRot', 'uAnel', 'uAro', 'uHalo', 'uCinza', 'uExpo', 'uRelevo', 'uTemTex', 'uLuz', 'uClaro', 'uTom', 'uSombra', 'uCor', 'uNorm'] as const
+const UNIFORMES = ['uRes', 'uCentro', 'uRaio', 'uSol', 'uRot', 'uAnel', 'uAro', 'uHalo', 'uCinza', 'uExpo', 'uRelevo', 'uTemTex', 'uLuz', 'uTom', 'uSombra', 'uCor', 'uNorm'] as const
 type Uniforme = (typeof UNIFORMES)[number]
 
 const COR = '/lua/cor.webp'
@@ -328,7 +314,6 @@ export function criarRenderizador(canvas: HTMLCanvasElement): Renderizador | nul
       GL.uniform1f(U.uRelevo, L.relevo ?? 1.6)
       GL.uniform1f(U.uTemTex, temTex)
       GL.uniform1f(U.uLuz, L.luz ?? 1)
-      GL.uniform1f(U.uClaro, L.claro ? 1 : 0)
       const tom = L.tom ?? [1, 1, 1]
       GL.uniform3f(U.uTom, tom[0], tom[1], tom[2])
       const s = L.sombra ?? [0, 0, 0, 0]

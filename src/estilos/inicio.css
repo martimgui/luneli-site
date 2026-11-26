@@ -26,7 +26,8 @@ html:not(.js) .cab-fixo{display:none}
 /* a noite: a abertura, a faixa de dores e a passagem dividem o céu, num quadro preso à janela (sticky) que este
    invólucro limita (a abertura é transparente para a lua aparecer atrás do título) */
 .noite{position:relative;background:linear-gradient(180deg,#0A0A0A 0,#0C0C0C 55svh,#0D0D0D 100svh)}
-html[data-modo="claro"] .noite{background:linear-gradient(180deg,var(--fundo-2) 0,var(--fundo) 100svh)}
+html[data-modo="claro"] .noite{background:radial-gradient(65% 50% at 50% 38%,color-mix(in srgb,var(--amber) 11%,transparent) 0%,transparent 72%),linear-gradient(180deg,var(--fundo-2) 0,var(--fundo) 100svh)}
+html[data-modo="claro"] .lua-fixa{display:none}
 /* o grão: um PNG pequeno (160 px, 4 níveis de branco transparente, 6 KB), pintado uma vez e repetido; a opacidade
    baixa dá o mesmo pó fino do feTurbulence antigo; some antes da história */
 .noite::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.045;background:url(/grao.png) 0 0/160px 160px repeat;
