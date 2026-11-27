@@ -20,6 +20,19 @@ function tema(ehClaro: boolean): void {
 escuro.addEventListener('click', () => tema(false))
 claro.addEventListener('click', () => tema(true))
 
+// Seletor das 8 cores na tela #dia
+const corBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-dia-cor]'))
+corBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const cor = btn.dataset.diaCor
+    if (!cor) return
+    corBtns.forEach((b) => b.classList.toggle('is-active', b === btn))
+    tela.style.setProperty('--p-acao', cor)
+    tela.style.setProperty('--p-acao-borda', `color-mix(in srgb, ${cor} 50%, transparent)`)
+    tela.style.setProperty('--p-acao-bg', `color-mix(in srgb, ${cor} 16%, transparent)`)
+  })
+})
+
 // Interatividade da tela de Pedido dentro de #dia
 const tipos = Array.from(document.querySelectorAll<HTMLElement>('#dia .pd-cli .seg > span'))
 const pagamentos = Array.from(document.querySelectorAll<HTMLElement>('#dia .pd-fech .seg > span'))

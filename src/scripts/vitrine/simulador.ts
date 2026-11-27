@@ -1,4 +1,4 @@
-// Simulador interativo do balcão, cozinha KDS, mesas, expedição e queda de internet.
+// Simulador interativo do balcão, cozinha KDS, mesas, expedição, atalhos de teclado e queda de internet.
 import { $, $$ } from './comum'
 
 type Aba = 'balcao' | 'cozinha' | 'mesas' | 'expedicao'
@@ -6,6 +6,7 @@ type Aba = 'balcao' | 'cozinha' | 'mesas' | 'expedicao'
 interface ItemCarrinho {
   nome: string
   preco: number
+  qtd: number
 }
 
 interface PedidoSim {
@@ -16,13 +17,14 @@ interface PedidoSim {
   status: 'preparo' | 'pronto' | 'entregue'
   modo: 'Online' | 'Local (em breve)'
   hora: string
+  pagamento: string
   entregador?: string
 }
 
 interface MesaSim {
   id: string
   status: string
-  total: string
+  totalNum: number
   detalhe: string
   ocupada: boolean
 }
@@ -36,6 +38,7 @@ const PEDIDOS_INICIAIS: PedidoSim[] = [
     status: 'preparo',
     modo: 'Online',
     hora: '20:58',
+    pagamento: 'Pix',
     entregador: 'Diego',
   },
   {
@@ -46,6 +49,7 @@ const PEDIDOS_INICIAIS: PedidoSim[] = [
     status: 'preparo',
     modo: 'Online',
     hora: '20:54',
+    pagamento: 'Cartão',
   },
   {
     numero: 246,
@@ -55,30 +59,37 @@ const PEDIDOS_INICIAIS: PedidoSim[] = [
     status: 'pronto',
     modo: 'Online',
     hora: '20:49',
+    pagamento: 'Dinheiro',
   },
 ]
 
 const CARRINHO_INICIAL: ItemCarrinho[] = [
-  { nome: 'X-Bacon Artesanal', preco: 34.0 },
-  { nome: 'Refrigerante Lata', preco: 7.0 },
+  { nome: 'X-Bacon Artesanal', preco: 34.0, qtd: 1 },
+  { nome: 'Refrigerante Lata', preco: 7.0, qtd: 1 },
 ]
 
-const MESAS: MesaSim[] = [
-  { id: 'Mesa 01', status: 'Livre', total: '—', detalhe: 'Mesa 01 livre para receber clientes.', ocupada: false },
-  { id: 'Mesa 02', status: 'Ocupada · 3 pessoas', total: 'R$ 142,00', detalhe: 'Mesa 02: 3 rodadas lançadas · R$ 47,33 por pessoa (divisão igual).', ocupada: true },
-  { id: 'Mesa 03', status: 'Livre', total: '—', detalhe: 'Mesa 03 livre para receber clientes.', ocupada: false },
-  { id: 'Mesa 04', status: 'Conta pedida · 2x', total: 'R$ 96,00', detalhe: 'Mesa 04: R$ 48,00 pagos no Pix · faltam R$ 48,00 no cartão.', ocupada: true },
-  { id: 'Comanda #18', status: 'Balcão / Bar', total: 'R$ 48,50', detalhe: 'Comanda #18: aberta às 20:32 · 2 itens lançados.', ocupada: true },
-  { id: 'Mesa 06', status: 'Livre', total: '—', detalhe: 'Mesa 06 livre para receber clientes.', ocupada: false },
+const MESAS_INICIAIS: MesaSim[] = [
+  { id: 'Mesa 01', status: 'Livre', totalNum: 0, detalhe: 'Mesa 01 livre.', ocupada: false },
+  { id: 'Mesa 02', status: 'Ocupada · 3 pessoas', totalNum: 142.0, detalhe: 'Mesa 02: 3 rodadas · R$ 47,33/pessoa.', ocupada: true },
+  { id: 'Mesa 03', status: 'Livre', totalNum: 0, detalhe: 'Mesa 03 livre.', ocupada: false },
+  { id: 'Mesa 04', status: 'Conta pedida · 2x', totalNum: 96.0, detalhe: 'Mesa 04: R$ 48,00 no Pix · falta R$ 48,00.', ocupada: true },
+  { id: 'Comanda #18', status: 'Balcão / Bar', totalNum: 48.5, detalhe: 'Comanda #18: aberta às 20:32.', ocupada: true },
+  { id: 'Mesa 06', status: 'Livre', totalNum: 0, detalhe: 'Mesa 06 livre.', ocupada: false },
 ]
 
 const fmt = (v: number): string => `R$ ${v.toFixed(2).replace('.', ',')}`
 
 const shell = $('#simShell')
 if (shell) {
+  let abaAtiva: Aba = 'balcao'
   let offline = false
+  let tipoPedido: 'Balcão' | 'Delivery' = 'Balcão'
+  let pagamento = 'Pix'
+  let obsLista: string[] = []
   let pedidos: PedidoSim[] = PEDIDOS_INICIAIS.map((p) => ({ ...p, itens: [...p.itens] }))
   let carrinho: ItemCarrinho[] = CARRINHO_INICIAL.map((c) => ({ ...c }))
+  let mesas: MesaSim[] = MESAS_INICIAIS.map((m) => ({ ...m }))
+  let mesaSelIdx = 1
   let proximoNumero = 249
 
   const tabs = $$<HTMLButtonElement>('[data-sim-tab]')
@@ -104,6 +115,7 @@ if (shell) {
   }
 
   function trocarAba(nova: Aba): void {
+    abaAtiva = nova
     tabs.forEach((t) => {
       const ativo = t.dataset.simTab === nova
       t.classList.toggle('is-active', ativo)
@@ -120,11 +132,13 @@ if (shell) {
     netText.textContent = offline ? 'Sem internet · Modo Local (em breve)' : 'Loja conectada'
     btnNet.textContent = offline ? 'Religar internet' : 'Simular queda de internet'
     btnNet.classList.toggle('is-offline', offline)
-    ticketMode.textContent = offline ? 'Balcão · Local (em breve)' : 'Balcão · Online'
   }
 
   function renderCarrinho(): void {
     ticketNum.textContent = `Pedido #${proximoNumero}`
+    const taxa = tipoPedido === 'Delivery' ? 6 : 0
+    ticketMode.textContent = `Total · ${pagamento}${tipoPedido === 'Delivery' ? ' (c/ entrega)' : ''}`
+
     if (carrinho.length === 0) {
       cartItems.innerHTML = '<p class="sim-empty">Clique nos itens ao lado para montar o pedido.</p>'
       cartTotal.textContent = 'R$ 0,00'
@@ -132,27 +146,76 @@ if (shell) {
       return
     }
     btnSend.disabled = false
-    const total = carrinho.reduce((s, item) => s + item.preco, 0)
-    cartTotal.textContent = fmt(total)
-    cartItems.innerHTML = carrinho
-      .map(
-        (item, idx) =>
-          `<div class="sim-ticket-row">
-            <span>${item.nome}</span>
-            <span class="sim-ticket-right">
-              <span>${fmt(item.preco)}</span>
-              <button type="button" class="sim-rm" data-rm-idx="${idx}" aria-label="Remover ${item.nome}">×</button>
-            </span>
-          </div>`,
-      )
-      .join('')
-    cartItems.querySelectorAll<HTMLButtonElement>('[data-rm-idx]').forEach((btn) => {
+    const totalItens = carrinho.reduce((s, item) => s + item.preco * item.qtd, 0)
+    cartTotal.textContent = fmt(totalItens + taxa)
+
+    cartItems.innerHTML =
+      carrinho
+        .map(
+          (item, idx) =>
+            `<div class="sim-ticket-row">
+              <span>${item.qtd}x ${item.nome}</span>
+              <span class="sim-ticket-right">
+                <button type="button" class="sim-qty" data-dec-idx="${idx}" aria-label="Diminuir">−</button>
+                <button type="button" class="sim-qty" data-inc-idx="${idx}" aria-label="Aumentar">+</button>
+                <span>${fmt(item.preco * item.qtd)}</span>
+              </span>
+            </div>`,
+        )
+        .join('') +
+      (obsLista.length > 0 ? `<div class="sim-obs-preview">OBS: ${obsLista.join(' · ')}</div>` : '')
+
+    cartItems.querySelectorAll<HTMLButtonElement>('[data-dec-idx]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.rmIdx)
-        carrinho.splice(idx, 1)
+        const idx = Number(btn.dataset.decIdx)
+        const item = carrinho[idx]
+        if (!item) return
+        if (item.qtd > 1) item.qtd--
+        else carrinho.splice(idx, 1)
         renderCarrinho()
       })
     })
+    cartItems.querySelectorAll<HTMLButtonElement>('[data-inc-idx]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.incIdx)
+        const item = carrinho[idx]
+        if (!item) return
+        item.qtd++
+        renderCarrinho()
+      })
+    })
+  }
+
+  function enviarPedido(): void {
+    if (carrinho.length === 0) return
+    const itens = carrinho.map((i) => `${i.qtd}x ${i.nome}`)
+    if (obsLista.length > 0) itens.push(`OBS: ${obsLista.join(', ')}`)
+    const taxa = tipoPedido === 'Delivery' ? 6 : 0
+    const total = carrinho.reduce((s, item) => s + item.preco * item.qtd, 0) + taxa
+    const num = proximoNumero++
+    pedidos.unshift({
+      numero: num,
+      canal: tipoPedido === 'Delivery' ? 'Delivery · Balcão' : 'Balcão',
+      itens,
+      total,
+      status: 'preparo',
+      modo: offline ? 'Local (em breve)' : 'Online',
+      hora: 'Agora',
+      pagamento,
+      entregador: tipoPedido === 'Delivery' ? 'Lucas M.' : undefined,
+    })
+    carrinho = []
+    obsLista = []
+    $$<HTMLButtonElement>('[data-sim-obs]').forEach((b) => b.classList.remove('is-active'))
+    setLog(
+      offline
+        ? `Modo Local (em breve) · Pedido #${num} guardado no caixa e enviado à cozinha`
+        : `Caixa 1 · Pedido #${num} (${pagamento}) enviado para a cozinha`,
+    )
+    renderCarrinho()
+    renderKds()
+    renderExpedicao()
+    trocarAba('cozinha')
   }
 
   function renderKds(): void {
@@ -193,18 +256,47 @@ if (shell) {
   }
 
   function renderMesas(): void {
-    mesasGrid.innerHTML = MESAS.map(
-      (m, idx) =>
-        `<button type="button" class="sim-mesa-box ${m.ocupada ? 'is-busy' : ''}" data-mesa-idx="${idx}">
-          <div class="sim-mesa-title">${m.id}</div>
-          <div class="sim-mesa-sub">${m.status}</div>
-          <div class="sim-mesa-total">${m.total}</div>
-        </button>`,
-    ).join('')
+    mesasGrid.innerHTML = mesas
+      .map(
+        (m, idx) =>
+          `<button type="button" class="sim-mesa-box ${m.ocupada ? 'is-busy' : ''} ${idx === mesaSelIdx ? 'is-selected' : ''}" data-mesa-idx="${idx}">
+            <div class="sim-mesa-title">${m.id}</div>
+            <div class="sim-mesa-sub">${m.status}</div>
+            <div class="sim-mesa-total">${m.ocupada ? fmt(m.totalNum) : '—'}</div>
+          </button>`,
+      )
+      .join('')
+
+    const sel = mesas[mesaSelIdx]
+    if (sel) {
+      mesaDetalhe.innerHTML = `
+        <span>${sel.detalhe}</span>
+        <span class="sim-mesa-acoes">
+          <button type="button" class="sim-kds-btn" data-sim-mesa-add>+ Chope (R$ 12,90)</button>
+          ${sel.ocupada ? '<button type="button" class="sim-btn-reset" data-sim-mesa-fechar>Fechar mesa</button>' : ''}
+        </span>`
+      mesaDetalhe.querySelector<HTMLButtonElement>('[data-sim-mesa-add]')?.addEventListener('click', () => {
+        sel.ocupada = true
+        sel.status = 'Ocupada · agora'
+        sel.totalNum += 12.9
+        sel.detalhe = `${sel.id}: +1 Chope lançado · Total ${fmt(sel.totalNum)}`
+        setLog(`${sel.id} · Chope 300 ml lançado (${fmt(sel.totalNum)})`)
+        renderMesas()
+      })
+      mesaDetalhe.querySelector<HTMLButtonElement>('[data-sim-mesa-fechar]')?.addEventListener('click', () => {
+        sel.ocupada = false
+        sel.status = 'Livre'
+        sel.totalNum = 0
+        sel.detalhe = `${sel.id} fechada e liberada.`
+        setLog(`${sel.id} · Conta fechada`)
+        renderMesas()
+      })
+    }
+
     mesasGrid.querySelectorAll<HTMLButtonElement>('[data-mesa-idx]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const m = MESAS[Number(btn.dataset.mesaIdx)]
-        if (m) mesaDetalhe.textContent = m.detalhe
+        mesaSelIdx = Number(btn.dataset.mesaIdx)
+        renderMesas()
       })
     })
   }
@@ -259,40 +351,45 @@ if (shell) {
       const nome = btn.dataset.addItem ?? ''
       const preco = Number(btn.dataset.addPrice ?? '0')
       if (!nome) return
-      carrinho.push({ nome, preco })
+      const existente = carrinho.find((i) => i.nome === nome)
+      if (existente) existente.qtd++
+      else carrinho.push({ nome, preco, qtd: 1 })
       renderCarrinho()
     })
   })
 
-  btnSend.addEventListener('click', () => {
-    if (carrinho.length === 0) return
-    const agrupado = carrinho.reduce<Record<string, number>>((acc, item) => {
-      acc[item.nome] = (acc[item.nome] ?? 0) + 1
-      return acc
-    }, {})
-    const itens = Object.entries(agrupado).map(([nome, qtd]) => `${qtd}x ${nome}`)
-    const total = carrinho.reduce((s, item) => s + item.preco, 0)
-    const num = proximoNumero++
-    pedidos.unshift({
-      numero: num,
-      canal: 'Balcão',
-      itens,
-      total,
-      status: 'preparo',
-      modo: offline ? 'Local (em breve)' : 'Online',
-      hora: 'Agora',
+  $$<HTMLButtonElement>('[data-sim-tipo]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tipoPedido = btn.dataset.simTipo === 'Delivery' ? 'Delivery' : 'Balcão'
+      $$<HTMLButtonElement>('[data-sim-tipo]').forEach((b) => b.classList.toggle('is-active', b === btn))
+      renderCarrinho()
     })
-    carrinho = []
-    setLog(
-      offline
-        ? `Modo Local (em breve) · Pedido #${num} guardado no caixa e enviado à cozinha`
-        : `Caixa 1 · Pedido #${num} enviado para a cozinha`,
-    )
-    renderCarrinho()
-    renderKds()
-    renderExpedicao()
-    trocarAba('cozinha')
   })
+
+  $$<HTMLButtonElement>('[data-sim-pag]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      pagamento = btn.dataset.simPag ?? 'Pix'
+      $$<HTMLButtonElement>('[data-sim-pag]').forEach((b) => b.classList.toggle('is-active', b === btn))
+      renderCarrinho()
+    })
+  })
+
+  $$<HTMLButtonElement>('[data-sim-obs]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const obs = btn.dataset.simObs ?? ''
+      if (!obs) return
+      if (obsLista.includes(obs)) {
+        obsLista = obsLista.filter((o) => o !== obs)
+        btn.classList.remove('is-active')
+      } else {
+        obsLista.push(obs)
+        btn.classList.add('is-active')
+      }
+      renderCarrinho()
+    })
+  })
+
+  btnSend.addEventListener('click', enviarPedido)
 
   btnNet.addEventListener('click', () => {
     offline = !offline
@@ -309,15 +406,45 @@ if (shell) {
 
   btnReset.addEventListener('click', () => {
     offline = false
+    tipoPedido = 'Balcão'
+    pagamento = 'Pix'
+    obsLista = []
     pedidos = PEDIDOS_INICIAIS.map((p) => ({ ...p, itens: [...p.itens] }))
     carrinho = CARRINHO_INICIAL.map((c) => ({ ...c }))
+    mesas = MESAS_INICIAIS.map((m) => ({ ...m }))
+    mesaSelIdx = 1
     proximoNumero = 249
+    $$<HTMLButtonElement>('[data-sim-obs]').forEach((b) => b.classList.remove('is-active'))
     setLog('Caixa 1 · Pedido #248 registrado às 20:58')
     renderRede()
     renderCarrinho()
     renderKds()
+    renderMesas()
     renderExpedicao()
     trocarAba('balcao')
+  })
+
+  shell.setAttribute('tabindex', '0')
+  shell.addEventListener('keydown', (e) => {
+    if (e.key === 'F2') {
+      e.preventDefault()
+      trocarAba('balcao')
+    } else if (e.key === 'F4') {
+      e.preventDefault()
+      trocarAba('mesas')
+    } else if (e.key === 'F8' && abaAtiva === 'balcao') {
+      e.preventDefault()
+      enviarPedido()
+    } else if (e.key === 'Enter' && abaAtiva === 'cozinha') {
+      const primeiro = pedidos.find((p) => p.status === 'preparo')
+      if (primeiro) {
+        e.preventDefault()
+        primeiro.status = 'pronto'
+        setLog(`Cozinha KDS · Pedido #${primeiro.numero} marcado como Pronto [Enter]`)
+        renderKds()
+        renderExpedicao()
+      }
+    }
   })
 
   renderRede()

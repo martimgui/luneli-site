@@ -7,9 +7,19 @@ import Pedido from '../telas/Pedido.astro'
   <div class="sec-cab">
     <div>
       <h2 class="serifa revela" id="dTit">O PDV de dia.</h2>
-      <div class="troca-tema revela" style="--i:1" role="group" aria-label="Tema da tela">
+      <div class="troca-tema revela" style="--i:1" role="group" aria-label="Tema e cor da tela">
         <span>Tema</span>
         <div class="seg-site"><button type="button" id="tEsc" aria-pressed="false">Escuro</button><button type="button" id="tCla" aria-pressed="true">Claro</button></div>
+        <div class="dia-cores" role="group" aria-label="Cor de destaque da tela">
+          <button type="button" class="dia-cor is-active" data-dia-cor="#F5A524" style="background:#F5A524" aria-label="Âmbar"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#FF6B57" style="background:#FF6B57" aria-label="Tomate"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#5AA9FF" style="background:#5AA9FF" aria-label="Azul"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#3DD6C6" style="background:#3DD6C6" aria-label="Turquesa"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#4FD58A" style="background:#4FD58A" aria-label="Verde"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#B08CFF" style="background:#B08CFF" aria-label="Roxo"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#FF7AB6" style="background:#FF7AB6" aria-label="Rosa"></button>
+          <button type="button" class="dia-cor" data-dia-cor="#FF8A65" style="background:#FF8A65" aria-label="Coral"></button>
+        </div>
       </div>
     </div>
     <p class="revela" style="--i:2">O escuro vem de fábrica. Para o caixa perto da janela ou o balcão do almoço, cada pessoa troca para o claro em Minha conta, e escolhe uma de 8 cores e o tamanho da letra, com o mesmo desenho e os mesmos atalhos. Quem aprendeu uma vez, sabe usar nos dois.</p>

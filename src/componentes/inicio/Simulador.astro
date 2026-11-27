@@ -71,12 +71,25 @@
             <div class="sim-ticket-col">
               <div class="sim-ticket-head">
                 <span class="sim-ticket-num" id="simTicketNum">Pedido #249</span>
-                <span class="sim-ticket-mode" id="simTicketMode">Balcão · Online</span>
+                <div class="sim-seg" role="group" aria-label="Tipo do pedido">
+                  <button type="button" class="is-active" data-sim-tipo="Balcão">Balcão</button>
+                  <button type="button" data-sim-tipo="Delivery">Delivery (+R$ 6)</button>
+                </div>
               </div>
               <div class="sim-ticket-items" id="simCartItems"></div>
+              <div class="sim-obs-row" aria-label="Observações rápidas">
+                <button type="button" class="sim-obs-chip" data-sim-obs="Sem cebola">+ Sem cebola</button>
+                <button type="button" class="sim-obs-chip" data-sim-obs="Borda catupiry">+ Borda catupiry</button>
+                <button type="button" class="sim-obs-chip" data-sim-obs="Bem passado">+ Bem passado</button>
+              </div>
               <div class="sim-ticket-foot">
+                <div class="sim-pag-row" role="group" aria-label="Forma de pagamento">
+                  <button type="button" class="is-active" data-sim-pag="Pix">Pix</button>
+                  <button type="button" data-sim-pag="Cartão">Cartão</button>
+                  <button type="button" data-sim-pag="Dinheiro">Dinheiro</button>
+                </div>
                 <div class="sim-ticket-total">
-                  <span>Total</span>
+                  <span id="simTicketMode">Total · Pix</span>
                   <strong id="simCartTotal">R$ 0,00</strong>
                 </div>
                 <button type="button" class="btn um sim-send-btn" id="simSendOrder">

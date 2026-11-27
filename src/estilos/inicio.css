@@ -490,9 +490,26 @@ html.js .rodape:not(.r-decidido){visibility:hidden}
 .sim-menu-price b{color:var(--amber-vivo);font-size:16px}
 
 .sim-ticket-col{display:flex;flex-direction:column;background:var(--s2);border:1px solid var(--linha);border-radius:var(--raio-lg);padding:14px}
-.sim-ticket-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--linha);font-size:13px}
+.sim-ticket-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--linha);font-size:13px;flex-wrap:wrap}
 .sim-ticket-num{font-weight:600;color:var(--t1)}
-.sim-ticket-mode{color:var(--t3)}
+.sim-ticket-mode{color:var(--t3);font-size:13px}
+.sim-seg,.sim-pag-row{display:inline-flex;gap:4px;padding:2px;border-radius:var(--raio);background:var(--s1);border:1px solid var(--linha)}
+.sim-seg button,.sim-pag-row button{height:26px;padding:0 9px;border-radius:6px;font-size:12px;color:var(--t2);transition:background-color .15s ease,color .15s ease}
+.sim-seg button.is-active,.sim-pag-row button.is-active{background:var(--s3);color:var(--t1);font-weight:600}
+.sim-pag-row{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
+.sim-obs-row{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:10px}
+.sim-obs-chip{height:26px;padding:0 9px;border-radius:999px;font-size:11.5px;color:var(--t2);border:1px solid var(--linha-2);background:var(--s1)}
+.sim-obs-chip.is-active{border-color:var(--amber-borda);background:var(--amber-suave);color:var(--amber-vivo);font-weight:600}
+.sim-obs-preview{font-size:12px;color:var(--amber-vivo);padding-top:4px}
+.sim-qty{width:22px;height:22px;border-radius:var(--raio-sm);border:1px solid var(--linha-2);background:var(--s1);color:var(--t1);font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.sim-qty:hover{border-color:var(--amber-borda)}
+.sim-mesa-box.is-selected{border-color:var(--amber);box-shadow:0 0 0 2px var(--amber-suave)}
+.sim-mesa-detalhe{margin-top:14px;padding:10px 14px;border-radius:var(--raio);background:var(--s2);border:1px solid var(--linha);font-size:13.5px;color:var(--t2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sim-mesa-acoes{display:inline-flex;gap:8px;align-items:center}
+.dia-cores{display:inline-flex;align-items:center;gap:6px;margin-left:6px}
+.dia-cor{width:18px;height:18px;border-radius:50%;border:2px solid transparent;transition:transform .15s ease,border-color .15s ease}
+.dia-cor:hover{transform:scale(1.15)}
+.dia-cor.is-active{border-color:#121212;transform:scale(1.15)}
 .sim-ticket-items{flex:1;padding:10px 0;display:grid;gap:6px;align-content:start}
 .sim-empty{font-size:13.5px;color:var(--t3);padding:14px 0}
 .sim-ticket-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13.5px;color:var(--t1)}
