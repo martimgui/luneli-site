@@ -39,15 +39,41 @@ const FUNCOES: { nome: string; texto: string; marca?: string }[] = [
         <h3 class="serifa">A internet caiu. O caixa continua.</h3>
         <p class="lead">Em construção: sem internet, os pedidos ficam guardados no computador do balcão, onde o Luneli Caixa está instalado, e sobem sozinhos para a nuvem quando a conexão volta.</p>
       </div>
-      <div class="rede" role="img" aria-label="Exemplo ilustrativo do que está sendo feito: um caixa no computador do balcão continua vendendo sem internet, e a nuvem recebe tudo quando a conexão volta.">
-       <div aria-hidden="true">
-        <div class="t">Luneli Caixa <span>em breve · exemplo ilustrativo</span></div>
-        <div class="l"><span>Caixa 1 · computador do balcão</span><em><i class="ponto"></i>Vendendo</em></div>
-        <div class="l"><span>Internet</span><em><i class="ponto esp"></i>Caiu</em></div>
-        <div class="l"><span>Pedidos e caixa</span><em>Guardados neste computador</em></div>
-        <div class="l"><span>Nuvem</span><em>Recebe tudo quando a conexão volta</em></div>
-        <div class="nota">É o que a primeira versão vai fazer: um caixa, no computador onde o Luneli está instalado.</div>
-       </div>
+      <div class="rede" id="redeSim" aria-label="Simulação ilustrativa do que está sendo feito: um caixa no computador do balcão continua vendendo sem internet, e a nuvem recebe tudo quando a conexão volta.">
+        <div class="rede-tabs" role="group" aria-label="Momento da conexão">
+          <button type="button" class="rede-tab" data-rede-fase="normal" aria-pressed="false">19:15 · Normal</button>
+          <button type="button" class="rede-tab is-active" data-rede-fase="caiu" aria-pressed="true">20:42 · Caiu</button>
+          <button type="button" class="rede-tab" data-rede-fase="voltou" aria-pressed="false">21:18 · Voltou</button>
+        </div>
+        <div class="rede-svg-wrap" aria-hidden="true">
+          <svg viewBox="0 0 380 86" class="rede-svg">
+            <line x1="88" y1="43" x2="152" y2="43" class="rede-line is-local" />
+            <line x1="228" y1="43" x2="292" y2="43" id="redeLinhaNuvem" class="rede-line is-cut" />
+            <g transform="translate(8,18)">
+              <rect width="84" height="50" rx="6" class="rede-box is-primary" />
+              <text x="42" y="23" text-anchor="middle" class="rede-txt-main">Caixa 1</text>
+              <text x="42" y="38" text-anchor="middle" class="rede-txt-sub">No balcão</text>
+            </g>
+            <g transform="translate(148,18)">
+              <rect width="84" height="50" rx="6" class="rede-box" />
+              <text x="42" y="23" text-anchor="middle" class="rede-txt-main">Pedidos</text>
+              <text x="42" y="38" text-anchor="middle" class="rede-txt-sub">No computador</text>
+            </g>
+            <g transform="translate(288,18)">
+              <rect width="84" height="50" rx="6" id="redeBoxNuvem" class="rede-box is-dim" />
+              <text x="42" y="23" text-anchor="middle" class="rede-txt-main">Nuvem</text>
+              <text x="42" y="38" text-anchor="middle" class="rede-txt-sub" id="redeTxtNuvem">Em fila</text>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="t">Luneli Caixa <span>em breve · exemplo ilustrativo</span></div>
+          <div class="l"><span>Caixa 1 · computador do balcão</span><em><i class="ponto"></i><b id="rCaixa">Vendendo</b></em></div>
+          <div class="l"><span>Internet</span><em><i class="ponto esp" id="rNetPonto"></i><b id="rNet">Caiu</b></em></div>
+          <div class="l"><span>Pedidos e caixa</span><em id="rPedidos">Guardados neste computador</em></div>
+          <div class="l"><span>Nuvem</span><em id="rNuvem">Em fila aguardando conexão</em></div>
+          <div class="nota" id="rNota">É o que a primeira versão vai fazer: um caixa, no computador onde o Luneli está instalado.</div>
+        </div>
       </div>
     </div>
   </div>

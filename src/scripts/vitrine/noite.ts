@@ -68,11 +68,17 @@ if (reduzido) pintar(1)
 else {
   let perto = false
   let p = 0
+  let travadoPorClique = false
+  let ultimoScroll = scrollY
   const pede = porQuadro(() => {
-    if (perto) pintar(p)
+    if (perto && !travadoPorClique) pintar(p)
   })
   const aoRolar = (): void => {
-    if (!perto) return
+    if (Math.abs(scrollY - ultimoScroll) > 24) {
+      travadoPorClique = false
+      ultimoScroll = scrollY
+    }
+    if (!perto || travadoPorClique) return
     p = progresso()
     pede()
   }
@@ -87,4 +93,20 @@ else {
   addEventListener('resize', aoRolar)
   p = progresso()
   pintar(p)
+
+  eventos.forEach((ev, i) => {
+    const selecionar = (): void => {
+      travadoPorClique = true
+      ultimoScroll = scrollY
+      ultimo = -1
+      pintar(i / (N - 1))
+    }
+    ev.addEventListener('click', selecionar)
+    ev.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        selecionar()
+      }
+    })
+  })
 }

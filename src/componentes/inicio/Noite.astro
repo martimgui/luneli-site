@@ -52,7 +52,7 @@ const ARCO = `M${X0} 270 Q 500 -100 ${X1} 270`
     </svg>
     <ol class="noite-eventos" aria-label="As seis etapas da noite">
       {EVENTOS.map((evento, i) => (
-        <li class:list={['n-ev', { ativo: i === N - 1 }]} style={`--i:${i}`} data-texto={evento.texto}>
+        <li class:list={['n-ev', { ativo: i === N - 1 }]} style={`--i:${i}`} data-texto={evento.texto} data-indice={i} role="button" tabindex="0" aria-label={`${evento.hora} ${evento.onde}`}>
           <time class="n-hora" datetime={evento.hora}>{evento.hora}</time>
           <b class="n-onde">{evento.onde}</b>
           <span class="so-leitor">: {evento.texto}</span>

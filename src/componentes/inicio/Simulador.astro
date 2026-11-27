@@ -1,0 +1,110 @@
+---
+/**
+ * 4b. Simulador interativo do sistema Luneli: permite testar o fluxo de balcão, cozinha (KDS),
+ * mesas e expedição ao vivo, incluindo simulação de queda de internet (modo local em breve).
+ */
+---
+<section class="secao simulador" id="simulador" aria-labelledby="simTit">
+  <div class="sim-in">
+    <div class="sec-cab centro">
+      <h2 class="serifa revela" id="simTit">Teste o balcão agora, sem instalar nada.</h2>
+      <p class="revela" style="--i:1">Lance itens no pedido, envie para a cozinha, marque como pronto na tela do KDS e veja o que acontece se a internet cair no meio do movimento.</p>
+    </div>
+
+    <div class="sim-shell revela" style="--i:2" id="simShell" aria-label="Simulador interativo do sistema Luneli">
+      <div class="sim-topbar">
+        <div class="sim-topbar-left">
+          <span class="sim-status-pill is-online" id="simNetPill">
+            <span class="sim-dot" aria-hidden="true"></span>
+            <span id="simNetText">Loja conectada</span>
+          </span>
+          <span class="sim-operator">Operador: Ana (PIN)</span>
+        </div>
+        <div class="sim-topbar-actions">
+          <button type="button" class="sim-btn-net" id="simToggleNet">Simular queda de internet</button>
+          <button type="button" class="sim-btn-reset" id="simReset" title="Reiniciar simulação" aria-label="Reiniciar simulação">Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="sim-tabs" role="tablist" aria-label="Telas do simulador">
+        <button type="button" role="tab" aria-selected="true" class="sim-tab is-active" data-sim-tab="balcao">
+          <span>Balcão</span>
+          <kbd class="sim-kbd">F2</kbd>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="sim-tab" data-sim-tab="cozinha">
+          <span>Cozinha KDS</span>
+          <span class="sim-badge" id="simKdsBadge">2</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="sim-tab" data-sim-tab="mesas">
+          <span>Mesas</span>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="sim-tab" data-sim-tab="expedicao">
+          <span>Expedição</span>
+        </button>
+      </div>
+
+      <div class="sim-body">
+        <div class="sim-panel" data-sim-panel="balcao" role="tabpanel">
+          <div class="sim-balcao-grid">
+            <div class="sim-menu-col">
+              <div class="sim-col-label">Cardápio rápido · clique para lançar</div>
+              <div class="sim-quick-items" id="simMenu">
+                <button type="button" class="sim-menu-btn" data-add-item="1/2 Calabresa + Portuguesa (G)" data-add-price="72.00">
+                  <span class="sim-menu-name">1/2 Calabresa + Portuguesa (G)</span>
+                  <span class="sim-menu-price">R$ 72,00 <b>+</b></span>
+                </button>
+                <button type="button" class="sim-menu-btn" data-add-item="X-Bacon Artesanal" data-add-price="34.00">
+                  <span class="sim-menu-name">X-Bacon Artesanal</span>
+                  <span class="sim-menu-price">R$ 34,00 <b>+</b></span>
+                </button>
+                <button type="button" class="sim-menu-btn" data-add-item="Porção Fritas Cheddar" data-add-price="28.50">
+                  <span class="sim-menu-name">Porção Fritas Cheddar</span>
+                  <span class="sim-menu-price">R$ 28,50 <b>+</b></span>
+                </button>
+                <button type="button" class="sim-menu-btn" data-add-item="Refrigerante Lata" data-add-price="7.00">
+                  <span class="sim-menu-name">Refrigerante Lata</span>
+                  <span class="sim-menu-price">R$ 7,00 <b>+</b></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="sim-ticket-col">
+              <div class="sim-ticket-head">
+                <span class="sim-ticket-num" id="simTicketNum">Pedido #249</span>
+                <span class="sim-ticket-mode" id="simTicketMode">Balcão · Online</span>
+              </div>
+              <div class="sim-ticket-items" id="simCartItems"></div>
+              <div class="sim-ticket-foot">
+                <div class="sim-ticket-total">
+                  <span>Total</span>
+                  <strong id="simCartTotal">R$ 0,00</strong>
+                </div>
+                <button type="button" class="btn um sim-send-btn" id="simSendOrder">
+                  Enviar para cozinha [F8]
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-panel" data-sim-panel="cozinha" role="tabpanel" hidden>
+          <div class="sim-kds-list" id="simKdsList"></div>
+        </div>
+
+        <div class="sim-panel" data-sim-panel="mesas" role="tabpanel" hidden>
+          <div class="sim-mesas-grid" id="simMesasGrid"></div>
+          <p class="sim-mesa-detalhe" id="simMesaDetalhe">Clique em uma mesa ocupada para ver o resumo da conta.</p>
+        </div>
+
+        <div class="sim-panel" data-sim-panel="expedicao" role="tabpanel" hidden>
+          <div class="sim-exp-list" id="simExpList"></div>
+        </div>
+      </div>
+
+      <div class="sim-footer">
+        <span class="sim-log" id="simLog">Caixa 1 · Pedido #248 registrado às 20:58</span>
+        <span class="sim-hint">Simulação interativa</span>
+      </div>
+    </div>
+  </div>
+</section>
