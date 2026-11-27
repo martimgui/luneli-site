@@ -302,20 +302,19 @@ if (shell) {
   }
 
   function renderExpedicao(): void {
-    const entregas = pedidos.filter((p) => p.canal.startsWith('Delivery') || p.status === 'pronto')
     expList.innerHTML =
       `<div class="sim-exp-header">
         <span>Escala ativa: Diego · Lucas M. · Rafael S.</span>
         <span>${offline ? 'Modo Local (em breve)' : 'Sincronizado'}</span>
       </div>` +
-      entregas
+      pedidos
         .map((p) => {
           const entregue = p.status === 'entregue'
-          const estado = entregue ? 'Entregue' : p.status === 'pronto' ? 'Pronto para sair' : 'Em preparo na cozinha'
-          return `<div class="sim-exp-row">
+          const estado = entregue ? 'Entregue ✓' : p.status === 'pronto' ? 'Pronto para sair' : 'Em preparo'
+          return `<div class="sim-exp-row ${entregue ? 'is-done' : ''}">
             <div>
               <div class="sim-exp-driver">#${p.numero} · ${p.canal}</div>
-              <div class="sim-exp-order">${p.entregador ? `Entregador: ${p.entregador}` : 'Retirada / Balcão'} · ${fmt(p.total)}</div>
+              <div class="sim-exp-order">${p.entregador ? `Entregador: ${p.entregador}` : 'Retirada / Salão'} · ${fmt(p.total)}</div>
             </div>
             <div class="sim-exp-right">
               <span class="sim-exp-state">${estado}</span>

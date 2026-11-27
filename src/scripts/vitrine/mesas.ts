@@ -196,7 +196,7 @@ if (secao) {
     contaEl.innerHTML = `
       <div class="c1"><h5>${c.nome}</h5><span class="t3">${c.tempo}</span></div>
       <div class="c2">${c.aberta ? `${c.pessoas} pessoas` : 'Disponível'}</div>
-      ${rodadasHtml}
+      <div class="rodadas-lista">${rodadasHtml}</div>
       <div class="tots">
         <div class="ln"><span>Itens</span><span class="num">${fmt(itens)}</span></div>
         <div class="ln"><span>Taxa de serviço (10%)</span><span class="num">${fmt(taxa)}</span></div>
