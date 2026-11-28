@@ -8,15 +8,24 @@ const form = new Formulario<'nome' | 'telefone' | 'email' | 'senhaAtual'>('form-
 void (async () => {
   try {
     const sessao = await sessaoAtual()
-    if (!sessao) {
-      irParaEntrar()
+    if (sessao) {
+      elemento('quem').textContent = `${sessao.funcionario.nome} · ${sessao.restaurante.nome}`
+      const meu = await api().auth.meuEmail.query()
+      form.campo('nome').value = sessao.funcionario.nome
+      form.campo('email').value = meu.email ?? ''
+      mostrarArea()
       return
     }
-    elemento('quem').textContent = `${sessao.funcionario.nome} · ${sessao.restaurante.nome}`
-    const meu = await api().auth.meuEmail.query()
-    form.campo('nome').value = sessao.funcionario.nome
-    form.campo('email').value = meu.email ?? ''
-    mostrarArea()
+    const portal = await api().conta.portal.query()
+    if (portal.logado) {
+      elemento('quem').textContent = portal.pessoa.nome ?? portal.pessoa.email ?? 'Sua conta'
+      form.campo('nome').value = portal.pessoa.nome ?? ''
+      form.campo('email').value = portal.pessoa.email ?? ''
+      form.campo('telefone').value = portal.pessoa.telefone ?? ''
+      mostrarArea()
+      return
+    }
+    irParaEntrar()
   } catch (erro) {
     erroDaArea(mensagemDoErro(erro))
   }

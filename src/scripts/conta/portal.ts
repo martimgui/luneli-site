@@ -19,6 +19,25 @@ async function carregarPortal(): Promise<void> {
       return
     }
     elemento('portal-conteudo').hidden = false
+    elemento('quem').textContent = res.pessoa.nome ?? res.pessoa.email ?? 'Sua conta'
+    const btnSair = document.getElementById('sair')
+    if (btnSair && !btnSair.dataset.ligado) {
+      btnSair.dataset.ligado = '1'
+      btnSair.addEventListener('click', async () => {
+        try {
+          await api().auth.sair.mutate()
+        } catch {
+          // Segue para /entrar/.
+        }
+        location.assign('/entrar/')
+      })
+    }
+    const temLoja = res.restaurantes.length > 0
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('.conta-menu a')) {
+      const href = a.getAttribute('href') ?? ''
+      const sohComLoja = ['/minha-conta/', '/minha-conta/equipe/', '/minha-conta/empresa/', '/minha-conta/plano/', '/minha-conta/cancelar/'].includes(href)
+      if (sohComLoja && a.parentElement) a.parentElement.hidden = !temLoja
+    }
     elemento('portal-ola').textContent = res.pessoa.nome ? `Olá, ${res.pessoa.nome}` : 'Sua conta'
     elemento('portal-dados').textContent = [res.pessoa.email, res.pessoa.telefone].filter(Boolean).join(' · ')
 
