@@ -1,0 +1,52 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+import Campo from '../../componentes/Campo.astro'
+---
+<AreaDaConta titulo="Equipe e Convites">
+  <div class="cartao">
+    <h2>Convidar pessoa por e-mail</h2>
+    <p class="fraco" style="margin-top:4px">O convidado recebe o link por e-mail (ou aceita direto no Portal se já tiver conta).</p>
+    <form id="form-convidar" class="form" method="post" novalidate style="margin-top:14px">
+      <div class="linha-2">
+        <Campo nome="nome" rotulo="Nome" obrigatorio maximo={80} />
+        <Campo nome="email" rotulo="E-mail" tipo="email" obrigatorio />
+      </div>
+      <div class="linha-2">
+        <Campo nome="telefone" rotulo="Telefone (opcional)" tipo="tel" maximo={40} />
+        <div class="campo">
+          <label for="f-papel">Função</label>
+          <select id="f-papel" name="papel">
+            <option value="caixa">Caixa</option>
+            <option value="atendente">Atendente</option>
+            <option value="garcom">Garçom</option>
+            <option value="gerente">Gerente</option>
+            <option value="entregador">Entregador / Motoboy</option>
+          </select>
+        </div>
+      </div>
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes">
+        <button class="btn um" type="submit">Enviar convite</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="cartao" id="bloco-pendentes" hidden>
+    <h2>Convites pendentes</h2>
+    <ul id="lista-pendentes" style="list-style:none;padding:0;margin-top:12px;display:grid;gap:10px"></ul>
+  </div>
+
+  <div class="cartao">
+    <h2>Funcionários</h2>
+    <ul id="lista-funcionarios" style="list-style:none;padding:0;margin-top:12px;display:grid;gap:10px"></ul>
+  </div>
+
+  <div class="cartao">
+    <h2>Entregadores (Motoboys)</h2>
+    <ul id="lista-entregadores" style="list-style:none;padding:0;margin-top:12px;display:grid;gap:10px"></ul>
+  </div>
+
+  <script>
+    import '../../scripts/conta/equipe'
+  </script>
+</AreaDaConta>

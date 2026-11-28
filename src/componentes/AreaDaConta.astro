@@ -13,11 +13,13 @@ const { titulo } = Astro.props
 const caminho = Astro.url.pathname.replace(/\/$/, '')
 const MENU: { href?: string; texto: string }[] = [
   { href: '/minha-conta/', texto: 'Resumo' },
+  { href: '/minha-conta/portal/', texto: 'Portal / Lojas' },
+  { href: '/minha-conta/equipe/', texto: 'Equipe e Convites' },
+  { href: '/minha-conta/empresa/', texto: 'Dados da empresa' },
+  { href: '/minha-conta/meus-dados/', texto: 'Meus dados' },
   { href: '/minha-conta/plano/', texto: 'Plano' },
   { texto: 'Pagamento' },
   { texto: 'Faturas' },
-  { texto: 'Dados da empresa' },
-  { texto: 'Meus dados' },
   { href: '/minha-conta/cancelar/', texto: 'Cancelar' },
 ]
 ---

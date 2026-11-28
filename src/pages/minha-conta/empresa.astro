@@ -1,0 +1,26 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+import Campo from '../../componentes/Campo.astro'
+---
+<AreaDaConta titulo="Dados da empresa">
+  <div class="cartao">
+    <h2>Informações do restaurante</h2>
+    <dl class="ficha" style="margin-top:10px;margin-bottom:16px">
+      <dt>Código da loja</dt><dd id="e-codigo"></dd>
+    </dl>
+    <form id="form-empresa" class="form" method="post" novalidate>
+      <div class="linha-2">
+        <Campo nome="nome" rotulo="Nome do restaurante" obrigatorio maximo={80} />
+        <Campo nome="dddPadrao" rotulo="DDD padrão" obrigatorio maximo={2} />
+      </div>
+      <Campo nome="endereco" rotulo="Endereço" maximo={200} />
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes">
+        <button class="btn um" type="submit">Salvar alterações</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    import '../../scripts/conta/empresa'
+  </script>
+</AreaDaConta>

@@ -1,11 +1,13 @@
 import { api, causaDoErro, errosDoFormulario, mensagemDoErro } from '../../lib/api'
 import { fusoDoNavegador, fusoDoRestaurante } from '../../lib/conta'
+import { mostrarArea } from './area'
 import { Formulario, avisar, elemento } from './formulario'
 
 const formEntrar = new Formulario<'email' | 'senha'>('form-portal-entrar', ['email', 'senha'])
 const formLoja = new Formulario<'nomeDoRestaurante' | 'documento' | 'endereco'>('form-criar-loja', ['nomeDoRestaurante', 'documento', 'endereco'])
 
 async function carregarPortal(): Promise<void> {
+  mostrarArea()
   elemento('portal-carregando').hidden = false
   elemento('portal-deslogado').hidden = true
   elemento('portal-conteudo').hidden = true

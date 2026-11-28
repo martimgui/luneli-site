@@ -1,0 +1,26 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+import Campo from '../../componentes/Campo.astro'
+---
+<AreaDaConta titulo="Meus dados">
+  <div class="cartao">
+    <h2>Dados pessoais</h2>
+    <p class="fraco" style="margin-top:4px">Alterar o e-mail ou telefone exige sua senha atual.</p>
+    <form id="form-meus-dados" class="form" method="post" novalidate style="margin-top:14px">
+      <div class="linha-2">
+        <Campo nome="nome" rotulo="Seu nome" obrigatorio maximo={80} />
+        <Campo nome="telefone" rotulo="Telefone com DDD" tipo="tel" maximo={40} />
+      </div>
+      <Campo nome="email" rotulo="E-mail" tipo="email" obrigatorio />
+      <Campo nome="senhaAtual" rotulo="Senha atual (para confirmar alterações)" tipo="password" obrigatorio mostrar />
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes">
+        <button class="btn um" type="submit">Salvar meus dados</button>
+        <a class="ligacao" href="/esqueci-a-senha/">Trocar minha senha</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    import '../../scripts/conta/meus-dados'
+  </script>
+</AreaDaConta>
