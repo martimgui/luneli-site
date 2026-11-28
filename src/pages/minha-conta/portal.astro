@@ -1,0 +1,61 @@
+---
+import AreaDaConta from '../../componentes/AreaDaConta.astro'
+import Campo from '../../componentes/Campo.astro'
+---
+<AreaDaConta titulo="Portal Luneli">
+  <div id="portal-carregando" class="cartao">
+    <p class="fraco">Carregando seu Portal…</p>
+  </div>
+
+  <div id="portal-deslogado" class="cartao" hidden>
+    <h2>Entre na sua conta pessoal</h2>
+    <p class="fraco" style="margin-top:6px">Use seu e-mail e senha para ver seus restaurantes, aceitar convites ou abrir uma nova loja.</p>
+    <form id="form-portal-entrar" class="form" method="post" novalidate style="margin-top:16px">
+      <Campo nome="email" rotulo="E-mail" tipo="email" autocomplete="email" obrigatorio />
+      <Campo nome="senha" rotulo="Senha" tipo="password" autocomplete="current-password" obrigatorio mostrar />
+      <p class="aviso" role="alert" hidden></p>
+      <div class="acoes">
+        <button class="btn um" type="submit">Entrar no Portal</button>
+        <a class="ligacao" href="/testar-gratis/">Criar conta</a>
+      </div>
+    </form>
+  </div>
+
+  <div id="portal-conteudo" hidden>
+    <div class="cartao">
+      <h2 id="portal-ola">Sua conta</h2>
+      <p class="fraco" id="portal-dados"></p>
+    </div>
+
+    <div class="cartao" id="bloco-convites" hidden>
+      <h2>Convites para você</h2>
+      <p class="fraco" style="margin-top:4px">Aceite abaixo para entrar na equipe da loja.</p>
+      <ul id="lista-convites" style="list-style:none;padding:0;margin-top:14px;display:grid;gap:10px"></ul>
+      <p class="aviso" id="aviso-convite" role="status" hidden></p>
+    </div>
+
+    <div class="cartao">
+      <h2>Seus restaurantes</h2>
+      <p class="fraco" id="sem-restaurantes" style="margin-top:6px" hidden>Você ainda não participa de nenhum restaurante. Crie o seu abaixo ou peça um convite ao dono da sua loja.</p>
+      <ul id="lista-lojas" style="list-style:none;padding:0;margin-top:14px;display:grid;gap:10px"></ul>
+    </div>
+
+    <div class="cartao">
+      <h2>Criar meu restaurante</h2>
+      <p class="fraco" style="margin-top:4px">O primeiro teste grátis vale por CPF ou CNPJ (liberado novamente após 12 meses).</p>
+      <form id="form-criar-loja" class="form" method="post" novalidate style="margin-top:14px">
+        <Campo nome="nomeDoRestaurante" rotulo="Nome do restaurante" obrigatorio maximo={80} placeholder="Como aparece na fachada" />
+        <Campo nome="documento" rotulo="CPF ou CNPJ do responsável" obrigatorio maximo={20} placeholder="000.000.000-00 ou 00.000.000/0001-00" />
+        <Campo nome="endereco" rotulo="Endereço (opcional)" maximo={200} />
+        <p class="aviso" role="alert" hidden></p>
+        <div class="acoes">
+          <button class="btn um" type="submit">Criar restaurante e iniciar teste grátis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    import '../../scripts/conta/portal'
+  </script>
+</AreaDaConta>

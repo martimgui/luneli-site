@@ -79,6 +79,16 @@ form.form.addEventListener('submit', async (evento) => {
       'info',
     )
   } catch (erro) {
+    if (causaDoErro(erro)?.tipo === 'credenciais_invalidas' && identificacao.includes('@')) {
+      try {
+        await api().conta.entrarPortal.mutate({ email: identificacao, senha })
+        form.campo('senha').value = ''
+        location.assign('/minha-conta/portal/')
+        return
+      } catch {
+        // Segue para a mensagem padrão abaixo.
+      }
+    }
     form.ocupado(false)
     form.campo('senha').value = ''
     const espera = esperaDoErro(erro)
